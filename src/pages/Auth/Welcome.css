@@ -1,0 +1,179 @@
+.welcome-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #F3F5F7;
+  position: relative;
+  overflow: hidden;
+}
+
+.wave-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 250px;
+  background-color: #034078;
+  z-index: 1;
+}
+
+.wave-svg {
+  position: absolute;
+  bottom: -2px; /* Prevent sub-pixel gaps */
+  left: 0;
+  width: 100%;
+  height: 100px; /* Stretch the wave nicely */
+}
+
+/* Because the SVG draws the wave at the bottom, we need to flip it or use it as the bottom border of the header */
+/* Wait, the SVG provided has the wave shape. If we want it to look exactly like the image, the blue is at the top, and it waves down into the white.
+   The path I provided is a standard top-wave. Let's adjust positioning so it sits at the bottom of the blue block. */
+.wave-header {
+  height: 25vh; 
+}
+.wave-svg {
+  bottom: -99px; /* push the wave down outside the blue box */
+  height: 100px;
+}
+
+.welcome-content {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  margin-top: 15vh; /* Push content down below the wave */
+}
+
+.logo-section {
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.welcome-logo {
+  height: 160px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.08));
+  margin-bottom: 16px;
+}
+
+.welcome-tagline {
+  color: #034078;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.4;
+  max-width: 280px;
+}
+
+.action-buttons {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.btn-pill {
+  width: 100%;
+  padding: 14px 24px;
+  border-radius: 50px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-align: center;
+}
+
+.btn-solid {
+  background-color: #034078;
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(3, 64, 120, 0.2);
+}
+
+.btn-solid:hover {
+  background-color: #022e5a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(3, 64, 120, 0.3);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: #034078;
+  border: 2px solid #034078;
+}
+
+.btn-outline:hover {
+  background-color: rgba(3, 64, 120, 0.05);
+}
+
+.social-login-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.social-text {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 16px;
+}
+
+.social-icons {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.social-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  background-color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.social-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+.register-text {
+  font-size: 0.9rem;
+  color: #0f172a;
+}
+
+.register-link {
+  color: #034078;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.register-link:hover {
+  color: #022e5a;
+}
+
+/* Mobile Responsiveness adjustments if necessary */
+@media (max-width: 400px) {
+  .welcome-logo {
+    height: 100px;
+  }
+}
