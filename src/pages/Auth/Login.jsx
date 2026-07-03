@@ -8,17 +8,33 @@ export default function Login() {
   const [loginType, setLoginType] = useState('email'); // 'email' or 'phone'
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   
   // Mock login function for testing
   const handleLogin = (e) => {
     e.preventDefault();
+    setError('');
     
-    // For demonstration: route based on input email
+    // Check if logging in via email
     if (loginType === 'email') {
-      if (email.includes('mitra')) navigate('/mitra');
-      else if (email.includes('admin')) navigate('/admin');
-      else navigate('/customer');
+      // First check mock routes for testing
+      if (email.includes('mitra')) return navigate('/mitra');
+      if (email.includes('admin')) return navigate('/admin');
+
+      // Check against registered user in localStorage
+      const savedUserStr = localStorage.getItem('handyGoUser');
+      if (savedUserStr) {
+        const savedUser = JSON.parse(savedUserStr);
+        if (email === savedUser.email && password === savedUser.password) {
+          return navigate('/customer');
+        }
+      }
+      
+      // If we reach here, no match was found
+      setError('Email atau kata sandi yang Anda masukkan salah.');
     } else {
+      // For phone number login, just bypass for now
       navigate('/customer');
     }
   };
@@ -74,6 +90,8 @@ export default function Login() {
                     type={showPassword ? "text" : "password"} 
                     className="form-input" 
                     placeholder="Masukkan kata sandi" 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required 
                   />
                   <button 
@@ -105,6 +123,8 @@ export default function Login() {
               </div>
             </>
           )}
+
+          {error && <p style={{ color: '#ef4444', fontSize: '0.85rem', margin: '0', textAlign: 'center' }}>{error}</p>}
 
           <button type="submit" className="submit-btn">
             Masuk

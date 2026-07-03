@@ -1,30 +1,31 @@
-import { Outlet, Link } from 'react-router-dom';
-import { Home, ClipboardList, User } from 'lucide-react';
-import logo from '../../assets/logo.png';
+import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Home, Clock, MessageCircle, Settings } from 'lucide-react';
+import './CustomerLayout.css';
 
 export default function CustomerLayout() {
+  const location = useLocation();
+
   return (
-    <div className="app-container">
-      <div className="main-content">
-        <header className="topbar">
-          <div className="brand" style={{ display: 'flex', alignItems: 'center' }}>
-            <img src={logo} alt="HandyGo Logo" style={{ height: '40px', objectFit: 'contain' }} />
-          </div>
-          <nav style={{ display: 'flex', gap: '24px' }}>
-            <Link to="/customer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '500' }}>
-              <Home size={18} /> Beranda
-            </Link>
-            <Link to="/customer/orders" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '500' }}>
-              <ClipboardList size={18} /> Pesanan Saya
-            </Link>
-            <Link to="/customer/profile" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '500' }}>
-              <User size={18} /> Profil
-            </Link>
-          </nav>
-        </header>
-        <main className="page-content animate-fade-in">
-          <Outlet />
-        </main>
+    <div className="mobile-app-container">
+      <main className="mobile-page-content animate-fade-in">
+        <Outlet />
+      </main>
+
+      <div className="bottom-nav-container">
+        <nav className="bottom-nav">
+          <Link to="/customer" className={`nav-item ${location.pathname === '/customer' ? 'active' : ''}`}>
+            <Home size={22} />
+          </Link>
+          <Link to="/customer/history" className={`nav-item ${location.pathname.includes('/history') ? 'active' : ''}`}>
+            <Clock size={22} />
+          </Link>
+          <Link to="/customer/messages" className={`nav-item ${location.pathname.includes('/messages') ? 'active' : ''}`}>
+            <MessageCircle size={22} />
+          </Link>
+          <Link to="/customer/settings" className={`nav-item ${location.pathname.includes('/settings') ? 'active' : ''}`}>
+            <Settings size={22} />
+          </Link>
+        </nav>
       </div>
     </div>
   );

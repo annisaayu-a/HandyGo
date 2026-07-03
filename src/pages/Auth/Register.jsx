@@ -8,10 +8,27 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  
   const handleRegister = (e) => {
     e.preventDefault();
-    // After mock register, go to login or directly to dashboard
-    navigate('/customer');
+    setError(''); // clear previous errors
+    
+    if (password !== confirmPassword) {
+      setError('Konfirmasi kata sandi tidak sesuai dengan kata sandi.');
+      return;
+    }
+    
+    // Save mock user to localStorage
+    const user = { name, email, password };
+    localStorage.setItem('handyGoUser', JSON.stringify(user));
+    
+    // Redirect to login after register
+    navigate('/login');
   };
 
   return (
@@ -34,6 +51,8 @@ export default function Register() {
                 type="text" 
                 className="form-input" 
                 placeholder="Masukkan nama" 
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 required 
               />
             </div>
@@ -46,6 +65,8 @@ export default function Register() {
                 type="email" 
                 className="form-input" 
                 placeholder="Masukkan email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required 
               />
             </div>
@@ -58,6 +79,8 @@ export default function Register() {
                 type={showPassword ? "text" : "password"} 
                 className="form-input" 
                 placeholder="Masukkan kata sandi" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required 
               />
               <button 
@@ -77,6 +100,8 @@ export default function Register() {
                 type={showConfirmPassword ? "text" : "password"} 
                 className="form-input" 
                 placeholder="Masukkan kata sandi" 
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 required 
               />
               <button 
@@ -89,7 +114,9 @@ export default function Register() {
             </div>
           </div>
 
-          <button type="submit" className="submit-btn" style={{ marginTop: '16px' }}>
+          {error && <p style={{ color: '#ef4444', fontSize: '0.85rem', margin: '0', textAlign: 'center' }}>{error}</p>}
+
+          <button type="submit" className="submit-btn" style={{ marginTop: '8px' }}>
             Daftar
           </button>
         </form>

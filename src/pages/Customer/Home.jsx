@@ -1,28 +1,108 @@
+import { useState } from 'react';
+import { Search, Bell, MapPin, ShoppingBag, Package, Sparkles, Wrench, Truck, Bike, Book } from 'lucide-react';
+import './Home.css';
+
 export default function CustomerHome() {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const services = [
+    { id: 1, name: 'Belanja', icon: <ShoppingBag size={24} /> },
+    { id: 2, name: 'Antar Barang', icon: <Package size={24} /> },
+    { id: 3, name: 'Bersih-Bersih', icon: <Sparkles size={24} /> },
+    { id: 4, name: 'Perbaikan', icon: <Wrench size={24} /> },
+    { id: 5, name: 'Pindahan', icon: <Truck size={24} /> },
+    { id: 6, name: 'Antar Jemput', icon: <Bike size={24} /> },
+    { id: 7, name: 'Tugas', icon: <Book size={24} /> },
+  ];
+
   return (
-    <div>
-      <h1 style={{ marginBottom: '8px' }}>Layanan Bantuan HandyGo</h1>
-      <p style={{ color: 'var(--text-muted)', marginBottom: '32px' }}>Pilih layanan yang Anda butuhkan hari ini.</p>
-      
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
-        <div className="glass-card">
-          <h3 style={{ marginBottom: '12px' }}>Bersih-Bersih</h3>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '24px', fontSize: '0.9rem' }}>Panggil mitra untuk membersihkan rumah Anda secara menyeluruh.</p>
-          <button className="btn btn-primary" style={{ width: '100%' }}>Pesan Sekarang</button>
+    <div className="customer-home">
+      {/* Header Section */}
+      <header className="home-header">
+        <div className="profile-section">
+          <img 
+            src="https://ui-avatars.com/api/?name=Ajel&background=034078&color=fff" 
+            alt="Profile" 
+            className="profile-img"
+          />
+          <div className="profile-info">
+            <h2 className="profile-name">Ajel</h2>
+            <p className="profile-location">
+              <MapPin size={12} className="location-icon" /> Kab. Gowa
+            </p>
+          </div>
+        </div>
+        <button className="notification-btn">
+          <Bell size={20} />
+        </button>
+      </header>
+
+      {/* Greeting Section */}
+      <section className="greeting-section">
+        <h1 className="greeting-title">Hai, Ajel!</h1>
+        <h2 className="greeting-subtitle">Mau dibantu apa hari ini?</h2>
+      </section>
+
+      {/* Search Bar */}
+      <section className="search-section">
+        <div className="search-bar">
+          <Search size={20} className="search-icon" />
+          <input 
+            type="text" 
+            placeholder="Cari kebutuhanmu di sini"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-input"
+          />
+        </div>
+      </section>
+
+      {/* Services Grid */}
+      <section className="services-section">
+        <h3 className="section-title">Layanan kami</h3>
+        <div className="services-grid">
+          {services.map((service) => (
+            <div key={service.id} className="service-item">
+              <div className="service-icon-wrapper">
+                {service.icon}
+              </div>
+              <span className="service-name">{service.name}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Promo Section */}
+      <section className="promo-section">
+        <div className="promo-header">
+          <h3 className="section-title">Promo Untukmu</h3>
+          <a href="#" className="see-all-link">Lihat Semua</a>
         </div>
         
-        <div className="glass-card">
-          <h3 style={{ marginBottom: '12px' }}>Jaga Bayi (Babysitting)</h3>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '24px', fontSize: '0.9rem' }}>Mitra profesional siap menjaga buah hati Anda dengan aman.</p>
-          <button className="btn btn-primary" style={{ width: '100%' }}>Pesan Sekarang</button>
+        <div className="promo-scroll">
+          <div className="promo-card">
+            <div className="promo-left">
+              <span className="promo-value">20%</span>
+              <span className="promo-type">diskon</span>
+            </div>
+            <div className="promo-right">
+              <h4 className="promo-title">Layanan Kebersihan</h4>
+              <p className="promo-expiry">Berakhir besok 23:59</p>
+            </div>
+          </div>
+          
+          <div className="promo-card">
+            <div className="promo-left">
+              <span className="promo-value">FREE</span>
+              <span className="promo-type">ongkir</span>
+            </div>
+            <div className="promo-right">
+              <h4 className="promo-title">Seluruh Layanan</h4>
+              <p className="promo-expiry">Berakhir hari ini 23:59</p>
+            </div>
+          </div>
         </div>
-        
-        <div className="glass-card">
-          <h3 style={{ marginBottom: '12px' }}>Jaga Rumah</h3>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '24px', fontSize: '0.9rem' }}>Pergi dengan tenang, mitra kami akan menjaga rumah Anda.</p>
-          <button className="btn btn-primary" style={{ width: '100%' }}>Pesan Sekarang</button>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }

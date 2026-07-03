@@ -1,0 +1,63 @@
+.mobile-app-container {
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  position: relative;
+  max-width: 480px; /* Simulate mobile on desktop */
+  margin: 0 auto;
+  box-shadow: 0 0 20px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-page-content {
+  flex: 1;
+  padding: 24px 20px;
+  padding-bottom: 100px; /* Space for bottom nav */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Floating Bottom Navigation */
+.bottom-nav-container {
+  position: fixed;
+  bottom: 24px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 50;
+  padding: 0 20px;
+  pointer-events: none; /* Let clicks pass through container */
+}
+
+.bottom-nav {
+  pointer-events: auto; /* Enable clicks on the nav itself */
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background-color: var(--primary);
+  border-radius: 50px;
+  padding: 14px 24px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 10px 25px rgba(3, 64, 120, 0.3);
+}
+
+.nav-item {
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.nav-item:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.nav-item.active {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.15);
+}
