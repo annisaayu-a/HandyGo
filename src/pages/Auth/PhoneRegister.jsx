@@ -26,15 +26,31 @@ export default function PhoneRegister() {
 
   useEffect(() => {
     if (step === 3) {
-      // Save mock user for testing
-      const user = { name, phone, password: 'otp-login' };
-      localStorage.setItem('handyGoUser', JSON.stringify(user));
+      const registerUser = async () => {
+        try {
+          const response = await fetch('http://localhost:5000/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ full_name: name, phone_number: phone, password: 'otp-login' })
+          });
+          const data = await response.json();
+          if (response.ok) {
+            const user = { name: data.user.full_name, phone: data.user.phone_number, id: data.user.id };
+            localStorage.setItem('handyGoUser', JSON.stringify(user));
+            localStorage.setItem('handyGoToken', data.token);
+          } else {
+            console.error('Registration failed:', data.error);
+          }
+        } catch (err) {
+          console.error('Failed to connect to backend', err);
+        }
+      };
       
-      const timeout = setTimeout(() => {
-        navigate('/customer');
-      }, 2000);
-      
-      return () => clearTimeout(timeout);
+      registerUser().then(() => {
+        setTimeout(() => {
+          navigate('/customer');
+        }, 2000);
+      });
     }
   }, [step, navigate, name, phone]);
 

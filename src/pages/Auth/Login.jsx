@@ -13,14 +13,12 @@ export default function Login() {
   const [error, setError] = useState('');
 
   // Mock login function for testing
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
 
     // For demonstration: route based on input email
     if (loginType === 'email') {
-      const storedUser = JSON.parse(localStorage.getItem('handyGoUser'));
-      
       // If user is trying to login as admin/mitra (mock bypass)
       if (email.includes('mitra')) {
         navigate('/mitra');
@@ -31,12 +29,27 @@ export default function Login() {
         return;
       }
 
-      // Check registered user
-      if (!storedUser || storedUser.email !== email || storedUser.password !== password) {
-        setError('Email atau kata sandi salah / belum terdaftar.');
-        return;
+      try {
+        const response = await fetch('http://localhost:5000/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await response.json();
+        
+        if (!response.ok) {
+          setError(data.error || 'Email atau kata sandi salah / belum terdaftar.');
+          return;
+        }
+
+        const user = { name: data.user.full_name, email: data.user.email, phone: data.user.phone_number, id: data.user.id };
+        localStorage.setItem('handyGoUser', JSON.stringify(user));
+        localStorage.setItem('handyGoToken', data.token);
+        navigate('/customer');
+      } catch (err) {
+        setError('Gagal menghubungi server. Pastikan server backend berjalan.');
+        console.error(err);
       }
-      navigate('/customer');
     } else {
       if (!phone.startsWith('08')) {
         setError('Nomor telepon harus diawali 08');
@@ -46,12 +59,28 @@ export default function Login() {
         setError('Nomor telepon harus terdiri dari 10-15 angka');
         return;
       }
-      const storedUser = JSON.parse(localStorage.getItem('handyGoUser'));
-      if (!storedUser || storedUser.phone !== phone) {
-        setError('Nomor handphone belum terdaftar.');
-        return;
+      
+      try {
+        const response = await fetch('http://localhost:5000/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone_number: phone, password: 'otp-login' })
+        });
+        const data = await response.json();
+        
+        if (!response.ok) {
+          setError(data.error || 'Nomor handphone belum terdaftar.');
+          return;
+        }
+
+        const user = { name: data.user.full_name, email: data.user.email, phone: data.user.phone_number, id: data.user.id };
+        localStorage.setItem('handyGoUser', JSON.stringify(user));
+        localStorage.setItem('handyGoToken', data.token);
+        navigate('/customer');
+      } catch (err) {
+        setError('Gagal menghubungi server. Pastikan server backend berjalan.');
+        console.error(err);
       }
-      navigate('/customer');
     }
   };
 

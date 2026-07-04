@@ -14,7 +14,7 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     setError(''); // clear previous errors
     
@@ -23,12 +23,31 @@ export default function Register() {
       return;
     }
     
-    // Save mock user to localStorage
-    const user = { name, email, password };
-    localStorage.setItem('handyGoUser', JSON.stringify(user));
-    
-    // Redirect directly to customer home after register
-    navigate('/customer');
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ full_name: name, email, password })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Terjadi kesalahan saat pendaftaran');
+        return;
+      }
+
+      // Save user to localStorage
+      const user = { name: data.user.full_name, email: data.user.email, id: data.user.id };
+      localStorage.setItem('handyGoUser', JSON.stringify(user));
+      localStorage.setItem('handyGoToken', data.token);
+      
+      // Redirect directly to customer home after register
+      navigate('/customer');
+    } catch (err) {
+      setError('Gagal menghubungi server. Pastikan server backend berjalan.');
+      console.error(err);
+    }
   };
 
   return (
