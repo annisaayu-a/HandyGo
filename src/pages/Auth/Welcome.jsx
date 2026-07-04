@@ -59,9 +59,7 @@ export default function Welcome() {
             </button>
           </div>
           
-          <p className="register-text">
-            Belum memiliki akun? <span className="register-link" onClick={() => navigate('/register')}>Daftar</span>
-          </p>
+
         </div>
       </div>
     </div>

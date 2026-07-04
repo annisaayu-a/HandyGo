@@ -24,6 +24,20 @@ export default function PhoneRegister() {
     return () => clearInterval(timer);
   }, [step, countdown]);
 
+  useEffect(() => {
+    if (step === 3) {
+      // Save mock user for testing
+      const user = { name, phone, password: 'otp-login' };
+      localStorage.setItem('handyGoUser', JSON.stringify(user));
+      
+      const timeout = setTimeout(() => {
+        navigate('/customer');
+      }, 2000);
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [step, navigate, name, phone]);
+
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
@@ -47,11 +61,6 @@ export default function PhoneRegister() {
     } else if (step === 2) {
       // Validate OTP here in a real app
       setStep(3);
-    } else if (step === 3) {
-      // Save mock user for testing
-      const user = { name, phone, password: 'otp-login' };
-      localStorage.setItem('handyGoUser', JSON.stringify(user));
-      navigate('/customer');
     }
   };
 
@@ -180,22 +189,18 @@ export default function PhoneRegister() {
               <div className="success-icon-container">
                 <div style={{ 
                   backgroundColor: '#16a34a', 
-                  width: '100px', 
-                  height: '100px', 
+                  width: '140px', 
+                  height: '140px', 
                   borderRadius: '50%', 
                   display: 'flex', 
                   alignItems: 'center', 
                   justifyContent: 'center',
                   boxShadow: '0 8px 24px rgba(22, 163, 74, 0.3)'
                 }}>
-                  <Check size={50} color="white" strokeWidth={4} />
+                  <Check size={80} color="white" strokeWidth={4} />
                 </div>
               </div>
               <h2 className="success-title">Sukses!</h2>
-              
-              <button type="submit" className="submit-btn" style={{ marginTop: '24px' }}>
-                Lanjutkan
-              </button>
             </div>
           )}
         </form>

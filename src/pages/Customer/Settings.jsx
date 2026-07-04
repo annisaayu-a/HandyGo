@@ -2,6 +2,10 @@ import { User, MapPin, CreditCard, Info, ShieldCheck } from 'lucide-react';
 import './Settings.css';
 
 export default function CustomerSettings() {
+  const storedUser = JSON.parse(localStorage.getItem('handyGoUser') || '{}');
+  const userName = storedUser.name || 'Ajel';
+  const userPhone = storedUser.phone || '+6285343750155';
+
   const menuItems = [
     { id: 1, label: 'Detail Profil', icon: <User size={20} /> },
     { id: 2, label: 'Lokasi', icon: <MapPin size={20} /> },
@@ -15,13 +19,13 @@ export default function CustomerSettings() {
       {/* Settings Header */}
       <div className="settings-header-large">
         <img 
-          src="https://ui-avatars.com/api/?name=Ajel&background=034078&color=fff&size=128" 
+          src={`https://ui-avatars.com/api/?name=${userName}&background=034078&color=fff&size=128`}
           alt="Profile" 
           className="settings-img-large"
         />
         <div className="settings-info-large">
-          <h1 className="settings-name-large">Ajel</h1>
-          <p className="settings-phone">+6285343750155</p>
+          <h1 className="settings-name-large">{userName}</h1>
+          <p className="settings-phone">{userPhone}</p>
         </div>
       </div>
 

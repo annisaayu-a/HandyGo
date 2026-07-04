@@ -6,6 +6,9 @@ import './Home.css';
 export default function CustomerHome() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  
+  const storedUser = JSON.parse(localStorage.getItem('handyGoUser') || '{}');
+  const userName = storedUser.name || 'Ajel';
 
   const services = [
     { id: 1, name: 'Belanja', icon: <ShoppingBag size={24} /> },
@@ -23,12 +26,12 @@ export default function CustomerHome() {
       <header className="home-header">
         <div className="profile-section">
           <img 
-            src="https://ui-avatars.com/api/?name=Ajel&background=034078&color=fff" 
+            src={`https://ui-avatars.com/api/?name=${userName}&background=034078&color=fff`} 
             alt="Profile" 
             className="profile-img"
           />
           <div className="profile-info">
-            <h2 className="profile-name">Ajel</h2>
+            <h2 className="profile-name">{userName}</h2>
             <p className="profile-location">
               <MapPin size={12} className="location-icon" /> Kab. Gowa
             </p>
@@ -41,7 +44,7 @@ export default function CustomerHome() {
 
       {/* Greeting Section */}
       <section className="greeting-section">
-        <h1 className="greeting-title">Hai, Ajel!</h1>
+        <h1 className="greeting-title">Hai, {userName}!</h1>
         <h2 className="greeting-subtitle">Mau dibantu apa hari ini?</h2>
       </section>
 

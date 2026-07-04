@@ -2,6 +2,9 @@ import { Bell, MapPin, ShoppingBag, Bike, Wrench } from 'lucide-react';
 import './History.css';
 
 export default function CustomerHistory() {
+  const storedUser = JSON.parse(localStorage.getItem('handyGoUser') || '{}');
+  const userName = storedUser.name || 'Ajel';
+
   const historyData = [
     {
       id: 1,
@@ -48,12 +51,12 @@ export default function CustomerHistory() {
       <header className="home-header">
         <div className="profile-section">
           <img 
-            src="https://ui-avatars.com/api/?name=Ajel&background=034078&color=fff" 
+            src={`https://ui-avatars.com/api/?name=${userName}&background=034078&color=fff`} 
             alt="Profile" 
             className="profile-img"
           />
           <div className="profile-info">
-            <h2 className="profile-name">Ajel</h2>
+            <h2 className="profile-name">{userName}</h2>
             <p className="profile-location">
               <MapPin size={12} className="location-icon" /> Kab. Gowa
             </p>
