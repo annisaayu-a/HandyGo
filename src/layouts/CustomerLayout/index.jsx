@@ -4,14 +4,28 @@ import './CustomerLayout.css';
 
 export default function CustomerLayout() {
   const location = useLocation();
+  
+  // Paths where the bottom navigation should be hidden
+  const hideBottomNavPaths = [
+    '/customer/shopping', 
+    '/customer/shopping/map', 
+    '/customer/shopping/details', 
+    '/customer/shopping/checkout',
+    '/customer/shopping/status'
+  ];
+  const shouldHideBottomNav = hideBottomNavPaths.includes(location.pathname);
 
   return (
     <div className="mobile-app-container">
-      <main className="mobile-page-content animate-fade-in">
+      <main 
+        className="mobile-page-content animate-fade-in"
+        style={{ paddingBottom: shouldHideBottomNav ? '24px' : '100px' }}
+      >
         <Outlet />
       </main>
 
-      <div className="bottom-nav-container">
+      {!shouldHideBottomNav && (
+        <div className="bottom-nav-container">
         <nav className="bottom-nav">
           <Link to="/customer" className={`nav-item ${location.pathname === '/customer' ? 'active' : ''}`}>
             <Home size={22} />
@@ -27,6 +41,7 @@ export default function CustomerLayout() {
           </Link>
         </nav>
       </div>
+      )}
     </div>
   );
 }

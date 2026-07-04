@@ -9,7 +9,16 @@ import AdminLayout from '../layouts/AdminLayout';
 import Welcome from '../pages/Auth/Welcome';
 import Login from '../pages/Auth/Login';
 import Register from '../pages/Auth/Register';
+import PhoneRegister from '../pages/Auth/PhoneRegister';
 import CustomerHome from '../pages/Customer/Home';
+import CustomerHistory from '../pages/Customer/History';
+import CustomerMessages from '../pages/Customer/Messages';
+import CustomerSettings from '../pages/Customer/Settings';
+import ShoppingOrder from '../pages/Customer/ShoppingOrder';
+import ShoppingMap from '../pages/Customer/ShoppingMap';
+import ShoppingDetails from '../pages/Customer/ShoppingDetails';
+import ShoppingCheckout from '../pages/Customer/ShoppingCheckout';
+import ShoppingStatus from '../pages/Customer/ShoppingStatus';
 import MitraDashboard from '../pages/Mitra/Dashboard';
 import AdminDashboard from '../pages/Admin/Dashboard';
 
@@ -26,6 +35,10 @@ export const router = createBrowserRouter([
     path: '/register',
     element: <Register />,
   },
+  {
+    path: '/phone-auth',
+    element: <PhoneRegister />,
+  },
   // Customer Routes
   {
     path: '/customer',
@@ -36,12 +49,36 @@ export const router = createBrowserRouter([
         element: <CustomerHome />,
       },
       {
-        path: 'orders',
-        element: <div>Halaman Pesanan Saya (Placeholder)</div>,
+        path: 'history',
+        element: <CustomerHistory />,
       },
       {
-        path: 'profile',
-        element: <div>Halaman Profil Customer (Placeholder)</div>,
+        path: 'messages',
+        element: <CustomerMessages />,
+      },
+      {
+        path: 'settings',
+        element: <CustomerSettings />,
+      },
+      {
+        path: 'shopping',
+        element: <ShoppingOrder />,
+      },
+      {
+        path: 'shopping/map',
+        element: <ShoppingMap />,
+      },
+      {
+        path: 'shopping/details',
+        element: <ShoppingDetails />,
+      },
+      {
+        path: 'shopping/checkout',
+        element: <ShoppingCheckout />,
+      },
+      {
+        path: 'shopping/status',
+        element: <ShoppingStatus />,
       },
     ],
   },

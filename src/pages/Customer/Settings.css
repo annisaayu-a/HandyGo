@@ -1,0 +1,81 @@
+.customer-settings {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 24px;
+}
+
+/* Header Section */
+.settings-header-large {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0 32px;
+}
+
+.settings-img-large {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.settings-info-large {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settings-name-large {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.settings-phone {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Menu List */
+.settings-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.settings-menu-item {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border-radius: 16px;
+  padding: 16px 20px;
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(3, 64, 120, 0.04);
+  border: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.settings-menu-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(3, 64, 120, 0.08);
+}
+
+.menu-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.menu-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #334155;
+  margin: 0;
+}

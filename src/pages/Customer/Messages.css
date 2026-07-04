@@ -1,0 +1,92 @@
+.customer-messages {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 24px;
+}
+
+.messages-page-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 16px 0 8px;
+}
+
+.messages-subtitle {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin: 0 0 32px;
+}
+
+.chat-history-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chat-history-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.chat-history-desc {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin: 0 0 16px;
+}
+
+.chat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chat-card {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border-radius: 16px;
+  padding: 16px;
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(3, 64, 120, 0.04);
+  border: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.chat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(3, 64, 120, 0.08);
+}
+
+.chat-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #f1f5f9;
+}
+
+.chat-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chat-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.chat-status {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0;
+}

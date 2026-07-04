@@ -19,7 +19,7 @@ export default function Register() {
     setError(''); // clear previous errors
     
     if (password !== confirmPassword) {
-      setError('Konfirmasi kata sandi tidak sesuai dengan kata sandi.');
+      setError('Konfirmasi kata sandi tidak sesuai');
       return;
     }
     
@@ -27,8 +27,8 @@ export default function Register() {
     const user = { name, email, password };
     localStorage.setItem('handyGoUser', JSON.stringify(user));
     
-    // Redirect to login after register
-    navigate('/login');
+    // Redirect directly to customer home after register
+    navigate('/customer');
   };
 
   return (
@@ -127,7 +127,7 @@ export default function Register() {
           </p>
           <p className="social-text" style={{ marginBottom: '12px' }}>atau</p>
           <p className="register-text">
-            Daftar dengan <span className="register-link">No. Handphone</span>
+            Daftar dengan <span className="register-link" onClick={() => navigate('/phone-auth')}>No. Handphone</span>
           </p>
         </div>
       </div>

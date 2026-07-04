@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Bell, MapPin, ShoppingBag, Package, Sparkles, Wrench, Truck, Bike, Book } from 'lucide-react';
 import './Home.css';
 
 export default function CustomerHome() {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
 
   const services = [
@@ -16,7 +18,7 @@ export default function CustomerHome() {
   ];
 
   return (
-    <div className="customer-home">
+    <div className="customer-home animate-fade-in">
       {/* Header Section */}
       <header className="home-header">
         <div className="profile-section">
@@ -62,7 +64,16 @@ export default function CustomerHome() {
         <h3 className="section-title">Layanan kami</h3>
         <div className="services-grid">
           {services.map((service) => (
-            <div key={service.id} className="service-item">
+            <div 
+              key={service.id} 
+              className="service-item"
+              onClick={() => {
+                if (service.id === 1) {
+                  navigate('/customer/shopping');
+                }
+              }}
+              style={{ cursor: 'pointer' }}
+            >
               <div className="service-icon-wrapper">
                 {service.icon}
               </div>

@@ -1,6 +1,8 @@
 .mobile-app-container {
   min-height: 100vh;
-  background-color: var(--bg-color);
+  width: 100%;
+  flex: 1;
+  background-color: #ffffff;
   position: relative;
   max-width: 480px; /* Simulate mobile on desktop */
   margin: 0 auto;

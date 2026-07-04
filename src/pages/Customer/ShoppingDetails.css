@@ -1,0 +1,210 @@
+.shopping-details-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  background-color: #ffffff;
+}
+
+/* Header */
+.details-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.details-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* Content */
+.details-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 100px; /* Space for bottom button */
+}
+
+/* Summary Card */
+.summary-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.summary-subtitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0 0 4px 0;
+}
+
+.location-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.location-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  padding-right: 16px;
+}
+
+.location-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.location-value {
+  font-size: 0.9rem;
+  color: #475569;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.change-btn {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0284c7; /* A bit lighter blue than primary for contrast */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.location-note-input {
+  display: flex;
+  align-items: center;
+  background-color: #f1f5f9;
+  border-radius: 12px;
+  padding: 12px 16px;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.note-icon {
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.note-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: #334155;
+}
+
+.note-input:focus {
+  outline: none;
+}
+
+.note-input::placeholder {
+  color: #94a3b8;
+}
+
+/* Generic Input Section */
+.input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.order-textarea {
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: #334155;
+  resize: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.order-textarea:focus {
+  outline: none;
+  border-color: #034078;
+}
+
+/* Price Input */
+.price-input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.price-prefix {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  padding-right: 16px;
+}
+
+.price-divider {
+  width: 1px;
+  height: 24px;
+  background-color: #e2e8f0;
+  margin-right: 16px;
+}
+
+.price-input {
+  flex: 1;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  color: #334155;
+}
+
+.price-input:focus {
+  outline: none;
+}
+
+/* Bottom Action Container (Fixed at bottom) */
+.bottom-action-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 16px 20px 24px; /* Accounting for safe area */
+  background-color: #ffffff;
+  display: flex;
+  justify-content: center;
+  z-index: 10;
+}
+
+.bottom-action-container .submit-btn {
+  margin: 0;
+  max-width: 440px; /* Keeping it consistent with mobile container width */
+}
