@@ -33,12 +33,56 @@ export default function ShoppingCheckout() {
     { id: 'qris', name: 'QRIS', icon: <Banknote size={20} /> }
   ];
 
-  const handleCheckout = () => {
-    setShowModal(true);
-    // Auto redirect back to status page after 3 seconds
-    setTimeout(() => {
-      navigate('/customer/shopping/status', { state: { pesanan } });
-    }, 3000);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleCheckout = async () => {
+    setIsSubmitting(true);
+    
+    // Retrieve user from local storage
+    const userStr = localStorage.getItem('handyGoUser');
+    let user = null;
+    if (userStr) {
+      try {
+        user = JSON.parse(userStr);
+      } catch (e) { console.error('Error parsing user data', e); }
+    }
+
+    if (!user || !user.id) {
+      alert("Anda harus masuk (login) terlebih dahulu.");
+      setIsSubmitting(false);
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user.id,
+          pickup_location: toko.name,
+          dropoff_location: pengantaran.name,
+          order_details: pesanan,
+          estimated_price: total,
+          payment_method: paymentMethod
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Gagal membuat pesanan');
+      }
+
+      setShowModal(true);
+      // Auto redirect back to status page after 3 seconds
+      setTimeout(() => {
+        navigate('/customer/shopping/status', { state: { pesanan } });
+      }, 3000);
+    } catch (error) {
+      alert("Terjadi kesalahan saat memproses pesanan. Pastikan server berjalan.");
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -147,8 +191,8 @@ export default function ShoppingCheckout() {
 
       {/* Bottom Button */}
       <div className="bottom-action-container">
-        <button className="submit-btn" onClick={handleCheckout}>
-          Lanjut
+        <button className="submit-btn" onClick={handleCheckout} disabled={isSubmitting}>
+          {isSubmitting ? 'Memproses...' : 'Lanjut'}
         </button>
       </div>
 
