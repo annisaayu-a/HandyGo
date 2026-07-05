@@ -8,11 +8,12 @@ export default function ShoppingCheckout() {
   const location = useLocation();
 
   // Retrieve state or use fallbacks
-  const { toko, pengantaran, pesanan, estimasiHarga } = location.state || {
+  const { toko, pengantaran, pesanan, estimasiHarga, locationDetail } = location.state || {
     toko: { name: 'Kost Ernias' },
     pengantaran: { name: 'Universitas Hasanuddin Kampus FAK...' },
     pesanan: 'Ayam Bakar Paha Atas (2), Ayam Bakar Dada (4)',
-    estimasiHarga: '78000'
+    estimasiHarga: '78000',
+    locationDetail: ''
   };
 
   // Process prices
@@ -61,7 +62,7 @@ export default function ShoppingCheckout() {
         body: JSON.stringify({
           user_id: user.id,
           pickup_location: toko.name,
-          dropoff_location: pengantaran.name,
+          dropoff_location: locationDetail ? `${pengantaran.name} (${locationDetail})` : pengantaran.name,
           order_details: pesanan,
           estimated_price: total,
           payment_method: paymentMethod
@@ -120,11 +121,12 @@ export default function ShoppingCheckout() {
             </button>
           </div>
           
-          {/* Faded location detail (read only) */}
-          <div className="location-note-read">
-            <div className="note-icon-placeholder"></div>
-            <span className="note-text-faded">Tambahin detail lokasi yuk!</span>
-          </div>
+          {/* Location detail (read only) */}
+          {locationDetail && (
+            <div className="location-note-read">
+              <span className="location-detail-text">{locationDetail}</span>
+            </div>
+          )}
         </div>
 
         {/* Order Details */}

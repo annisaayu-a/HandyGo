@@ -1,82 +1,175 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ArrowUp, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 import './ShoppingMap.css';
+
+// Komponen helper untuk melacak pergerakan peta
+function MapEvents({ setAddress, setIsDragging }) {
+  const map = useMapEvents({
+    dragstart: () => {
+      setIsDragging(true);
+      setAddress(prev => ({ ...prev, name: 'Mencari lokasi...', address: '' }));
+    },
+    dragend: async () => {
+      setIsDragging(false);
+      const center = map.getCenter();
+      try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${center.lat}&lon=${center.lng}&zoom=18&addressdetails=1`);
+        
+        if (!response.ok) {
+          if (response.status === 429 || response.status === 403) {
+            setAddress({ name: 'Terlalu banyak klik', address: 'Sistem peta membatasi akses sementara. Mohon tunggu 1-2 menit.', lat: center.lat, lng: center.lng });
+          } else {
+            setAddress({ name: 'Gagal memuat', address: 'Layanan peta sedang gangguan', lat: center.lat, lng: center.lng });
+          }
+          return;
+        }
+
+        const data = await response.json();
+        
+        if (data && data.display_name) {
+          const nameParts = data.display_name.split(', ');
+          const name = data.name || (data.address && data.address.road) || nameParts[0];
+          setAddress({
+            name: name,
+            address: data.display_name,
+            lat: center.lat,
+            lng: center.lng
+          });
+        } else {
+          setAddress({ name: 'Lokasi tidak dikenal', address: 'Tidak dapat menemukan alamat di titik ini', lat: center.lat, lng: center.lng });
+        }
+      } catch (err) {
+        console.error("Gagal mendapatkan lokasi:", err);
+        setAddress({ name: 'Gagal memuat', address: 'Periksa koneksi internet Anda', lat: center.lat, lng: center.lng });
+      }
+    }
+  });
+  return null;
+}
+
+// Komponen untuk animasi terbang ke lokasi pencarian
+function MapFlyTo({ center }) {
+  const map = useMapEvents({});
+  useEffect(() => {
+    if (center) {
+      map.flyTo(center, 17, { animate: true, duration: 1.5 });
+    }
+  }, [center, map]);
+  return null;
+}
 
 export default function ShoppingMap() {
   const navigate = useNavigate();
 
-  // Mock addresses to cycle through when the map is dragged
-  const addresses = [
-    { name: "Kost Ernias", address: "Romang Lompoa, Kec. Bontomarannu, Kabupaten Gowa, Sulawesi Selatan, Indonesia" },
-    { name: "Fakultas Teknik Unhas", address: "Jl. Poros Malino, Gowa, Sulawesi Selatan, Indonesia" },
-    { name: "Warkop Bundu Gowa", address: "Jl. Bontomarannu, Gowa, Sulawesi Selatan, Indonesia" },
-    { name: "Asrama Mahasiswa", address: "Jl. Teknik Raya, Kabupaten Gowa, Sulawesi Selatan, Indonesia" },
-    { name: "Indomaret Poros Malino", address: "Jl. Poros Malino KM 15, Kabupaten Gowa, Indonesia" }
-  ];
+  // Default coordinate (Makassar/Gowa border)
+  const defaultPosition = [-5.185, 119.452]; 
 
-  const [addressIndex, setAddressIndex] = useState(0);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [currentAddress, setCurrentAddress] = useState({
+    name: 'Kabupaten Gowa',
+    address: 'Sulawesi Selatan, Indonesia',
+    lat: defaultPosition[0],
+    lng: defaultPosition[1]
+  });
 
+  const [isMapDragging, setIsMapDragging] = useState(false);
   const [step, setStep] = useState('toko'); // 'toko' or 'pengantaran'
   const [tokoLocation, setTokoLocation] = useState(null);
 
-  const handlePointerDown = (e) => {
-    setIsDragging(true);
-    setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
-  };
+  // Search States
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [mapTargetCenter, setMapTargetCenter] = useState(defaultPosition);
+  const searchTimeoutRef = useRef(null);
 
-  const handlePointerMove = (e) => {
-    if (isDragging) {
-      setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
-      });
+  useEffect(() => {
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${defaultPosition[0]}&lon=${defaultPosition[1]}`)
+      .then(res => res.json())
+      .then(data => {
+        if(data && data.display_name) {
+          const nameParts = data.display_name.split(', ');
+          const name = data.name || (data.address && data.address.road) || nameParts[0];
+          setCurrentAddress(prev => ({ ...prev, name: name, address: data.display_name }));
+        }
+      }).catch(console.error);
+  }, []);
+
+  // Fungsi Pencarian (Autocomplete)
+  const handleSearch = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    if (query.length > 2) {
+      searchTimeoutRef.current = setTimeout(async () => {
+        try {
+          const viewbox = '119.35,-5.05,119.55,-5.35';
+          const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=id&viewbox=${viewbox}&bounded=0&limit=5`);
+          if (response.ok) {
+            const data = await response.json();
+            setSearchResults(data);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }, 600);
+    } else {
+      setSearchResults([]);
     }
   };
 
-  const handlePointerUp = () => {
-    if (isDragging) {
-      setIsDragging(false);
-      // Change address sequentially when drag ends to simulate finding a new location
-      setAddressIndex((prev) => (prev + 1) % addresses.length);
-    }
+  // Saat hasil pencarian dipilih
+  const handleSelectResult = (result) => {
+    const lat = parseFloat(result.lat);
+    const lon = parseFloat(result.lon);
+    
+    // Terbang ke titik baru
+    setMapTargetCenter([lat, lon]);
+    setSearchResults([]);
+    setSearchQuery('');
+    
+    const nameParts = result.display_name.split(', ');
+    const name = result.name || nameParts[0];
+    
+    setCurrentAddress({
+      name: name,
+      address: result.display_name,
+      lat: lat,
+      lng: lon
+    });
   };
 
   return (
     <div className="shopping-map-page animate-fade-in">
       {/* Full screen Map */}
-      <div 
-        className="fullscreen-map"
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerUp}
-        style={{ cursor: isDragging ? 'grabbing' : 'grab', overflow: 'hidden' }}
-      >
-        <div style={{
-          position: 'absolute',
-          top: '-100%', left: '-100%',
-          width: '300%', height: '300%',
-          transform: `translate(${position.x}px, ${position.y}px)`,
-          transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-          pointerEvents: 'none'
-        }}>
-          <iframe 
-            src="https://www.openstreetmap.org/export/embed.html?bbox=119.45%2C-5.18%2C119.55%2C-5.08&amp;layer=mapnik" 
-            width="100%" 
-            height="100%" 
-            style={{ border: 0 }} 
-            allowFullScreen="" 
-            loading="lazy" 
-          ></iframe>
-        </div>
+      <div className="fullscreen-map" style={{ zIndex: 0 }}>
+        <MapContainer 
+          center={defaultPosition} 
+          zoom={16} 
+          style={{ width: '100%', height: '100%' }}
+          zoomControl={false}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+          <MapEvents setAddress={setCurrentAddress} setIsDragging={setIsMapDragging} />
+          <MapFlyTo center={mapTargetCenter} />
+        </MapContainer>
         
-        {/* Custom Map Pin (Mock) */}
-        <div className="map-pin-center" style={{ pointerEvents: 'none' }}>
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        {/* Custom Map Pin (Static in Center) */}
+        <div className="map-pin-center" style={{ pointerEvents: 'none', zIndex: 400, position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -100%)' }}>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" 
+               style={{ 
+                 transform: isMapDragging ? 'translateY(-10px)' : 'translateY(0)', 
+                 transition: 'transform 0.2s',
+                 filter: 'drop-shadow(0px 4px 4px rgba(0,0,0,0.25))'
+               }}>
             <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2Z" fill="#034078"/>
             <circle cx="12" cy="9" r="3" fill="white"/>
           </svg>
@@ -84,15 +177,16 @@ export default function ShoppingMap() {
       </div>
 
       {/* Floating Top Search Card */}
-      <div className="floating-top-card">
+      <div className="floating-top-card" style={{ zIndex: 1000 }}>
         <div className="location-input-group">
           <ArrowUp size={20} className="input-icon-up" />
           <input 
             type="text" 
             className="location-input" 
-            placeholder="Cari lokasi toko"
-            value={step === 'pengantaran' ? tokoLocation.name : ''}
-            readOnly={step === 'pengantaran'}
+            placeholder={step === 'toko' ? "Ketik nama/lokasi toko di sini" : "Lokasi toko (Tersimpan)"}
+            value={step === 'toko' ? searchQuery : (tokoLocation ? tokoLocation.name : '')}
+            onChange={step === 'toko' ? handleSearch : undefined}
+            readOnly={step !== 'toko'}
           />
         </div>
         <div className="location-divider"></div>
@@ -101,13 +195,28 @@ export default function ShoppingMap() {
           <input 
             type="text" 
             className="location-input" 
-            placeholder="Cari lokasi pengantaran"
+            placeholder={step === 'pengantaran' ? "Ketik lokasi pengantaran di sini" : "Cari lokasi pengantaran"}
+            value={step === 'pengantaran' ? searchQuery : ''}
+            onChange={step === 'pengantaran' ? handleSearch : undefined}
+            readOnly={step !== 'pengantaran'}
           />
         </div>
+
+        {/* Dropdown Hasil Pencarian */}
+        {searchResults.length > 0 && (
+          <div className="search-results-dropdown">
+            {searchResults.map((res, i) => (
+              <div key={i} className="search-result-item" onClick={() => handleSelectResult(res)}>
+                <div className="result-name">{res.name || res.display_name.split(',')[0]}</div>
+                <div className="result-address">{res.display_name}</div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Bottom Sheet */}
-      <div className="bottom-sheet">
+      <div className="bottom-sheet" style={{ zIndex: 1000 }}>
         <div className="bottom-sheet-header">
           <h2 className="sheet-title">
             {step === 'toko' ? 'Set lokasi toko' : 'Set lokasi pengantaran'}
@@ -116,33 +225,32 @@ export default function ShoppingMap() {
         </div>
         
         <div className="selected-location-box">
-          <h3 className="location-name">{addresses[addressIndex].name}</h3>
+          <h3 className="location-name">{currentAddress.name}</h3>
           <p className="location-address">
-            {addresses[addressIndex].address}
+            {currentAddress.address}
           </p>
         </div>
 
         <button 
           className="submit-btn" 
           style={{ marginTop: '16px' }}
+          disabled={isMapDragging || !currentAddress.address}
           onClick={() => {
             if (step === 'toko') {
-              setTokoLocation(addresses[addressIndex]);
+              setTokoLocation(currentAddress);
               setStep('pengantaran');
-              // Optionally change the map visual state slightly or reset index
-              setAddressIndex((prev) => (prev + 1) % addresses.length);
+              setSearchQuery('');
             } else {
-              // Both selected, proceed to details page
               navigate('/customer/shopping/details', { 
                 state: { 
                   toko: tokoLocation, 
-                  pengantaran: addresses[addressIndex] 
+                  pengantaran: currentAddress 
                 } 
               });
             }
           }}
         >
-          Lanjut
+          {isMapDragging ? 'Mencari lokasi...' : 'Lanjut'}
         </button>
       </div>
     </div>

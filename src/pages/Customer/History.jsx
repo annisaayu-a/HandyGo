@@ -1,49 +1,63 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bell, MapPin, ShoppingBag, Bike, Wrench } from 'lucide-react';
 import './History.css';
 
 export default function CustomerHistory() {
+  const navigate = useNavigate();
   const storedUser = JSON.parse(localStorage.getItem('handyGoUser') || '{}');
   const userName = storedUser.name || 'Ajel';
 
-  const historyData = [
-    {
-      id: 1,
-      service: 'Belanja',
-      status: 'Sukses',
-      date: 'Hari ini, 10:48 WITA',
-      ratingText: 'Belum diberi rating',
-      icon: <ShoppingBag size={24} />,
-      statusColor: '#1e293b'
-    },
-    {
-      id: 2,
-      service: 'Antar Jemput',
-      status: 'Sukses',
-      date: 'Kamis, 9 April, 15:23 WITA',
-      ratingText: 'Kamu memberi rating ⭐️ 4.9',
-      icon: <Bike size={24} />,
-      statusColor: '#1e293b'
-    },
-    {
-      id: 3,
-      service: 'Belanja',
-      status: 'Dibatalkan',
-      date: 'Selasa, 7 April, 20:19 WITA',
-      ratingText: 'Toko tutup',
-      icon: <ShoppingBag size={24} />,
-      statusColor: '#64748b',
-      isCanceled: true
-    },
-    {
-      id: 4,
-      service: 'Perbaikan',
-      status: 'Sukses',
-      date: 'Sabtu, 4 April, 17:08 WITA',
-      ratingText: 'Kamu memberi rating ⭐️ 5.0',
-      icon: <Wrench size={24} />,
-      statusColor: '#1e293b'
-    }
-  ];
+  const [historyData, setHistoryData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      if (!storedUser.id) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const response = await fetch(`http://localhost:5000/api/orders?user_id=${storedUser.id}`);
+        const data = await response.json();
+        if (response.ok) {
+          // Format data to match UI
+          const formattedOrders = data.orders.map(order => {
+            const isCanceled = order.status === 'batal';
+            
+            // Format date 
+            const dateObj = new Date(order.created_at);
+            const dateStr = dateObj.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) + ' WITA';
+
+            return {
+              id: order.id,
+              service: order.service?.name || 'Layanan',
+              status: order.status.charAt(0).toUpperCase() + order.status.slice(1),
+              date: dateStr,
+              ratingText: 'Belum diberi rating',
+              isCanceled: isCanceled,
+              statusColor: isCanceled ? '#64748b' : '#1e293b',
+              pesanan: order.order_details // Pass the details for the status page
+            };
+          });
+          setHistoryData(formattedOrders);
+        }
+      } catch (err) {
+        console.error("Failed to fetch history", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, [storedUser.id]);
+
+  const getServiceIcon = (serviceName) => {
+    if (serviceName.toLowerCase().includes('belanja')) return <ShoppingBag size={24} />;
+    if (serviceName.toLowerCase().includes('antar')) return <Bike size={24} />;
+    if (serviceName.toLowerCase().includes('perbaikan')) return <Wrench size={24} />;
+    return <ShoppingBag size={24} />;
+  };
 
   return (
     <div className="customer-history animate-fade-in">
@@ -71,9 +85,18 @@ export default function CustomerHistory() {
 
       <div className="history-list">
         {historyData.map((item) => (
-          <div key={item.id} className={`history-card ${item.isCanceled ? 'canceled' : ''}`}>
+          <div 
+            key={item.id} 
+            className={`history-card ${item.isCanceled ? 'canceled' : ''}`}
+            style={{ cursor: item.status.toLowerCase() === 'menunggu' ? 'pointer' : 'default' }}
+            onClick={() => {
+              if (item.status.toLowerCase() === 'menunggu') {
+                navigate('/customer/shopping/status', { state: { pesanan: item.pesanan } });
+              }
+            }}
+          >
             <div className="history-icon">
-              {item.icon}
+              {getServiceIcon(item.service)}
             </div>
             <div className="history-details">
               <h3 className="history-service-name">{item.service}</h3>

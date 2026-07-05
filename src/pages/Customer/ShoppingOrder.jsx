@@ -1,9 +1,66 @@
+import { useState, useRef } from 'react';
 import { ChevronLeft, ArrowUp, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './ShoppingOrder.css';
 
 export default function ShoppingOrder() {
   const navigate = useNavigate();
+
+  const [tokoLocation, setTokoLocation] = useState(null);
+  const [pengantaranLocation, setPengantaranLocation] = useState(null);
+  
+  const [activeInput, setActiveInput] = useState(null); // 'toko' or 'pengantaran'
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const searchTimeoutRef = useRef(null);
+  
+  const handleSearch = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    if (query.length > 2) {
+      searchTimeoutRef.current = setTimeout(async () => {
+        try {
+          // Tambahkan viewbox untuk memprioritaskan pencarian di sekitar area Makassar & Gowa
+          const viewbox = '119.35,-5.05,119.55,-5.35';
+          const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=id&viewbox=${viewbox}&bounded=0&limit=5`);
+          if (response.ok) {
+            const data = await response.json();
+            setSearchResults(data);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }, 600); // 600ms delay agar tidak diblokir oleh server
+    } else {
+      setSearchResults([]);
+    }
+  };
+
+  const handleSelectResult = (result) => {
+    const nameParts = result.display_name.split(', ');
+    const name = result.name || nameParts[0];
+    const locationData = {
+      name: name,
+      address: result.display_name,
+      lat: parseFloat(result.lat),
+      lng: parseFloat(result.lon)
+    };
+
+    if (activeInput === 'toko') {
+      setTokoLocation(locationData);
+    } else if (activeInput === 'pengantaran') {
+      setPengantaranLocation(locationData);
+    }
+
+    setSearchResults([]);
+    setSearchQuery('');
+    setActiveInput(null);
+  };
 
   return (
     <div className="shopping-order-page animate-fade-in">
@@ -17,13 +74,20 @@ export default function ShoppingOrder() {
 
       <main className="shopping-content">
         {/* Location Inputs Card */}
-        <div className="location-card">
+        <div className="location-card" style={{ position: 'relative' }}>
           <div className="location-input-group">
             <ArrowUp size={20} className="input-icon-up" />
             <input 
               type="text" 
               className="location-input" 
               placeholder="Cari lokasi toko"
+              value={activeInput === 'toko' ? searchQuery : (tokoLocation ? tokoLocation.name : '')}
+              onChange={handleSearch}
+              onFocus={() => {
+                setActiveInput('toko');
+                setSearchQuery('');
+                setSearchResults([]);
+              }}
             />
           </div>
           <div className="location-divider"></div>
@@ -33,9 +97,46 @@ export default function ShoppingOrder() {
               type="text" 
               className="location-input" 
               placeholder="Cari lokasi pengantaran"
+              value={activeInput === 'pengantaran' ? searchQuery : (pengantaranLocation ? pengantaranLocation.name : '')}
+              onChange={handleSearch}
+              onFocus={() => {
+                setActiveInput('pengantaran');
+                setSearchQuery('');
+                setSearchResults([]);
+              }}
             />
           </div>
+          
+          {/* Dropdown Hasil Pencarian */}
+          {searchResults.length > 0 && activeInput && (
+            <div className="search-results-dropdown-inline">
+              {searchResults.map((res, i) => (
+                <div key={i} className="search-result-item-inline" onClick={() => handleSelectResult(res)}>
+                  <div className="result-name-inline">{res.name || res.display_name.split(',')[0]}</div>
+                  <div className="result-address-inline">{res.display_name}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
+
+        {/* Action Button if both selected */}
+        {tokoLocation && pengantaranLocation && (
+          <button 
+            className="submit-btn" 
+            style={{ width: '100%', marginBottom: '24px' }}
+            onClick={() => {
+              navigate('/customer/shopping/details', { 
+                state: { 
+                  toko: tokoLocation, 
+                  pengantaran: pengantaranLocation 
+                } 
+              });
+            }}
+          >
+            Lanjut
+          </button>
+        )}
 
         {/* Map Section */}
         <h2 className="map-title">Atau pilih lewat peta</h2>

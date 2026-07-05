@@ -91,6 +91,56 @@
   margin: 0 20px;
 }
 
+/* Dropdown Inline Search Results */
+.search-results-dropdown-inline {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(8px);
+  border: 1px solid #e2e8f0;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  margin-top: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 50;
+}
+
+.search-result-item-inline {
+  padding: 12px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.search-result-item-inline:last-child {
+  border-bottom: none;
+}
+
+.search-result-item-inline:active,
+.search-result-item-inline:hover {
+  background-color: #f8fafc;
+}
+
+.result-name-inline {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 2px;
+}
+
+.result-address-inline {
+  font-size: 0.8rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Map Section */
 .map-title {
   font-family: 'Outfit', sans-serif;

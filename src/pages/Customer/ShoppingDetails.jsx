@@ -15,6 +15,19 @@ export default function ShoppingDetails() {
 
   const [pesanan, setPesanan] = useState('');
   const [estimasiHarga, setEstimasiHarga] = useState('');
+  const [locationDetail, setLocationDetail] = useState('');
+
+  const handlePriceChange = (e) => {
+    // Remove all non-numeric characters
+    const numericValue = e.target.value.replace(/[^0-9]/g, '');
+    if (!numericValue) {
+      setEstimasiHarga('');
+      return;
+    }
+    // Format with thousand separator (e.g., 10.000)
+    const formattedValue = new Intl.NumberFormat('id-ID').format(parseInt(numericValue, 10));
+    setEstimasiHarga(formattedValue);
+  };
 
   return (
     <div className="shopping-details-page animate-fade-in">
@@ -57,6 +70,8 @@ export default function ShoppingDetails() {
               type="text" 
               placeholder="Tambahin detail lokasi yuk!" 
               className="note-input"
+              value={locationDetail}
+              onChange={(e) => setLocationDetail(e.target.value)}
             />
           </div>
         </div>
@@ -84,7 +99,7 @@ export default function ShoppingDetails() {
               className="price-input" 
               placeholder="Estimasi Harga"
               value={estimasiHarga}
-              onChange={(e) => setEstimasiHarga(e.target.value)}
+              onChange={handlePriceChange}
             />
           </div>
         </div>
@@ -104,7 +119,8 @@ export default function ShoppingDetails() {
                 toko,
                 pengantaran,
                 pesanan,
-                estimasiHarga
+                estimasiHarga,
+                locationDetail
               }
             });
           }}
