@@ -9,6 +9,11 @@ export default function CustomerHome() {
   
   const storedUser = JSON.parse(localStorage.getItem('handyGoUser') || '{}');
   const userName = storedUser.name || 'Ajel';
+  const profilePic = storedUser.profile_picture;
+  const userLocation = storedUser.default_location || 'Atur lokasimu di sini';
+
+  // Format location to be shorter for Home screen if it's too long
+  const displayLocation = userLocation === 'Atur lokasimu di sini' ? userLocation : userLocation.split(',')[0];
 
   const services = [
     { id: 1, name: 'Belanja', icon: <ShoppingBag size={24} /> },
@@ -25,15 +30,28 @@ export default function CustomerHome() {
       {/* Header Section */}
       <header className="home-header">
         <div className="profile-section">
-          <img 
-            src={`https://ui-avatars.com/api/?name=${userName}&background=034078&color=fff`} 
-            alt="Profile" 
-            className="profile-img"
-          />
+          {profilePic ? (
+            <img 
+              src={`http://localhost:5000${profilePic}`}
+              alt="Profile" 
+              className="profile-img"
+            />
+          ) : (
+            <img 
+              src={`https://ui-avatars.com/api/?name=${userName}&background=034078&color=fff`} 
+              alt="Profile" 
+              className="profile-img"
+            />
+          )}
           <div className="profile-info">
             <h2 className="profile-name">{userName}</h2>
-            <p className="profile-location">
-              <MapPin size={12} className="location-icon" /> Kab. Gowa
+            <p 
+              className="profile-location" 
+              onClick={() => navigate('/customer/location')}
+              style={{ cursor: 'pointer' }}
+            >
+              <MapPin size={12} className="location-icon" /> 
+              {displayLocation}
             </p>
           </div>
         </div>
@@ -49,15 +67,14 @@ export default function CustomerHome() {
       </section>
 
       {/* Search Bar */}
-      <section className="search-section">
-        <div className="search-bar">
+      <section className="search-section" onClick={() => navigate('/customer/search')} style={{ cursor: 'pointer' }}>
+        <div className="search-bar" style={{ pointerEvents: 'none' }}>
           <Search size={20} className="search-icon" />
           <input 
             type="text" 
             placeholder="Cari kebutuhanmu di sini"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
             className="search-input"
+            readOnly
           />
         </div>
       </section>
@@ -73,6 +90,8 @@ export default function CustomerHome() {
               onClick={() => {
                 if (service.id === 1) {
                   navigate('/customer/shopping');
+                } else if (service.id === 2) {
+                  navigate('/customer/delivery');
                 }
               }}
               style={{ cursor: 'pointer' }}

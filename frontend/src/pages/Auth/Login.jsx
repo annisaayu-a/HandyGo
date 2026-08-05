@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import './Login.css';
 
 export default function Login() {
@@ -11,11 +11,17 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [phoneError, setPhoneError] = useState('');
 
   // Mock login function for testing
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+    setEmailError('');
+    setPasswordError('');
+    setPhoneError('');
 
     // For demonstration: route based on input email
     if (loginType === 'email') {
@@ -29,6 +35,25 @@ export default function Login() {
         return;
       }
 
+      let hasError = false;
+      if (!email) {
+        setEmailError('Email tidak boleh kosong.');
+        hasError = true;
+      } else {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          setEmailError('Masukkan alamat email yang valid.');
+          hasError = true;
+        }
+      }
+
+      if (!password) {
+        setPasswordError('Kata sandi tidak boleh kosong.');
+        hasError = true;
+      }
+
+      if (hasError) return;
+
       try {
         const response = await fetch('http://localhost:5000/api/auth/login', {
           method: 'POST',
@@ -38,7 +63,14 @@ export default function Login() {
         const data = await response.json();
         
         if (!response.ok) {
-          setError(data.error || 'Email atau kata sandi salah / belum terdaftar.');
+          const errMsg = data.error || '';
+          if (errMsg.toLowerCase().includes('password') || errMsg.toLowerCase().includes('sandi')) {
+            setPasswordError('Kata sandi yang dimasukkan salah.');
+          } else if (errMsg.toLowerCase().includes('user') || errMsg.toLowerCase().includes('not found') || errMsg.toLowerCase().includes('pengguna') || errMsg.toLowerCase().includes('email')) {
+            setEmailError('Alamat email tidak ditemukan. Coba lagi.');
+          } else {
+            setError(data.error || 'Email atau kata sandi salah.');
+          }
           return;
         }
 
@@ -51,14 +83,21 @@ export default function Login() {
         console.error(err);
       }
     } else {
-      if (!phone.startsWith('08')) {
-        setError('Nomor telepon harus diawali 08');
-        return;
+      let hasError = false;
+      if (!phone || phone === '+62') {
+        setPhoneError('No. Hp tidak boleh kosong.');
+        hasError = true;
+      } else {
+        if (!phone.startsWith('+628')) {
+          setPhoneError('Nomor telepon harus diawali angka 8.');
+          hasError = true;
+        } else if (phone.length < 12 || phone.length > 16) { // +62 + 8 + 7 to 11 digits
+          setPhoneError('No. Hp yang dimasukkan salah.');
+          hasError = true;
+        }
       }
-      if (phone.length < 10 || phone.length > 15) {
-        setError('Nomor telepon harus terdiri dari 10-15 angka');
-        return;
-      }
+
+      if (hasError) return;
       
       try {
         const response = await fetch('http://localhost:5000/api/auth/login', {
@@ -69,7 +108,7 @@ export default function Login() {
         const data = await response.json();
         
         if (!response.ok) {
-          setError(data.error || 'Nomor handphone belum terdaftar.');
+          setPhoneError('No. Hp yang dimasukkan salah.');
           return;
         }
 
@@ -86,6 +125,11 @@ export default function Login() {
 
   return (
     <div className="login-container">
+      {/* Back Button */}
+      <button className="auth-back-btn" onClick={() => navigate(-1)}>
+        <ArrowLeft size={24} color="#1e293b" />
+      </button>
+
       {/* Wavy Header Background */}
       <div className="wave-header">
         <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="wave-svg">
@@ -118,17 +162,18 @@ export default function Login() {
                 <label className="form-label">Email</label>
                 <div className="input-wrapper">
                   <input
-                    type="email"
+                    type="text"
                     className="form-input"
                     placeholder="Masukkan email"
                     value={email}
                     onChange={(e) => {
                       setEmail(e.target.value);
+                      if (emailError) setEmailError('');
                       if (error) setError('');
                     }}
-                    required
                   />
                 </div>
+                {emailError && <p className="field-error-text">{emailError}</p>}
               </div>
 
               <div className="form-group">
@@ -141,9 +186,9 @@ export default function Login() {
                     value={password}
                     onChange={(e) => {
                       setPassword(e.target.value);
+                      if (passwordError) setPasswordError('');
                       if (error) setError('');
                     }}
-                    required
                   />
                   <button
                     type="button"
@@ -153,6 +198,7 @@ export default function Login() {
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+                {passwordError && <p className="field-error-text">{passwordError}</p>}
               </div>
 
               <div className="forgot-password">
@@ -163,20 +209,27 @@ export default function Login() {
             <>
               <div className="form-group">
                 <label className="form-label">No. Hp</label>
-                <div className="input-wrapper">
+                <div className={`input-wrapper phone-input-wrapper ${phoneError ? 'has-error' : ''}`} style={{ display: 'flex', alignItems: 'center', borderRadius: '12px', padding: '0 16px', backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)' }}>
+                  <div className="phone-prefix" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '8px', fontWeight: '600', color: '#1e293b' }}>
+                    <img src="https://flagcdn.com/w20/id.png" alt="ID" style={{ width: '20px', borderRadius: '2px' }} />
+                    +62
+                  </div>
                   <input
                     type="tel"
-                    className="form-input"
-                    placeholder="Contoh: 08123456789"
-                    value={phone}
+                    className="form-input phone-input-no-shadow"
+                    placeholder="8123456789"
+                    value={phone.startsWith('+62') ? phone.slice(3) : phone}
                     onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '');
-                      setPhone(val);
+                      let val = e.target.value.replace(/\D/g, '');
+                      if (val.startsWith('0')) val = val.slice(1);
+                      setPhone('+62' + val);
+                      if (phoneError) setPhoneError('');
                       if (error) setError('');
                     }}
-                    required
+                    style={{ border: 'none', backgroundColor: 'transparent', padding: '14px 0', flex: 1, outline: 'none', boxShadow: 'none' }}
                   />
                 </div>
+                {phoneError && <p className="field-error-text">{phoneError}</p>}
               </div>
             </>
           )}

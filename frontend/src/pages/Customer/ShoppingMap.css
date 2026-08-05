@@ -10,6 +10,27 @@
   flex-direction: column;
 }
 
+.map-back-btn {
+  position: absolute;
+  top: 52px; /* Centered between the two inputs (20px card top + 32px offset) */
+  left: 20px;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.map-back-btn:active {
+  transform: scale(0.95);
+}
+
 /* Fullscreen Map */
 .fullscreen-map {
   position: absolute;
@@ -32,8 +53,8 @@
 /* Floating Top Search Card */
 .floating-top-card {
   position: absolute;
-  top: 60px; /* Space for status bar / notch */
-  left: 20px;
+  top: 20px; /* Space for status bar / notch */
+  left: 76px; /* Space for back button */
   right: 20px;
   background-color: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(8px);

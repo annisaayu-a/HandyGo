@@ -16,7 +16,8 @@ model User {
   phone_number    String?  @unique
   email           String?  @unique
   password_hash   String
-  default_location String? @default("Kab. Gowa")
+  default_location String?
+  profile_picture String?
   created_at      DateTime @default(now())
   orders          Order[]
 }

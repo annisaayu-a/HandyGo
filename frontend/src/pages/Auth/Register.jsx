@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import './Login.css'; // Reusing the same CSS classes for identical layout structures
 
 export default function Register() {
@@ -18,6 +18,13 @@ export default function Register() {
     e.preventDefault();
     setError(''); // clear previous errors
     
+    // Validasi format email ketat (harus ada .com, .co.id, dsb)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Format email tidak valid (contoh: nama@gmail.com)');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError('Konfirmasi kata sandi tidak sesuai');
       return;
@@ -52,6 +59,11 @@ export default function Register() {
 
   return (
     <div className="login-container">
+      {/* Back Button */}
+      <button className="auth-back-btn" onClick={() => navigate(-1)}>
+        <ArrowLeft size={24} color="#1e293b" />
+      </button>
+
       {/* Wavy Header Background */}
       <div className="wave-header">
         <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="wave-svg">

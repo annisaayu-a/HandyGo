@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowUp, Target } from 'lucide-react';
+import { ArrowUp, Target, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -146,6 +146,15 @@ export default function ShoppingMap() {
 
   return (
     <div className="shopping-map-page animate-fade-in">
+      {/* Back Button */}
+      <button 
+        className="map-back-btn" 
+        onClick={() => navigate(-1)}
+        style={{ zIndex: 1000 }}
+      >
+        <ArrowLeft size={24} color="#1e293b" />
+      </button>
+
       {/* Full screen Map */}
       <div className="fullscreen-map" style={{ zIndex: 0 }}>
         <MapContainer 

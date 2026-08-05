@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check } from 'lucide-react';
+import { Check, ArrowLeft } from 'lucide-react';
 import './Login.css';
 
 export default function PhoneRegister() {
@@ -63,12 +63,16 @@ export default function PhoneRegister() {
   const handleNextStep = (e) => {
     e.preventDefault();
     if (step === 1) {
-      if (!phone.startsWith('08')) {
-        setPhoneError('Nomor telepon harus diawali 08');
+      if (!phone || phone === '+62') {
+        setPhoneError('No. Hp tidak boleh kosong.');
         return;
       }
-      if (phone.length < 10 || phone.length > 15) {
-        setPhoneError('Nomor telepon harus terdiri dari 10-15 angka');
+      if (!phone.startsWith('+628')) {
+        setPhoneError('Nomor telepon harus diawali angka 8.');
+        return;
+      }
+      if (phone.length < 12 || phone.length > 16) {
+        setPhoneError('No. Hp yang dimasukkan salah.');
         return;
       }
       setPhoneError('');
@@ -110,6 +114,11 @@ export default function PhoneRegister() {
 
   return (
     <div className="login-container">
+      {/* Back Button */}
+      <button className="auth-back-btn" onClick={() => navigate(-1)}>
+        <ArrowLeft size={24} color="#1e293b" />
+      </button>
+
       {/* Wavy Header Background */}
       <div className="wave-header">
         <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="wave-svg">
@@ -140,22 +149,26 @@ export default function PhoneRegister() {
 
               <div className="form-group">
                 <label className="form-label">No. Hp</label>
-                <div className="input-wrapper">
+                <div className={`input-wrapper phone-input-wrapper ${phoneError ? 'has-error' : ''}`} style={{ display: 'flex', alignItems: 'center', borderRadius: '12px', padding: '0 16px', backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)' }}>
+                  <div className="phone-prefix" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '8px', fontWeight: '600', color: '#1e293b' }}>
+                    <img src="https://flagcdn.com/w20/id.png" alt="ID" style={{ width: '20px', borderRadius: '2px' }} />
+                    +62
+                  </div>
                   <input 
                     type="tel" 
-                    className="form-input" 
-                    placeholder="Contoh: 08123456789" 
-                    value={phone}
+                    className="form-input phone-input-no-shadow" 
+                    placeholder="8123456789" 
+                    value={phone.startsWith('+62') ? phone.slice(3) : phone}
                     onChange={(e) => {
-                      // Only allow numbers
-                      const val = e.target.value.replace(/\D/g, '');
-                      setPhone(val);
+                      let val = e.target.value.replace(/\D/g, '');
+                      if (val.startsWith('0')) val = val.slice(1);
+                      setPhone('+62' + val);
                       if (phoneError) setPhoneError('');
                     }}
-                    required 
+                    style={{ border: 'none', backgroundColor: 'transparent', padding: '14px 0', flex: 1, outline: 'none', boxShadow: 'none' }}
                   />
                 </div>
-                {phoneError && <p style={{ color: '#ef4444', fontSize: '0.85rem', margin: '4px 0 0' }}>{phoneError}</p>}
+                {phoneError && <p className="field-error-text">{phoneError}</p>}
               </div>
 
               <button type="submit" className="submit-btn" style={{ marginTop: '24px' }}>

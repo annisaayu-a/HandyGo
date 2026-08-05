@@ -11,6 +11,9 @@ import Login from '../pages/Auth/Login';
 import Register from '../pages/Auth/Register';
 import PhoneRegister from '../pages/Auth/PhoneRegister';
 import CustomerHome from '../pages/Customer/Home';
+import CustomerLocation from '../pages/Customer/Location';
+import CustomerSearch from '../pages/Customer/Search';
+import CustomerProfile from '../pages/Customer/ProfileDetail';
 import CustomerHistory from '../pages/Customer/History';
 import CustomerMessages from '../pages/Customer/Messages';
 import CustomerSettings from '../pages/Customer/Settings';
@@ -19,6 +22,8 @@ import ShoppingMap from '../pages/Customer/ShoppingMap';
 import ShoppingDetails from '../pages/Customer/ShoppingDetails';
 import ShoppingCheckout from '../pages/Customer/ShoppingCheckout';
 import ShoppingStatus from '../pages/Customer/ShoppingStatus';
+import Delivery from '../pages/Customer/Delivery';
+import DeliveryLocation from '../pages/Customer/DeliveryLocation';
 import MitraDashboard from '../pages/Mitra/Dashboard';
 import AdminDashboard from '../pages/Admin/Dashboard';
 
@@ -49,6 +54,14 @@ export const router = createBrowserRouter([
         element: <CustomerHome />,
       },
       {
+        path: 'location',
+        element: <CustomerLocation />,
+      },
+      {
+        path: 'search',
+        element: <CustomerSearch />,
+      },
+      {
         path: 'history',
         element: <CustomerHistory />,
       },
@@ -59,6 +72,10 @@ export const router = createBrowserRouter([
       {
         path: 'settings',
         element: <CustomerSettings />,
+      },
+      {
+        path: 'profile',
+        element: <CustomerProfile />,
       },
       {
         path: 'shopping',
@@ -79,6 +96,14 @@ export const router = createBrowserRouter([
       {
         path: 'shopping/status',
         element: <ShoppingStatus />,
+      },
+      {
+        path: 'delivery',
+        element: <Delivery />,
+      },
+      {
+        path: 'delivery-location',
+        element: <DeliveryLocation />,
       },
     ],
   },

@@ -18,6 +18,28 @@
   z-index: 1;
 }
 
+.auth-back-btn {
+  position: absolute;
+  top: 40px;
+  left: 24px;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.2s;
+}
+
+.auth-back-btn:active {
+  transform: scale(0.95);
+}
+
 .wave-svg {
   position: absolute;
   bottom: -99px;
@@ -104,6 +126,12 @@
   font-size: 0.95rem;
 }
 
+.field-error-text {
+  color: #ef4444;
+  font-size: 0.8rem;
+  margin: 2px 0 0 4px;
+}
+
 .input-wrapper {
   position: relative;
   width: 100%;
@@ -125,6 +153,14 @@
 .form-input:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(3, 64, 120, 0.2);
+}
+
+.phone-input-wrapper:focus-within {
+  box-shadow: 0 0 0 2px rgba(3, 64, 120, 0.2);
+}
+
+.phone-input-no-shadow:focus {
+  box-shadow: none !important;
 }
 
 .form-input::placeholder {
