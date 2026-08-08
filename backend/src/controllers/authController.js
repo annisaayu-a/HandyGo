@@ -71,14 +71,21 @@ exports.login = async (req, res) => {
       return res.status(400).json({ error: 'Identitas dan Password wajib diisi' });
     }
 
-    // Find user by email or phone
-    const user = await prisma.user.findFirst({
-      where: {
+    // Find user by email and phone
+    let whereClause = {};
+    if (email && phone_number) {
+      whereClause = { email: email, phone_number: phone_number };
+    } else {
+      whereClause = {
         OR: [
           { phone_number: phone_number || undefined },
           { email: email || undefined }
         ]
-      }
+      };
+    }
+
+    const user = await prisma.user.findFirst({
+      where: whereClause
     });
 
     if (!user) {

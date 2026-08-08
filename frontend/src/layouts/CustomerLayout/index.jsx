@@ -15,6 +15,7 @@ export default function CustomerLayout() {
     '/customer/location',
     '/customer/profile',
     '/customer/search',
+    '/customer/delivery',
     '/customer/delivery/location',
     '/customer/delivery/details',
     '/customer/delivery/receiver',

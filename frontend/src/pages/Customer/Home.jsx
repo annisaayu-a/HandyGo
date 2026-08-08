@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, MapPin, ShoppingBag, Package, Sparkles, Wrench, Truck, Bike, Book } from 'lucide-react';
+import { Search, Bell, MapPin } from 'lucide-react';
+import { FaShoppingBag, FaBox, FaBroom, FaWrench, FaTruck, FaMotorcycle } from 'react-icons/fa';
 import './Home.css';
 
 export default function CustomerHome() {
@@ -11,18 +12,19 @@ export default function CustomerHome() {
   const userName = storedUser.name || 'Ajel';
   const profilePic = storedUser.profile_picture;
   const userLocation = storedUser.default_location || 'Atur lokasimu di sini';
-
+  
   // Format location to be shorter for Home screen if it's too long
   const displayLocation = userLocation === 'Atur lokasimu di sini' ? userLocation : userLocation.split(',')[0];
 
+  const iconProps = { size: 28, color: "#034078" };
+
   const services = [
-    { id: 1, name: 'Belanja', icon: <ShoppingBag size={24} /> },
-    { id: 2, name: 'Antar Barang', icon: <Package size={24} /> },
-    { id: 3, name: 'Bersih-Bersih', icon: <Sparkles size={24} /> },
-    { id: 4, name: 'Perbaikan', icon: <Wrench size={24} /> },
-    { id: 5, name: 'Pindahan', icon: <Truck size={24} /> },
-    { id: 6, name: 'Antar Jemput', icon: <Bike size={24} /> },
-    { id: 7, name: 'Tugas', icon: <Book size={24} /> },
+    { id: 1, name: 'Belanja', icon: <FaShoppingBag {...iconProps} /> },
+    { id: 2, name: 'Antar Barang', icon: <FaBox {...iconProps} /> },
+    { id: 3, name: 'Bersih-Bersih', icon: <FaBroom {...iconProps} /> },
+    { id: 4, name: 'Perbaikan', icon: <FaWrench {...iconProps} /> },
+    { id: 5, name: 'Pindahan', icon: <FaTruck {...iconProps} /> },
+    { id: 6, name: 'Antar Jemput', icon: <FaMotorcycle {...iconProps} /> }
   ];
 
   return (

@@ -38,9 +38,9 @@ export default function Login() {
       setEmailError('Email tidak boleh kosong');
       hasError = true;
     } else {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const emailRegex = /^[^\s@]+@gmail\.com$/i;
       if (!emailRegex.test(email)) {
-        setEmailError('Masukkan alamat email yang valid.');
+        setEmailError('Hanya akun @gmail.com yang diizinkan.');
         hasError = true;
       }
     }

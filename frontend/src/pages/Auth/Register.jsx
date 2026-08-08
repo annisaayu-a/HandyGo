@@ -19,10 +19,10 @@ export default function Register() {
     e.preventDefault();
     setError(''); // clear previous errors
     
-    // Validasi format email ketat (harus ada .com, .co.id, dsb)
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Validasi format email ketat (harus gmail)
+    const emailRegex = /^[^\s@]+@gmail\.com$/i;
     if (!emailRegex.test(email)) {
-      setError('Format email tidak valid (contoh: nama@gmail.com)');
+      setError('Hanya akun @gmail.com yang diizinkan (contoh: nama@gmail.com)');
       return;
     }
 
