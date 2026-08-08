@@ -15,7 +15,6 @@ export default function Login() {
   const [passwordError, setPasswordError] = useState('');
   const [phoneError, setPhoneError] = useState('');
 
-  // Mock login function for testing
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
@@ -23,103 +22,70 @@ export default function Login() {
     setPasswordError('');
     setPhoneError('');
 
+    let hasError = false;
+    
     // For demonstration: route based on input email
-    if (loginType === 'email') {
-      // If user is trying to login as admin/mitra (mock bypass)
-      if (email.includes('mitra')) {
-        navigate('/mitra');
-        return;
-      }
-      if (email.includes('admin')) {
-        navigate('/admin');
-        return;
-      }
+    if (email.includes('mitra')) {
+      navigate('/mitra');
+      return;
+    }
+    if (email.includes('admin')) {
+      navigate('/admin');
+      return;
+    }
 
-      let hasError = false;
-      if (!email) {
-        setEmailError('Email tidak boleh kosong.');
-        hasError = true;
-      } else {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-          setEmailError('Masukkan alamat email yang valid.');
-          hasError = true;
-        }
-      }
-
-      if (!password) {
-        setPasswordError('Kata sandi tidak boleh kosong.');
-        hasError = true;
-      }
-
-      if (hasError) return;
-
-      try {
-        const response = await fetch('http://localhost:5000/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        });
-        const data = await response.json();
-        
-        if (!response.ok) {
-          const errMsg = data.error || '';
-          if (errMsg.toLowerCase().includes('password') || errMsg.toLowerCase().includes('sandi')) {
-            setPasswordError('Kata sandi yang dimasukkan salah.');
-          } else if (errMsg.toLowerCase().includes('user') || errMsg.toLowerCase().includes('not found') || errMsg.toLowerCase().includes('pengguna') || errMsg.toLowerCase().includes('email')) {
-            setEmailError('Alamat email tidak ditemukan. Coba lagi.');
-          } else {
-            setError(data.error || 'Email atau kata sandi salah.');
-          }
-          return;
-        }
-
-        const user = { name: data.user.full_name, email: data.user.email, phone: data.user.phone_number, id: data.user.id };
-        localStorage.setItem('handyGoUser', JSON.stringify(user));
-        localStorage.setItem('handyGoToken', data.token);
-        navigate('/customer');
-      } catch (err) {
-        setError('Gagal menghubungi server. Pastikan server backend berjalan.');
-        console.error(err);
-      }
+    if (!email) {
+      setEmailError('Email tidak boleh kosong');
+      hasError = true;
     } else {
-      let hasError = false;
-      if (!phone || phone === '+62') {
-        setPhoneError('No. Hp tidak boleh kosong.');
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setEmailError('Masukkan alamat email yang valid.');
         hasError = true;
-      } else {
-        if (!phone.startsWith('+628')) {
-          setPhoneError('Nomor telepon harus diawali angka 8.');
-          hasError = true;
-        } else if (phone.length < 12 || phone.length > 16) { // +62 + 8 + 7 to 11 digits
-          setPhoneError('No. Hp yang dimasukkan salah.');
-          hasError = true;
-        }
       }
+    }
 
-      if (hasError) return;
+    if (!phone) {
+      setPhoneError('Nomor telepon tidak boleh kosong');
+      hasError = true;
+    }
+
+    if (!password) {
+      setPasswordError('Kata sandi tidak boleh kosong.');
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, phone_number: phone, password })
+      });
+      const data = await response.json();
       
-      try {
-        const response = await fetch('http://localhost:5000/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone_number: phone, password: 'otp-login' })
-        });
-        const data = await response.json();
-        
-        if (!response.ok) {
-          setPhoneError('No. Hp yang dimasukkan salah.');
-          return;
+      if (!response.ok) {
+        const errMsg = data.error || '';
+        if (errMsg.toLowerCase().includes('password') || errMsg.toLowerCase().includes('sandi')) {
+          setPasswordError('Kata sandi yang dimasukkan salah');
+        } else if (errMsg.toLowerCase().includes('user') || errMsg.toLowerCase().includes('not found') || errMsg.toLowerCase().includes('pengguna') || errMsg.toLowerCase().includes('email')) {
+          setEmailError('Alamat email tidak ditemukan. Coba lagi.');
+        } else if (errMsg.toLowerCase().includes('phone') || errMsg.toLowerCase().includes('hp') || errMsg.toLowerCase().includes('telepon')) {
+          setPhoneError('Nomor telepon yang dimasukkan salah');
+        } else {
+          setError(data.error || 'Email, nomor telepon, atau kata sandi salah.');
         }
-
-        const user = { name: data.user.full_name, email: data.user.email, phone: data.user.phone_number, id: data.user.id };
-        localStorage.setItem('handyGoUser', JSON.stringify(user));
-        localStorage.setItem('handyGoToken', data.token);
-        navigate('/customer');
-      } catch (err) {
-        setError('Gagal menghubungi server. Pastikan server backend berjalan.');
-        console.error(err);
+        return;
       }
+
+      const user = { name: data.user.full_name, email: data.user.email, phone: data.user.phone_number, id: data.user.id };
+      localStorage.setItem('handyGoUser', JSON.stringify(user));
+      localStorage.setItem('handyGoToken', data.token);
+      navigate('/customer');
+    } catch (err) {
+      setError('Gagal menghubungi server. Pastikan server backend berjalan.');
+      console.error(err);
     }
   };
 
@@ -140,24 +106,7 @@ export default function Login() {
       <div className="login-content animate-fade-in">
         <h1 className="login-title">Masuk</h1>
 
-        <div className="toggle-container">
-          <button
-            className={`toggle-btn ${loginType === 'email' ? 'active' : 'inactive'}`}
-            onClick={() => setLoginType('email')}
-          >
-            Email
-          </button>
-          <button
-            className={`toggle-btn ${loginType === 'phone' ? 'active' : 'inactive'}`}
-            onClick={() => setLoginType('phone')}
-          >
-            No hp
-          </button>
-        </div>
-
         <form className="login-form" onSubmit={handleLogin}>
-          {loginType === 'email' ? (
-            <>
               <div className="form-group">
                 <label className="form-label">Email</label>
                 <div className="input-wrapper">
@@ -174,6 +123,31 @@ export default function Login() {
                   />
                 </div>
                 {emailError && <p className="field-error-text">{emailError}</p>}
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Nomor Telepon</label>
+                <div className={`input-wrapper phone-input-wrapper ${phoneError ? 'has-error' : ''}`} style={{ display: 'flex', alignItems: 'center', borderRadius: '12px', padding: '0 16px', backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)', border: '1px solid #f1f5f9' }}>
+                  <div className="phone-prefix" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '8px', fontWeight: '600', color: '#1e293b' }}>
+                    <img src="https://flagcdn.com/w20/id.png" alt="ID" style={{ width: '20px', borderRadius: '2px' }} />
+                    +62
+                  </div>
+                  <input
+                    type="tel"
+                    className="form-input phone-input-no-shadow"
+                    placeholder="8123456789"
+                    value={phone.startsWith('+62') ? phone.slice(3) : phone}
+                    onChange={(e) => {
+                      let val = e.target.value.replace(/\D/g, '');
+                      if (val.startsWith('0')) val = val.slice(1);
+                      setPhone('+62' + val);
+                      if (phoneError) setPhoneError('');
+                      if (error) setError('');
+                    }}
+                    style={{ border: 'none', backgroundColor: 'transparent', padding: '14px 0', flex: 1, outline: 'none', boxShadow: 'none' }}
+                  />
+                </div>
+                {phoneError && <p className="field-error-text">{phoneError}</p>}
               </div>
 
               <div className="form-group">
@@ -204,35 +178,6 @@ export default function Login() {
               <div className="forgot-password">
                 Lupa kata sandi?
               </div>
-            </>
-          ) : (
-            <>
-              <div className="form-group">
-                <label className="form-label">No. Hp</label>
-                <div className={`input-wrapper phone-input-wrapper ${phoneError ? 'has-error' : ''}`} style={{ display: 'flex', alignItems: 'center', borderRadius: '12px', padding: '0 16px', backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)' }}>
-                  <div className="phone-prefix" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '8px', fontWeight: '600', color: '#1e293b' }}>
-                    <img src="https://flagcdn.com/w20/id.png" alt="ID" style={{ width: '20px', borderRadius: '2px' }} />
-                    +62
-                  </div>
-                  <input
-                    type="tel"
-                    className="form-input phone-input-no-shadow"
-                    placeholder="8123456789"
-                    value={phone.startsWith('+62') ? phone.slice(3) : phone}
-                    onChange={(e) => {
-                      let val = e.target.value.replace(/\D/g, '');
-                      if (val.startsWith('0')) val = val.slice(1);
-                      setPhone('+62' + val);
-                      if (phoneError) setPhoneError('');
-                      if (error) setError('');
-                    }}
-                    style={{ border: 'none', backgroundColor: 'transparent', padding: '14px 0', flex: 1, outline: 'none', boxShadow: 'none' }}
-                  />
-                </div>
-                {phoneError && <p className="field-error-text">{phoneError}</p>}
-              </div>
-            </>
-          )}
 
           {error && <p style={{ color: '#ef4444', fontSize: '0.85rem', margin: '0', textAlign: 'center' }}>{error}</p>}
 

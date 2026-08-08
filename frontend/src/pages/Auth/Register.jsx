@@ -10,6 +10,7 @@ export default function Register() {
   
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -30,31 +31,13 @@ export default function Register() {
       return;
     }
     
-    try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ full_name: name, email, password })
+      // Navigate to OTP page instead of registering directly
+      navigate('/otp-verification', { 
+        state: { 
+          userData: { full_name: name, email, phone_number: phone, password },
+          source: 'register'
+        } 
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || 'Terjadi kesalahan saat pendaftaran');
-        return;
-      }
-
-      // Save user to localStorage
-      const user = { name: data.user.full_name, email: data.user.email, id: data.user.id };
-      localStorage.setItem('handyGoUser', JSON.stringify(user));
-      localStorage.setItem('handyGoToken', data.token);
-      
-      // Redirect directly to customer home after register
-      navigate('/customer');
-    } catch (err) {
-      setError('Gagal menghubungi server. Pastikan server backend berjalan.');
-      console.error(err);
-    }
   };
 
   return (
@@ -99,6 +82,30 @@ export default function Register() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required 
+              />
+            </div>
+          </div>
+          
+          <div className="form-group">
+            <label className="form-label">Nomor Telepon</label>
+            <div className={`input-wrapper phone-input-wrapper`} style={{ display: 'flex', alignItems: 'center', borderRadius: '12px', padding: '0 16px', backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)', border: '1px solid #f1f5f9' }}>
+              <div className="phone-prefix" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '8px', fontWeight: '600', color: '#1e293b' }}>
+                <img src="https://flagcdn.com/w20/id.png" alt="ID" style={{ width: '20px', borderRadius: '2px' }} />
+                +62
+              </div>
+              <input
+                type="tel"
+                className="form-input phone-input-no-shadow"
+                placeholder="8123456789"
+                value={phone.startsWith('+62') ? phone.slice(3) : phone}
+                onChange={(e) => {
+                  let val = e.target.value.replace(/\D/g, '');
+                  if (val.startsWith('0')) val = val.slice(1);
+                  setPhone('+62' + val);
+                  if (error) setError('');
+                }}
+                style={{ border: 'none', backgroundColor: 'transparent', padding: '14px 0', flex: 1, outline: 'none', boxShadow: 'none' }}
+                required
               />
             </div>
           </div>
@@ -155,10 +162,6 @@ export default function Register() {
         <div className="social-login-section" style={{ marginTop: '0' }}>
           <p className="register-text" style={{ marginBottom: '12px' }}>
             Sudah memiliki akun? <span className="register-link" onClick={() => navigate('/login')}>Masuk</span>
-          </p>
-          <p className="social-text" style={{ marginBottom: '12px' }}>atau</p>
-          <p className="register-text">
-            Daftar dengan <span className="register-link" onClick={() => navigate('/phone-auth')}>No. Handphone</span>
           </p>
         </div>
       </div>

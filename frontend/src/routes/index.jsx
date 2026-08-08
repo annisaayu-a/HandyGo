@@ -9,7 +9,7 @@ import AdminLayout from '../layouts/AdminLayout';
 import Welcome from '../pages/Auth/Welcome';
 import Login from '../pages/Auth/Login';
 import Register from '../pages/Auth/Register';
-import PhoneRegister from '../pages/Auth/PhoneRegister';
+import OTPVerification from '../pages/Auth/OTPVerification';
 import CustomerHome from '../pages/Customer/Home';
 import CustomerLocation from '../pages/Customer/Location';
 import CustomerSearch from '../pages/Customer/Search';
@@ -41,8 +41,8 @@ export const router = createBrowserRouter([
     element: <Register />,
   },
   {
-    path: '/phone-auth',
-    element: <PhoneRegister />,
+    path: '/otp-verification',
+    element: <OTPVerification />,
   },
   // Customer Routes
   {
