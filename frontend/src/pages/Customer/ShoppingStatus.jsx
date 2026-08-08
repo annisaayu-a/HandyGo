@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Phone, Star } from 'lucide-react';
+import { ChevronLeft, Phone, MessageCircle, Star } from 'lucide-react';
 import './ShoppingStatus.css';
 
 export default function ShoppingStatus() {
@@ -108,19 +108,26 @@ export default function ShoppingStatus() {
         <div className="courier-card">
           <div className="courier-info-left">
             <img 
-              src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" 
+              src="https://i.pravatar.cc/150?img=11" 
               alt="Courier Avatar" 
               className="courier-avatar"
             />
             <div className="courier-text">
               <h4 className="courier-name">Rafael gemam</h4>
-              <p className="courier-subtitle">Chat dengan kurir</p>
+              <div className="courier-rating">
+                <span className="star">★</span> 4.9 <span className="reviews">(59 ulasan)</span>
+              </div>
             </div>
           </div>
           {orderStatus !== 'selesai' && (
-            <button className="call-btn">
-              <Phone size={20} fill="currentColor" />
-            </button>
+            <div className="courier-actions">
+              <button className="courier-action-btn" onClick={() => navigate('/customer/call')}>
+                <Phone size={18} color="#034078" fill="currentColor" />
+              </button>
+              <button className="courier-action-btn" onClick={() => navigate('/customer/chat')}>
+                <MessageCircle size={18} color="#034078" fill="currentColor" />
+              </button>
+            </div>
           )}
         </div>
 

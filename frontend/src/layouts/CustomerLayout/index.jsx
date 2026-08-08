@@ -17,6 +17,8 @@ export default function CustomerLayout() {
     '/customer/cleaning/checkout',
     '/customer/cleaning/status',
     '/customer/cleaning/payment',
+    '/customer/chat',
+    '/customer/call',
     '/customer/location',
     '/customer/search-location',
     '/customer/profile',

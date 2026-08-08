@@ -1,0 +1,160 @@
+.chatlist-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #ffffff;
+  padding: 24px 20px;
+}
+
+/* Header */
+.chatlist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.chatlist-profile {
+  display: flex;
+  align-items: center;
+}
+
+.chatlist-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 12px;
+}
+
+.chatlist-profile-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.chatlist-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 2px 0;
+}
+
+.chatlist-location {
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #64748b;
+  gap: 4px;
+}
+
+.chatlist-bell {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Sections */
+.chatlist-section {
+  margin-bottom: 32px;
+}
+
+.chatlist-section-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 12px 0;
+}
+
+.chatlist-empty-text {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.chatlist-history-desc {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+}
+
+/* Chat Cards */
+.chatlist-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chatlist-card {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background-color: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chatlist-card:hover {
+  background-color: #f8fafc;
+  transform: translateY(-1px);
+}
+
+.chatlist-card-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 16px;
+}
+
+.chatlist-card-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.chatlist-card-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+
+.chatlist-card-msg {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chatlist-card-msg.finished {
+  color: #94a3b8;
+}
+
+.chatlist-unread-badge {
+  background-color: #034078;
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  margin-left: 12px;
+}

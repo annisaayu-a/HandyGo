@@ -236,37 +236,57 @@
 .courier-text {
   display: flex;
   flex-direction: column;
-  gap: 4px;
 }
 
 .courier-name {
   font-family: 'Outfit', sans-serif;
-  font-size: 1.05rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #1e293b;
-  margin: 0;
+  margin: 0 0 2px 0;
+  font-size: 1rem;
 }
 
-.courier-subtitle {
-  font-size: 0.85rem;
-  color: #64748b;
-  margin: 0;
-}
-
-.call-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: transparent;
-  border: none;
+.courier-rating {
+  font-size: 0.75rem;
+  color: #1e293b;
   display: flex;
-  justify-content: center;
   align-items: center;
-  color: #1e293b;
-  cursor: pointer;
 }
 
-/* Order Details */
+.courier-rating .star {
+  color: #eab308;
+  margin-right: 4px;
+}
+
+.courier-rating .reviews {
+  color: #64748b;
+  margin-left: 4px;
+}
+
+.courier-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.courier-action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.courier-action-btn:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+/* Order Details / Rating */
 .order-details-section {
   display: flex;
   flex-direction: column;

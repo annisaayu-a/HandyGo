@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { ChevronLeft, ArrowUp, Target } from 'lucide-react';
+import { ChevronLeft, ArrowUp, Target, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import illustration from '../../assets/shopping_illustration.png.png';
 import './ShoppingOrder.css';

@@ -36,6 +36,9 @@ import CleaningMap from '../pages/Customer/CleaningMap';
 import CleaningCheckout from '../pages/Customer/CleaningCheckout';
 import CleaningStatus from '../pages/Customer/CleaningStatus';
 import CleaningPayment from '../pages/Customer/CleaningPayment';
+import Chat from '../pages/Customer/Chat';
+import ChatList from '../pages/Customer/ChatList';
+import Call from '../pages/Customer/Call';
 import MitraDashboard from '../pages/Mitra/Dashboard';
 import AdminDashboard from '../pages/Admin/Dashboard';
 
@@ -164,6 +167,18 @@ export const router = createBrowserRouter([
       {
         path: 'cleaning/payment',
         element: <CleaningPayment />,
+      },
+      {
+        path: 'chat',
+        element: <Chat />,
+      },
+      {
+        path: 'messages',
+        element: <ChatList />,
+      },
+      {
+        path: 'call',
+        element: <Call />,
       },
     ],
   },

@@ -302,10 +302,10 @@ export default function CleaningStatus() {
                 </div>
               </div>
               <div className="cs-mitra-actions">
-                <button className="cs-action-btn">
+                <button className="cs-action-btn" onClick={() => navigate('/customer/call')}>
                   <Phone size={18} color="#034078" fill="currentColor" />
                 </button>
-                <button className="cs-action-btn">
+                <button className="cs-action-btn" onClick={() => navigate('/customer/chat')}>
                   <MessageCircle size={18} color="#034078" fill="currentColor" />
                 </button>
               </div>
