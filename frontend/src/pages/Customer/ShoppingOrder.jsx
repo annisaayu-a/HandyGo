@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { ChevronLeft, ArrowUp, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import illustration from '../../assets/shopping_illustration.png.png';
 import './ShoppingOrder.css';
 
 export default function ShoppingOrder() {
@@ -64,17 +65,17 @@ export default function ShoppingOrder() {
 
   return (
     <div className="shopping-order-page animate-fade-in">
-      {/* Header */}
-      <header className="shopping-header">
-        <button className="back-btn" onClick={() => navigate(-1)}>
+      {/* Header with Illustration */}
+      <div className="shopping-landing-header">
+        <button className="back-btn-overlay" onClick={() => navigate(-1)}>
           <ChevronLeft size={24} />
         </button>
-        <h1 className="shopping-title">Set lokasi toko</h1>
-      </header>
-
-      <main className="shopping-content">
-        {/* Location Inputs Card */}
-        <div className="location-card" style={{ position: 'relative' }}>
+        <div className="illustration-wrapper">
+          <img src={illustration} alt="Shopping Illustration" className="shopping-illustration" />
+        </div>
+        
+        {/* Location Inputs Card Overlapping Illustration */}
+        <div className="location-card">
           <div className="location-input-group">
             <ArrowUp size={20} className="input-icon-up" />
             <input 
@@ -119,12 +120,14 @@ export default function ShoppingOrder() {
             </div>
           )}
         </div>
+      </div>
 
+      <main className="shopping-content">
         {/* Action Button if both selected */}
         {tokoLocation && pengantaranLocation && (
           <button 
             className="submit-btn" 
-            style={{ width: '100%', marginBottom: '24px' }}
+            style={{ width: '100%', marginBottom: '0' }}
             onClick={() => {
               navigate('/customer/shopping/details', { 
                 state: { 
