@@ -76,8 +76,8 @@ export default function ShoppingOrder() {
         
         {/* Location Inputs Card Overlapping Illustration */}
         <div className="location-card">
-          <div className="location-input-group">
-            <ArrowUp size={20} className="input-icon-up" />
+          <div className="location-input-group" onClick={() => navigate('/customer/search-location')} style={{ cursor: 'pointer' }}>
+            <MapPin size={20} className="input-icon-up" />
             <input 
               type="text" 
               className="location-input" 
@@ -92,7 +92,7 @@ export default function ShoppingOrder() {
             />
           </div>
           <div className="location-divider"></div>
-          <div className="location-input-group">
+          <div className="location-input-group" onClick={() => navigate('/customer/search-location')} style={{ cursor: 'pointer' }}>
             <Target size={20} className="input-icon-target" />
             <input 
               type="text" 

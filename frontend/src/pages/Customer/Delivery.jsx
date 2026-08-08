@@ -17,12 +17,12 @@ export default function Delivery() {
         
         {/* Search Card overlapping illustration */}
         <div className="landing-search-card">
-          <div className="landing-input-group" onClick={() => navigate('/customer/delivery/location')}>
+          <div className="landing-input-group" onClick={() => navigate('/customer/search-location')}>
             <ArrowUp size={20} className="input-icon-up" />
             <div className="landing-input-placeholder">Cari lokasi pengambilan paket</div>
           </div>
           <div className="landing-divider"></div>
-          <div className="landing-input-group" onClick={() => navigate('/customer/delivery/location')}>
+          <div className="landing-input-group" onClick={() => navigate('/customer/search-location')}>
             <Target size={20} className="input-icon-target" />
             <div className="landing-input-placeholder">Cari lokasi pengantaran paket</div>
           </div>

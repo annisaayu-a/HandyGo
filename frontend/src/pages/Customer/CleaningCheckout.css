@@ -1,0 +1,344 @@
+.cleaning-checkout-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8fafc;
+  position: relative;
+  padding-bottom: 380px; /* Space for the bottom sheet */
+}
+
+/* Header */
+.cc-header {
+  display: flex;
+  align-items: center;
+  padding: 24px;
+  background-color: #f8fafc;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.cc-back-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-right: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1e293b;
+}
+
+.cc-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* Content */
+.cc-content {
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Location Card */
+.cc-location-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+}
+
+.cc-location-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 16px;
+}
+
+.cc-location-header > div {
+  flex: 1;
+}
+
+.cc-location-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+
+.cc-location-address {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: #334155;
+  margin: 0;
+}
+
+.cc-ganti-lokasi {
+  background: none;
+  border: none;
+  color: #034078;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.cc-detail-input-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: #f8fafc;
+  border-radius: 12px;
+  padding: 10px 12px;
+  gap: 8px;
+}
+
+.cc-detail-icon {
+  color: #94a3b8;
+}
+
+.cc-detail-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: #334155;
+}
+
+.cc-detail-input::placeholder {
+  color: #94a3b8;
+}
+
+/* Info Text */
+.cc-info-text-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cc-info-text-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.cc-info-text-bottom {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+/* Sections (Area, Kekotoran) */
+.cc-section-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 12px 0;
+}
+
+.cc-pill-group {
+  display: flex;
+  gap: 8px;
+}
+
+.cc-pill {
+  flex: 1;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  padding: 10px 0;
+  border-radius: 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.cc-pill.active {
+  background-color: #034078;
+  color: #ffffff;
+  border-color: #034078;
+  font-weight: 600;
+}
+
+/* Catatan Khusus */
+.cc-notes-input {
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 12px 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: #334155;
+  outline: none;
+  resize: none;
+  background-color: #ffffff;
+  box-sizing: border-box;
+}
+
+.cc-notes-input::placeholder {
+  color: #94a3b8;
+}
+
+/* Bottom Sheet */
+.cc-bottom-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08);
+  z-index: 20;
+}
+
+.cc-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.cc-price-label {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #64748b;
+  gap: 12px;
+}
+
+.cc-price-icon-wrapper {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f1f5f9;
+  border-radius: 8px;
+}
+
+.cc-price-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.cc-price-divider {
+  height: 1px;
+  background-color: #e2e8f0;
+  margin: 16px 0;
+}
+
+.cc-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.cc-total-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.cc-total-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #034078;
+}
+
+.cc-disclaimer {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin-bottom: 16px;
+  text-align: justify;
+}
+
+.cc-submit-btn {
+  width: 100%;
+  background-color: #034078;
+  color: #ffffff;
+  border: none;
+  border-radius: 24px;
+  padding: 16px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(3, 64, 120, 0.2);
+}
+
+.cc-submit-btn:hover {
+  opacity: 0.9;
+}
+
+/* Success Modal */
+.cc-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 24px;
+}
+
+.cc-modal-content {
+  background-color: #ffffff;
+  border-radius: 24px;
+  padding: 32px 24px;
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalPop {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.cc-modal-icon {
+  width: 64px;
+  height: 64px;
+  background-color: #22c55e;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  color: #ffffff;
+}
+
+.cc-modal-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}

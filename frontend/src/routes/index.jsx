@@ -12,6 +12,7 @@ import Register from '../pages/Auth/Register';
 import OTPVerification from '../pages/Auth/OTPVerification';
 import CustomerHome from '../pages/Customer/Home';
 import CustomerLocation from '../pages/Customer/Location';
+import SearchLocation from '../pages/Customer/SearchLocation';
 import CustomerSearch from '../pages/Customer/Search';
 import CustomerProfile from '../pages/Customer/ProfileDetail';
 import CustomerHistory from '../pages/Customer/History';
@@ -30,6 +31,11 @@ import DeliverySender from '../pages/Customer/DeliverySender';
 import DeliveryCheckout from '../pages/Customer/DeliveryCheckout';
 import DeliveryStatus from '../pages/Customer/DeliveryStatus';
 import DeliveryMap from '../pages/Customer/DeliveryMap';
+import Cleaning from '../pages/Customer/Cleaning';
+import CleaningMap from '../pages/Customer/CleaningMap';
+import CleaningCheckout from '../pages/Customer/CleaningCheckout';
+import CleaningStatus from '../pages/Customer/CleaningStatus';
+import CleaningPayment from '../pages/Customer/CleaningPayment';
 import MitraDashboard from '../pages/Mitra/Dashboard';
 import AdminDashboard from '../pages/Admin/Dashboard';
 
@@ -62,6 +68,10 @@ export const router = createBrowserRouter([
       {
         path: 'location',
         element: <CustomerLocation />,
+      },
+      {
+        path: 'search-location',
+        element: <SearchLocation />,
       },
       {
         path: 'search',
@@ -134,6 +144,26 @@ export const router = createBrowserRouter([
       {
         path: 'delivery/map',
         element: <DeliveryMap />,
+      },
+      {
+        path: 'cleaning',
+        element: <Cleaning />,
+      },
+      {
+        path: 'cleaning/map',
+        element: <CleaningMap />,
+      },
+      {
+        path: 'cleaning/checkout',
+        element: <CleaningCheckout />,
+      },
+      {
+        path: 'cleaning/status',
+        element: <CleaningStatus />,
+      },
+      {
+        path: 'cleaning/payment',
+        element: <CleaningPayment />,
       },
     ],
   },

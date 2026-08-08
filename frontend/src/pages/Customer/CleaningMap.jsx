@@ -1,0 +1,241 @@
+import { useState, useEffect, useRef } from 'react';
+import { Target, ArrowLeft } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import './ShoppingMap.css'; // Reusing the map styles
+
+// Komponen helper untuk melacak pergerakan peta
+function MapEvents({ setAddress, setIsDragging }) {
+  const map = useMapEvents({
+    dragstart: () => {
+      setIsDragging(true);
+      setAddress(prev => ({ ...prev, name: 'Mencari lokasi...', address: '' }));
+    },
+    dragend: async () => {
+      setIsDragging(false);
+      const center = map.getCenter();
+      try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${center.lat}&lon=${center.lng}&zoom=18&addressdetails=1`);
+        
+        if (!response.ok) {
+          if (response.status === 429 || response.status === 403) {
+            setAddress({ name: 'Terlalu banyak klik', address: 'Sistem peta membatasi akses sementara. Mohon tunggu 1-2 menit.', lat: center.lat, lng: center.lng });
+          } else {
+            setAddress({ name: 'Gagal memuat', address: 'Layanan peta sedang gangguan', lat: center.lat, lng: center.lng });
+          }
+          return;
+        }
+
+        const data = await response.json();
+        
+        if (data && data.display_name) {
+          const nameParts = data.display_name.split(', ');
+          const name = data.name || (data.address && data.address.road) || nameParts[0];
+          setAddress({
+            name: name,
+            address: data.display_name,
+            lat: center.lat,
+            lng: center.lng
+          });
+        } else {
+          setAddress({ name: 'Lokasi tidak dikenal', address: 'Tidak dapat menemukan alamat di titik ini', lat: center.lat, lng: center.lng });
+        }
+      } catch (err) {
+        console.error("Gagal mendapatkan lokasi:", err);
+        setAddress({ name: 'Gagal memuat', address: 'Periksa koneksi internet Anda', lat: center.lat, lng: center.lng });
+      }
+    }
+  });
+  return null;
+}
+
+// Komponen untuk animasi terbang ke lokasi pencarian
+function MapFlyTo({ center }) {
+  const map = useMapEvents({});
+  useEffect(() => {
+    if (center) {
+      map.flyTo(center, 17, { animate: true, duration: 1.5 });
+    }
+  }, [center, map]);
+  return null;
+}
+
+export default function CleaningMap() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const returnUrl = location.state?.returnUrl || '/customer/cleaning/checkout';
+
+  // Default coordinate
+  const defaultPosition = [-5.1325178, 119.4939223]; 
+
+  const [currentAddress, setCurrentAddress] = useState({
+    name: 'Mencari lokasi...',
+    address: 'Sedang memuat alamat...',
+    lat: defaultPosition[0],
+    lng: defaultPosition[1]
+  });
+
+  const [isMapDragging, setIsMapDragging] = useState(false);
+
+  // Search States
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [mapTargetCenter, setMapTargetCenter] = useState(defaultPosition);
+  const searchTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${defaultPosition[0]}&lon=${defaultPosition[1]}`)
+      .then(res => res.json())
+      .then(data => {
+        if(data && data.display_name) {
+          const nameParts = data.display_name.split(', ');
+          const name = data.name || (data.address && data.address.road) || nameParts[0];
+          setCurrentAddress(prev => ({ ...prev, name: name, address: data.display_name }));
+        }
+      }).catch(console.error);
+  }, []);
+
+  // Fungsi Pencarian (Autocomplete)
+  const handleSearch = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    if (query.length > 2) {
+      searchTimeoutRef.current = setTimeout(async () => {
+        try {
+          const viewbox = '119.35,-5.05,119.55,-5.35';
+          const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=id&viewbox=${viewbox}&bounded=0&limit=5`);
+          if (response.ok) {
+            const data = await response.json();
+            setSearchResults(data);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }, 600);
+    } else {
+      setSearchResults([]);
+    }
+  };
+
+  // Saat hasil pencarian dipilih
+  const handleSelectResult = (result) => {
+    const lat = parseFloat(result.lat);
+    const lon = parseFloat(result.lon);
+    
+    // Terbang ke titik baru
+    setMapTargetCenter([lat, lon]);
+    setSearchResults([]);
+    setSearchQuery('');
+    
+    const nameParts = result.display_name.split(', ');
+    const name = result.name || nameParts[0];
+    
+    setCurrentAddress({
+      name: name,
+      address: result.display_name,
+      lat: lat,
+      lng: lon
+    });
+  };
+
+  return (
+    <div className="shopping-map-page animate-fade-in">
+      {/* Back Button */}
+      <button 
+        className="map-back-btn" 
+        onClick={() => navigate(-1)}
+        style={{ zIndex: 1000, top: '26px' }}
+      >
+        <ArrowLeft size={24} color="#1e293b" />
+      </button>
+
+      {/* Full screen Map */}
+      <div className="fullscreen-map" style={{ zIndex: 0 }}>
+        <MapContainer 
+          center={defaultPosition} 
+          zoom={16} 
+          style={{ width: '100%', height: '100%' }}
+          zoomControl={false}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; OpenStreetMap'
+          />
+          <MapEvents setAddress={setCurrentAddress} setIsDragging={setIsMapDragging} />
+          <MapFlyTo center={mapTargetCenter} />
+        </MapContainer>
+        
+        {/* Custom Map Pin (Static in Center) */}
+        <div className="map-pin-center" style={{ pointerEvents: 'none', zIndex: 400, position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -100%)' }}>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" 
+               style={{ 
+                 transform: isMapDragging ? 'translateY(-10px)' : 'translateY(0)', 
+                 transition: 'transform 0.2s',
+                 filter: 'drop-shadow(0px 4px 4px rgba(0,0,0,0.25))'
+               }}>
+            <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2Z" fill="#034078"/>
+            <circle cx="12" cy="9" r="3" fill="white"/>
+          </svg>
+        </div>
+      </div>
+
+      {/* Floating Top Search Card */}
+      <div className="floating-top-card" style={{ zIndex: 1000 }}>
+        <div className="location-input-group">
+          <Target size={20} className="input-icon-target" />
+          <input 
+            type="text" 
+            className="location-input" 
+            placeholder="Cari lokasi"
+            value={searchQuery}
+            onChange={handleSearch}
+          />
+        </div>
+
+        {/* Dropdown Hasil Pencarian */}
+        {searchResults.length > 0 && (
+          <div className="search-results-dropdown">
+            {searchResults.map((res, i) => (
+              <div key={i} className="search-result-item" onClick={() => handleSelectResult(res)}>
+                <div className="result-name">{res.name || res.display_name.split(',')[0]}</div>
+                <div className="result-address">{res.display_name}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Sheet */}
+      <div className="bottom-sheet" style={{ zIndex: 1000 }}>
+        <div className="bottom-sheet-header">
+          <h2 className="sheet-title">Set lokasi</h2>
+          <button className="edit-btn">Edit</button>
+        </div>
+        
+        <div className="selected-location-box">
+          <h3 className="location-name">{currentAddress.name}</h3>
+          <p className="location-address">
+            {currentAddress.address}
+          </p>
+        </div>
+
+        <button 
+          className="submit-btn" 
+          style={{ marginTop: '16px' }}
+          disabled={isMapDragging || !currentAddress.address}
+          onClick={() => {
+            navigate(returnUrl, { state: { selectedLocation: currentAddress } });
+          }}
+        >
+          {isMapDragging ? 'Mencari lokasi...' : 'Lanjut'}
+        </button>
+      </div>
+    </div>
+  );
+}
