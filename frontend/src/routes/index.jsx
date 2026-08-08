@@ -24,6 +24,12 @@ import ShoppingCheckout from '../pages/Customer/ShoppingCheckout';
 import ShoppingStatus from '../pages/Customer/ShoppingStatus';
 import Delivery from '../pages/Customer/Delivery';
 import DeliveryLocation from '../pages/Customer/DeliveryLocation';
+import DeliveryDetails from '../pages/Customer/DeliveryDetails';
+import DeliveryReceiver from '../pages/Customer/DeliveryReceiver';
+import DeliverySender from '../pages/Customer/DeliverySender';
+import DeliveryCheckout from '../pages/Customer/DeliveryCheckout';
+import DeliveryStatus from '../pages/Customer/DeliveryStatus';
+import DeliveryMap from '../pages/Customer/DeliveryMap';
 import MitraDashboard from '../pages/Mitra/Dashboard';
 import AdminDashboard from '../pages/Admin/Dashboard';
 
@@ -102,8 +108,32 @@ export const router = createBrowserRouter([
         element: <Delivery />,
       },
       {
-        path: 'delivery-location',
+        path: 'delivery/location',
         element: <DeliveryLocation />,
+      },
+      {
+        path: 'delivery/details',
+        element: <DeliveryDetails />,
+      },
+      {
+        path: 'delivery/receiver',
+        element: <DeliveryReceiver />,
+      },
+      {
+        path: 'delivery/sender',
+        element: <DeliverySender />,
+      },
+      {
+        path: 'delivery/checkout',
+        element: <DeliveryCheckout />,
+      },
+      {
+        path: 'delivery/status',
+        element: <DeliveryStatus />,
+      },
+      {
+        path: 'delivery/map',
+        element: <DeliveryMap />,
       },
     ],
   },

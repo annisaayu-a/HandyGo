@@ -1,9 +1,38 @@
+import { useState, useEffect } from 'react';
 import { Bell, MapPin } from 'lucide-react';
 import './Messages.css';
 
 export default function CustomerMessages() {
   const storedUser = JSON.parse(localStorage.getItem('handyGoUser') || '{}');
   const userName = storedUser.name || 'Ajel';
+
+  const [activeChat, setActiveChat] = useState(null);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      if (!storedUser.id) return;
+      try {
+        const response = await fetch(`http://localhost:5000/api/orders?user_id=${storedUser.id}`);
+        const data = await response.json();
+        if (response.ok && data.orders && data.orders.length > 0) {
+          const latestOrder = data.orders[0];
+          if (latestOrder.status !== 'selesai' && latestOrder.status !== 'batal') {
+            setActiveChat({
+              id: 'active-1',
+              name: 'Rafael gemam',
+              status: latestOrder.service?.name === 'Antar Barang' 
+                ? 'Kurir sedang menuju lokasi penjemputan.' 
+                : 'Mohon menunggu, pesananmu sedang disiapkan.',
+              image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80',
+            });
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch orders for chat", err);
+      }
+    };
+    fetchOrders();
+  }, [storedUser.id]);
 
   const chatHistory = [
     {
@@ -49,7 +78,21 @@ export default function CustomerMessages() {
       </header>
 
       <h1 className="messages-page-title">Chat</h1>
-      <p className="messages-subtitle">Tidak ada chat yang berlangsung</p>
+      
+      {activeChat ? (
+        <div className="active-chat-section">
+          <div className="chat-card active-chat-card">
+            <img src={activeChat.image} alt={activeChat.name} className="chat-avatar" />
+            <div className="chat-details">
+              <h3 className="chat-name">{activeChat.name}</h3>
+              <p className="chat-status active-text">{activeChat.status}</p>
+            </div>
+            <div className="active-indicator"></div>
+          </div>
+        </div>
+      ) : (
+        <p className="messages-subtitle">Tidak ada chat yang berlangsung</p>
+      )}
 
       <div className="chat-history-section">
         <h2 className="chat-history-title">Riwayat Chat</h2>

@@ -1,161 +1,43 @@
-import { useState, useRef } from 'react';
 import { ChevronLeft, ArrowUp, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import illustration from '../../assets/delivery_illustration.png';
 import './Delivery.css';
 
 export default function Delivery() {
   const navigate = useNavigate();
 
-  const [pickupLocation, setPickupLocation] = useState(null);
-  const [dropoffLocation, setDropoffLocation] = useState(null);
-  
-  const [activeInput, setActiveInput] = useState(null); // 'pickup' or 'dropoff'
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const searchTimeoutRef = useRef(null);
-  
-  const handleSearch = (e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-    
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-
-    if (query.length > 2) {
-      searchTimeoutRef.current = setTimeout(async () => {
-        try {
-          const viewbox = '119.35,-5.05,119.55,-5.35';
-          const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=id&viewbox=${viewbox}&bounded=0&limit=5`);
-          if (response.ok) {
-            const data = await response.json();
-            setSearchResults(data);
-          }
-        } catch (err) {
-          console.error(err);
-        }
-      }, 600);
-    } else {
-      setSearchResults([]);
-    }
-  };
-
-  const handleSelectResult = (result) => {
-    const nameParts = result.display_name.split(', ');
-    const name = result.name || nameParts[0];
-    const locationData = {
-      name: name,
-      address: result.display_name,
-      lat: parseFloat(result.lat),
-      lng: parseFloat(result.lon)
-    };
-
-    if (activeInput === 'pickup') {
-      setPickupLocation(locationData);
-    } else if (activeInput === 'dropoff') {
-      setDropoffLocation(locationData);
-    }
-
-    setSearchResults([]);
-    setSearchQuery('');
-    setActiveInput(null);
-  };
-
   return (
-    <div className="delivery-order-page animate-fade-in">
-      {/* Header */}
-      <header className="delivery-header">
-        <button className="back-btn" onClick={() => navigate(-1)}>
+    <div className="delivery-landing-page animate-fade-in">
+      {/* Header with Illustration */}
+      <div className="delivery-landing-header">
+        <button className="back-btn-overlay" onClick={() => navigate(-1)}>
           <ChevronLeft size={24} />
         </button>
-        <h1 className="delivery-title">Antar barang ke mana?</h1>
-      </header>
-
-      <main className="delivery-content">
-        {/* Location Inputs Card */}
-        <div className="location-card" style={{ position: 'relative' }}>
-          <div className="location-input-group">
+        <img src={illustration} alt="Delivery Illustration" className="delivery-illustration" />
+        
+        {/* Search Card overlapping illustration */}
+        <div className="landing-search-card">
+          <div className="landing-input-group" onClick={() => navigate('/customer/delivery/location')}>
             <ArrowUp size={20} className="input-icon-up" />
-            <input 
-              type="text" 
-              className="location-input" 
-              placeholder="Cari lokasi pengambilan paket"
-              value={activeInput === 'pickup' ? searchQuery : (pickupLocation ? pickupLocation.name : '')}
-              onChange={handleSearch}
-              onFocus={() => {
-                setActiveInput('pickup');
-                setSearchQuery('');
-                setSearchResults([]);
-              }}
-            />
+            <div className="landing-input-placeholder">Cari lokasi pengambilan paket</div>
           </div>
-          <div className="location-divider"></div>
-          <div className="location-input-group">
+          <div className="landing-divider"></div>
+          <div className="landing-input-group" onClick={() => navigate('/customer/delivery/location')}>
             <Target size={20} className="input-icon-target" />
-            <input 
-              type="text" 
-              className="location-input" 
-              placeholder="Cari lokasi pengantaran paket"
-              value={activeInput === 'dropoff' ? searchQuery : (dropoffLocation ? dropoffLocation.name : '')}
-              onChange={handleSearch}
-              onFocus={() => {
-                setActiveInput('dropoff');
-                setSearchQuery('');
-                setSearchResults([]);
-              }}
-            />
+            <div className="landing-input-placeholder">Cari lokasi pengantaran paket</div>
           </div>
-          
-          {/* Dropdown Hasil Pencarian */}
-          {searchResults.length > 0 && activeInput && (
-            <div className="search-results-dropdown-inline">
-              {searchResults.map((res, i) => (
-                <div key={i} className="search-result-item-inline" onClick={() => handleSelectResult(res)}>
-                  <div className="result-name-inline">{res.name || res.display_name.split(',')[0]}</div>
-                  <div className="result-address-inline">{res.display_name}</div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
+      </div>
 
-        {/* Action Button if both selected */}
-        {pickupLocation && dropoffLocation && (
-          <button 
-            className="submit-btn" 
-            style={{ width: '100%', marginBottom: '24px' }}
-            onClick={() => {
-              // Later to checkout or delivery details
-              navigate('/customer');
-            }}
-          >
-            Lanjut
-          </button>
-        )}
-
+      <main className="delivery-landing-content">
         {/* Map Section */}
-        <h2 className="map-title">Atau pilih lewat peta</h2>
+        <h2 className="landing-map-title">Atau pilih lewat peta</h2>
         <div 
-          className="map-container" 
-          onClick={() => navigate('/customer/shopping/map')} // Maps interaction (can reuse shopping map or make new)
-          style={{ cursor: 'pointer', position: 'relative' }}
+          className="landing-map-container" 
+          onClick={() => navigate('/customer/delivery/map')} 
         >
-          <div style={{
-            position: 'absolute',
-            top: 0, left: 0, right: 0, bottom: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            backgroundColor: 'rgba(255,255,255,0.2)',
-            zIndex: 10
-          }}>
-            <span style={{
-              backgroundColor: '#034078',
-              color: 'white',
-              padding: '10px 24px',
-              borderRadius: '24px',
-              fontWeight: '600',
-              fontFamily: 'Outfit, sans-serif',
-              boxShadow: '0 4px 12px rgba(3,64,120,0.3)'
-            }}>
+          <div className="landing-map-overlay">
+            <span className="landing-map-badge">
               Pilih Lokasi
             </span>
           </div>

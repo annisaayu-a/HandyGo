@@ -156,8 +156,10 @@ export default function DeliveryLocation() {
             className="submit-btn" 
             style={{ width: '100%' }}
             onClick={() => {
-              // Navigate back to delivery page or to a details page
-              navigate(-1);
+              // Navigate to delivery details
+              navigate('/customer/delivery/details', {
+                state: { pickupLocation, dropoffLocation }
+              });
             }}
           >
             Lanjut

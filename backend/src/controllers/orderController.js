@@ -16,11 +16,13 @@ exports.createOrder = async (req, res) => {
       return res.status(400).json({ error: 'Data pesanan tidak lengkap' });
     }
 
-    // Since we just added Service, let's ensure a "Belanja" service exists to attach this order to
-    let service = await prisma.service.findFirst({ where: { name: 'Belanja' } });
+    const serviceName = req.body.service_name || 'Belanja';
+    
+    // Ensure the service exists to attach this order to
+    let service = await prisma.service.findFirst({ where: { name: serviceName } });
     if (!service) {
       service = await prisma.service.create({
-        data: { name: 'Belanja', base_price: 10000 }
+        data: { name: serviceName, base_price: 10000 }
       });
     }
 

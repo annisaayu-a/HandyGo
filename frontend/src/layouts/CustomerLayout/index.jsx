@@ -14,7 +14,14 @@ export default function CustomerLayout() {
     '/customer/shopping/status',
     '/customer/location',
     '/customer/profile',
-    '/customer/search'
+    '/customer/search',
+    '/customer/delivery/location',
+    '/customer/delivery/details',
+    '/customer/delivery/receiver',
+    '/customer/delivery/sender',
+    '/customer/delivery/checkout',
+    '/customer/delivery/status',
+    '/customer/delivery/map'
   ];
   const shouldHideBottomNav = hideBottomNavPaths.includes(location.pathname);
 
