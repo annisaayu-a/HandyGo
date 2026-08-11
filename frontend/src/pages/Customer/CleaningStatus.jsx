@@ -18,6 +18,30 @@ export default function CleaningStatus() {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState('');
 
+  // Dynamic ETA
+  const [eta, setEta] = useState({ arriveStart: '', arriveEnd: '', finishStart: '', finishEnd: '', finished: '', started: '' });
+
+  useEffect(() => {
+    const now = new Date();
+    const aStart = new Date(now.getTime() + 15 * 60000);
+    const aEnd = new Date(now.getTime() + 20 * 60000);
+    const fStart = new Date(now.getTime() + 180 * 60000); // Approx 3 hours
+    const fEnd = new Date(now.getTime() + 200 * 60000);
+    
+    const formatTime = (date) => {
+      return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
+    };
+
+    setEta({
+      arriveStart: formatTime(aStart),
+      arriveEnd: formatTime(aEnd),
+      finishStart: formatTime(fStart),
+      finishEnd: formatTime(fEnd),
+      finished: formatTime(fStart),
+      started: formatTime(aEnd)
+    });
+  }, []);
+
   // Auto-progress steps for demonstration
   useEffect(() => {
     const timer1 = setTimeout(() => setActiveStep(2), 5000);
@@ -72,9 +96,9 @@ export default function CleaningStatus() {
       <div className="cs-content">
         {/* Arrival/Complete Time */}
         <div className="cs-arrival-pill">
-          {activeStep === 1 && <>Akan sampai pada <span className="fw-bold">10:15 - 10:20</span></>}
-          {activeStep === 2 && <>Akan selesai pada <span className="fw-bold">13:20 - 13:40</span></>}
-          {activeStep === 3 && <>Telah selesai pada <span className="fw-bold">13:20</span></>}
+          {activeStep === 1 && <>Akan sampai pada <span className="fw-bold">{eta.arriveStart} - {eta.arriveEnd}</span></>}
+          {activeStep === 2 && <>Akan selesai pada <span className="fw-bold">{eta.finishStart} - {eta.finishEnd}</span></>}
+          {activeStep === 3 && <>Telah selesai pada <span className="fw-bold">{eta.finished}</span></>}
         </div>
 
         {/* Stepper */}
@@ -126,7 +150,7 @@ export default function CleaningStatus() {
                 <span className="cs-live-label">Durasi pengerjaan</span>
               </div>
               <div className="cs-live-time" style={{ marginTop: 8 }}>{formatTime(elapsedSeconds)}</div>
-              <div className="cs-live-subtext" style={{ marginTop: 4 }}>10:20 - 13:20 WITA</div>
+              <div className="cs-live-subtext" style={{ marginTop: 4 }}>{eta.started} - {eta.finished} WITA</div>
             </div>
 
             {/* Final Cost Card */}
@@ -205,7 +229,7 @@ export default function CleaningStatus() {
                 <span className="cs-live-label">Durasi pengerjaan</span>
               </div>
               <div className="cs-live-time">{formatTime(elapsedSeconds)}</div>
-              <div className="cs-live-subtext">Dimulai pada 10:20 WITA</div>
+              <div className="cs-live-subtext">Dimulai pada {eta.started} WITA</div>
               <div className="cs-live-subtext">+1.000 setiap menit</div>
             </div>
 

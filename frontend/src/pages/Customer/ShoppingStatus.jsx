@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Phone, MessageCircle, Star } from 'lucide-react';
 import './ShoppingStatus.css';
@@ -14,6 +14,25 @@ export default function ShoppingStatus() {
   
   // Rating state for 'selesai' step
   const [rating, setRating] = useState(0);
+
+  // Dynamic ETA
+  const [eta, setEta] = useState({ start: '', end: '', arrived: '' });
+
+  useEffect(() => {
+    const now = new Date();
+    const startTime = new Date(now.getTime() + 15 * 60000);
+    const endTime = new Date(now.getTime() + 30 * 60000);
+    
+    const formatTime = (date) => {
+      return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
+    };
+
+    setEta({
+      start: formatTime(startTime),
+      end: formatTime(endTime),
+      arrived: formatTime(now) // just for demo when finished
+    });
+  }, []);
   
   const handleSelesaiClick = () => {
     if (orderStatus !== 'selesai') {
@@ -38,9 +57,9 @@ export default function ShoppingStatus() {
         <div className="eta-badge-container">
           <div className="eta-badge">
             {orderStatus === 'selesai' ? (
-              <span className="eta-text">Telah sampai pada <strong>14:38</strong></span>
+              <span className="eta-text">Telah sampai pada <strong>{eta.arrived}</strong></span>
             ) : (
-              <span className="eta-text">Akan sampai dalam <strong>14:29 - 14:44</strong></span>
+              <span className="eta-text">Akan sampai dalam <strong>{eta.start} - {eta.end}</strong></span>
             )}
           </div>
         </div>

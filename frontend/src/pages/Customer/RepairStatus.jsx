@@ -22,6 +22,24 @@ export default function RepairStatus() {
     uploadedPhotos: []
   };
 
+  // Dynamic ETA
+  const [eta, setEta] = useState({ start: '', end: '' });
+
+  useEffect(() => {
+    const now = new Date();
+    const startTime = new Date(now.getTime() + 15 * 60000);
+    const endTime = new Date(now.getTime() + 20 * 60000);
+    
+    const formatTime = (date) => {
+      return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
+    };
+
+    setEta({
+      start: formatTime(startTime),
+      end: formatTime(endTime)
+    });
+  }, []);
+
   // Simulate phase transitions
   useEffect(() => {
     if (statusPhase === 'coming') {
@@ -65,7 +83,7 @@ export default function RepairStatus() {
         {/* Arrival Pill */}
         {statusPhase === 'coming' && (
           <div className="rs-arrival-pill" style={{ marginBottom: '32px', backgroundColor: '#ffffff', padding: '10px 24px', borderRadius: '24px', fontSize: '0.85rem', color: '#64748b', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
-            Akan sampai pada <span style={{ fontWeight: 700, color: '#1e293b' }}>10:15 - 10:20</span>
+            Akan sampai pada <span style={{ fontWeight: 700, color: '#1e293b' }}>{eta.start} - {eta.end}</span>
           </div>
         )}
 

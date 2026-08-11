@@ -69,7 +69,7 @@ export default function DeliveryLocation() {
         <button className="icon-btn" onClick={() => navigate(-1)}>
           <ArrowLeft size={24} color="#1e293b" />
         </button>
-        <h1 className="header-title">Masukkan lokasi</h1>
+        <h1 className="header-title">Antar barang ke mana?</h1>
       </header>
 
       {/* Input Card */}
