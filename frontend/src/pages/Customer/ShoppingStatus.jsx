@@ -7,15 +7,21 @@ export default function ShoppingStatus() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { pesanan } = location.state || {
-    pesanan: 'Ayam Bakar Paha Atas (2), Ayam Bakar Dada (4)'
-  };
+  const { pesanan = 'Ayam Bakar Paha Atas (2), Ayam Bakar Dada (4)', total = 88000, paymentMethod = 'Tunai', orderStatus: initialStatus = 'disiapkan' } = location.state || {};
 
   // State to simulate mitra changing order status ('disiapkan', 'diantar', 'selesai')
-  const [orderStatus, setOrderStatus] = useState('disiapkan');
+  const [orderStatus, setOrderStatus] = useState(initialStatus);
   
   // Rating state for 'selesai' step
   const [rating, setRating] = useState(0);
+  
+  const handleSelesaiClick = () => {
+    if (orderStatus !== 'selesai') {
+      navigate('/customer/shopping/payment', {
+        state: { totalBiaya: total, method: paymentMethod.toLowerCase().includes('qris') ? 'qris' : 'tunai', pesanan }
+      });
+    }
+  };
 
   return (
     <div className="shopping-status-page animate-fade-in">
@@ -64,7 +70,7 @@ export default function ShoppingStatus() {
               <div className={`dot ${orderStatus === 'selesai' ? 'active-dot' : ''}`}></div>
             </div>
 
-            <div className={`step ${orderStatus === 'selesai' ? 'active' : ''}`} onClick={() => setOrderStatus('selesai')}>
+            <div className={`step ${orderStatus === 'selesai' ? 'active' : ''}`} onClick={handleSelesaiClick}>
               <div className="step-circle">3</div>
               <span className="step-label">Selesai</span>
             </div>

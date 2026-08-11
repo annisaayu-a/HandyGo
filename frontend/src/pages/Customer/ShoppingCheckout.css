@@ -122,99 +122,77 @@
   color: #1e293b;
 }
 
-/* Payment Method Button */
-.payment-method-btn {
+/* Payment Options List */
+.payment-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.payment-option-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
-  padding: 16px 20px;
+  padding: 16px;
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
   cursor: pointer;
+  transition: all 0.2s;
 }
 
-.payment-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.payment-icon {
-  color: #475569;
-}
-
-.payment-text {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #334155;
-}
-
-/* Rotate icon */
-.rotate-up {
-  transform: rotate(180deg);
-}
-
-/* Simple Dropdown Menu */
-.payment-dropdown-menu {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  width: 100%;
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  animation: dropDownAnim 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-@keyframes dropDownAnim {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.payment-dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 20px;
-  background-color: transparent;
-  border: none;
-  border-bottom: 1px solid #f1f5f9;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  text-align: left;
-}
-
-.payment-dropdown-item:last-child {
-  border-bottom: none;
-}
-
-.payment-dropdown-item:hover {
+.payment-option-card.selected {
+  border-color: #034078;
   background-color: #f8fafc;
 }
 
-.payment-dropdown-icon {
-  color: #475569;
+.payment-option-left {
   display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
-.payment-dropdown-text {
+.payment-option-icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #034078;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.payment-option-text {
   font-family: 'Inter', sans-serif;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 500;
-  color: #334155;
+  color: #1e293b;
+}
+
+.payment-radio {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.payment-radio.checked {
+  border-color: #034078;
+}
+
+.payment-radio-inner {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #034078;
 }
 
 /* Success Modal */
-.modal-overlay {
+.shopping-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;

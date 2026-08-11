@@ -65,7 +65,7 @@ export default function SearchLocation() {
         <button className="sl-back-btn" onClick={() => navigate(-1)}>
           <ArrowLeft size={24} />
         </button>
-        <h1 className="sl-title">Di mana layanan dibutuhkan?</h1>
+        <h1 className="sl-title">Masukkan lokasi</h1>
       </header>
 
       {/* Search Input Box */}

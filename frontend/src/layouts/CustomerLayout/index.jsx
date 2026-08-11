@@ -12,6 +12,8 @@ export default function CustomerLayout() {
     '/customer/shopping/details', 
     '/customer/shopping/checkout',
     '/customer/shopping/status',
+    '/customer/shopping/payment',
+    '/customer/shopping/location',
     '/customer/cleaning',
     '/customer/cleaning/map',
     '/customer/cleaning/checkout',

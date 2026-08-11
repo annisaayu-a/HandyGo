@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Banknote, ChevronDown, Check } from 'lucide-react';
+import { ChevronLeft, Banknote, QrCode, Check } from 'lucide-react';
 import './ShoppingCheckout.css';
 
 export default function ShoppingCheckout() {
@@ -27,11 +28,10 @@ export default function ShoppingCheckout() {
 
   const [paymentMethod, setPaymentMethod] = useState('Bayar di Tempat');
   const [showModal, setShowModal] = useState(false);
-  const [showPaymentOptions, setShowPaymentOptions] = useState(false);
 
   const paymentMethods = [
-    { id: 'tunai', name: 'Bayar di Tempat', icon: <Banknote size={20} /> },
-    { id: 'qris', name: 'QRIS', icon: <Banknote size={20} /> }
+    { id: 'tunai', name: 'Bayar di Tempat', icon: <Banknote size={20} color="white" /> },
+    { id: 'qris', name: 'QRIS', icon: <QrCode size={20} color="white" /> }
   ];
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -76,7 +76,7 @@ export default function ShoppingCheckout() {
       setShowModal(true);
       // Auto redirect back to status page after 3 seconds
       setTimeout(() => {
-        navigate('/customer/shopping/status', { state: { pesanan } });
+        navigate('/customer/shopping/status', { state: { pesanan, total, paymentMethod } });
       }, 3000);
     } catch (error) {
       alert("Terjadi kesalahan saat memproses pesanan. Pastikan server berjalan.");
@@ -153,39 +153,27 @@ export default function ShoppingCheckout() {
         </div>
 
         {/* Payment Method */}
-        <div className="checkout-section" style={{ position: 'relative' }}>
+        <div className="checkout-section">
           <h3 className="section-title">Metode Pembayaran</h3>
-          <button 
-            className="payment-method-btn"
-            onClick={() => setShowPaymentOptions(!showPaymentOptions)}
-          >
-            <div className="payment-left">
-              <Banknote size={20} className="payment-icon" />
-              <span className="payment-text">{paymentMethod}</span>
-            </div>
-            <ChevronDown size={20} className={`payment-icon ${showPaymentOptions ? 'rotate-up' : ''}`} style={{ transition: 'transform 0.2s' }} />
-          </button>
-
-          {/* Simple Dropdown Menu */}
-          {showPaymentOptions && (
-            <div className="payment-dropdown-menu">
-              {paymentMethods
-                .filter(m => m.name !== paymentMethod) // Show only the other method
-                .map((method) => (
-                <button 
-                  key={method.id} 
-                  className="payment-dropdown-item"
-                  onClick={() => {
-                    setPaymentMethod(method.name);
-                    setShowPaymentOptions(false);
-                  }}
-                >
-                  <span className="payment-dropdown-icon">{method.icon}</span>
-                  <span className="payment-dropdown-text">{method.name}</span>
-                </button>
-              ))}
-            </div>
-          )}
+          <div className="payment-options-list">
+            {paymentMethods.map((method) => (
+              <div 
+                key={method.id} 
+                className={`payment-option-card ${paymentMethod === method.name ? 'selected' : ''}`}
+                onClick={() => setPaymentMethod(method.name)}
+              >
+                <div className="payment-option-left">
+                  <div className="payment-option-icon-circle">
+                    {method.icon}
+                  </div>
+                  <span className="payment-option-text">{method.name}</span>
+                </div>
+                <div className={`payment-radio ${paymentMethod === method.name ? 'checked' : ''}`}>
+                  {paymentMethod === method.name && <div className="payment-radio-inner" />}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </main>
 
@@ -198,16 +186,16 @@ export default function ShoppingCheckout() {
         </button>
       </div>
 
-      {/* Success Modal */}
-      {showModal && (
-        <div className="modal-overlay">
+      {showModal && createPortal(
+        <div className="shopping-modal-overlay">
           <div className="success-modal animate-scale-up">
             <div className="success-icon-wrapper">
               <Check size={40} className="success-icon" />
             </div>
             <h2 className="success-title">Pesananmu Berhasil!</h2>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

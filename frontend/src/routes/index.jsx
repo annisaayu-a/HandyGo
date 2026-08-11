@@ -23,6 +23,8 @@ import ShoppingMap from '../pages/Customer/ShoppingMap';
 import ShoppingDetails from '../pages/Customer/ShoppingDetails';
 import ShoppingCheckout from '../pages/Customer/ShoppingCheckout';
 import ShoppingStatus from '../pages/Customer/ShoppingStatus';
+import ShoppingPayment from '../pages/Customer/ShoppingPayment';
+import ShoppingLocation from '../pages/Customer/ShoppingLocation';
 import Delivery from '../pages/Customer/Delivery';
 import DeliveryLocation from '../pages/Customer/DeliveryLocation';
 import DeliveryDetails from '../pages/Customer/DeliveryDetails';
@@ -107,6 +109,10 @@ export const router = createBrowserRouter([
         element: <ShoppingOrder />,
       },
       {
+        path: 'shopping/location',
+        element: <ShoppingLocation />,
+      },
+      {
         path: 'shopping/map',
         element: <ShoppingMap />,
       },
@@ -121,6 +127,10 @@ export const router = createBrowserRouter([
       {
         path: 'shopping/status',
         element: <ShoppingStatus />,
+      },
+      {
+        path: 'shopping/payment',
+        element: <ShoppingPayment />,
       },
       {
         path: 'delivery',

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowUp, Target, Star, Clock, MapPin } from 'lucide-react';
 import './DeliveryLocation.css';
 
-export default function DeliveryLocation() {
+export default function ShoppingLocation() {
   const navigate = useNavigate();
   
   const [pickupLocation, setPickupLocation] = useState(null);
@@ -77,9 +77,9 @@ export default function DeliveryLocation() {
         <div className="location-input-row border-bottom">
           <ArrowUp size={20} color="#1e293b" className="location-icon" />
           <input 
-            type="text" 
-            className="location-input" 
-            placeholder="Cari lokasi pengambilan paket" 
+            type="text"
+            className="location-input"
+            placeholder="Cari lokasi toko"  
             value={activeInput === 'pickup' ? searchQuery : (pickupLocation ? pickupLocation.name : '')}
             onChange={handleSearch}
             onFocus={() => {
@@ -93,9 +93,9 @@ export default function DeliveryLocation() {
         <div className="location-input-row">
           <Target size={20} color="#034078" className="location-icon" />
           <input 
-            type="text" 
-            className="location-input" 
-            placeholder="Cari lokasi pengantaran paket" 
+            type="text"
+            className="location-input"
+            placeholder="Cari lokasi pengantaran"  
             value={activeInput === 'dropoff' ? searchQuery : (dropoffLocation ? dropoffLocation.name : '')}
             onChange={handleSearch}
             onFocus={() => {
@@ -155,9 +155,9 @@ export default function DeliveryLocation() {
             className="submit-btn" 
             style={{ width: '100%' }}
             onClick={() => {
-              // Navigate to delivery details
-              navigate('/customer/delivery/details', {
-                state: { pickupLocation, dropoffLocation }
+              // Navigate to shopping details
+              navigate('/customer/shopping/details', {
+                state: { toko: pickupLocation, pengantaran: dropoffLocation }
               });
             }}
           >

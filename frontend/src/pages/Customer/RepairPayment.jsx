@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import './RepairPayment.css';
 import bgPaymentCash from '../../assets/bg_payment_cash.png';
 import bgPaymentQris from '../../assets/bg_payment_qris.png';
+import barcodeQris from '../../assets/barcode-qris.jpeg';
 
 export default function RepairPayment() {
   const navigate = useNavigate();
@@ -78,7 +79,7 @@ export default function RepairPayment() {
           method === 'qris' ? (
             <div className="rp-qris-container">
               <div className="rp-qris-subtitle">Scan kode QR di bawah ini</div>
-              <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=handygo-${totalBiaya}`} alt="QRIS" className="rp-qris-img" />
+              <img src={barcodeQris} alt="QRIS" className="rp-qris-img" />
               
               <div className="rp-qris-timer-label">Sisa waktu pembayaran</div>
               <div className="rp-qris-timer">{formatTimeLeft()}</div>
