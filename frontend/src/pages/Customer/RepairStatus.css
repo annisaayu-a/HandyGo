@@ -1,0 +1,620 @@
+.repair-status-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #ffffff;
+  padding-bottom: 40px;
+}
+
+/* Header */
+.rs-header {
+  display: flex;
+  align-items: center;
+  padding: 24px;
+  background-color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.rs-back-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-right: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1e293b;
+}
+
+.rs-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* Content */
+.rs-content {
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Arrival Pill */
+.rs-arrival-pill {
+  background-color: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 24px;
+  padding: 10px 24px;
+  font-size: 0.85rem;
+  color: #64748b;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  margin-bottom: 32px;
+}
+
+.rs-arrival-pill .fw-bold {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* Stepper */
+.rs-stepper-container {
+  width: 100%;
+  position: relative;
+  margin-bottom: 32px;
+}
+
+.rs-stepper-track {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #e2e8f0;
+  z-index: 1;
+}
+
+.rs-stepper-line {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background-color: #034078;
+  transition: all 0.5s ease;
+  width: 0; /* initial */
+}
+
+.rs-stepper-line.active {
+  width: auto; /* will be set by left/right */
+}
+
+.rs-steps {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+  margin-bottom: 24px;
+}
+
+.rs-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.rs-step-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 2px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  color: #94a3b8;
+  margin-bottom: 12px;
+  transition: all 0.3s;
+}
+
+.rs-step.active .rs-step-circle {
+  background-color: #034078;
+  border-color: #034078;
+  color: #ffffff;
+}
+
+.rs-step-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.rs-step.active .rs-step-label {
+  color: #034078;
+}
+
+.rs-step-desc {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Divider */
+.rs-divider {
+  width: 100vw;
+  margin-left: -24px;
+  height: 8px;
+  background-color: #f8fafc;
+  margin-bottom: 24px;
+}
+
+/* Cards */
+.rs-card {
+  width: 100%;
+  background-color: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.02);
+}
+
+.rs-card-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 16px 0;
+}
+
+.rs-detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+}
+
+.rs-detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.rs-detail-label {
+  color: #64748b;
+}
+
+.rs-detail-value {
+  color: #1e293b;
+  font-weight: 600;
+  text-align: right;
+  max-width: 60%;
+}
+
+/* Live Service Card */
+.rs-live-card {
+  width: 100%;
+  background-color: #034078;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 24px rgba(3, 64, 120, 0.15);
+}
+
+.rs-live-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 16px 0;
+}
+
+.rs-live-inner-card {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.rs-live-inner-card:last-child {
+  margin-bottom: 0;
+}
+
+.rs-live-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.rs-live-label {
+  font-size: 0.85rem;
+  color: #e2e8f0;
+}
+
+.rs-live-time,
+.rs-live-price {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.rs-live-subtext {
+  font-size: 0.75rem;
+  color: #cbd5e1;
+  margin-bottom: 2px;
+}
+
+/* Info Box */
+.rs-info-box {
+  background-color: #f8fafc;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* --- STEP 3: PAYMENT SCREEN --- */
+.rs-payment-screen {
+  width: 100%;
+}
+
+/* Success Banner */
+.rs-success-banner {
+  background-color: #ecfccb;
+  border-radius: 16px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.rs-success-text {
+  flex: 1;
+}
+
+.rs-success-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #166534;
+  margin-bottom: 4px;
+}
+
+.rs-success-icon-check {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #166534;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+}
+
+.rs-success-desc {
+  font-size: 0.75rem;
+  color: #3f6212;
+  line-height: 1.4;
+}
+
+.rs-success-img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  margin-left: 12px;
+}
+
+/* Payment Methods */
+.rs-payment-methods {
+  margin-top: 16px;
+}
+
+.rs-payment-option {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.rs-payment-option.selected {
+  border-color: #034078;
+  background-color: #f8fafc;
+}
+
+.rs-payment-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.rs-payment-name {
+  flex: 1;
+  font-size: 0.95rem;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.rs-radio-btn {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rs-radio-btn.selected {
+  border-color: #22c55e;
+}
+
+.rs-radio-inner {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #22c55e;
+}
+
+/* Pay Button */
+.rs-pay-btn {
+  width: 100%;
+  background-color: #034078;
+  color: #ffffff;
+  border: none;
+  border-radius: 24px;
+  padding: 16px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 24px;
+  box-shadow: 0 4px 12px rgba(3, 64, 120, 0.2);
+  transition: opacity 0.3s;
+}
+
+.rs-pay-btn:disabled {
+  background-color: #e2e8f0;
+  color: #94a3b8;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Notes Card */
+.rs-notes-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.rs-notes-icon {
+  display: flex;
+}
+
+.rs-notes-text {
+  font-size: 0.85rem;
+  color: #334155;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Mitra Card */
+.rs-mitra-card {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+}
+
+.rs-mitra-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 16px;
+}
+
+.rs-mitra-info {
+  flex: 1;
+}
+
+.rs-mitra-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+
+.rs-mitra-rating {
+  font-size: 0.8rem;
+  color: #1e293b;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rs-mitra-rating .star {
+  color: #eab308;
+}
+
+.rs-mitra-rating .reviews {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.rs-mitra-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.rs-action-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.rs-action-btn:hover {
+  background-color: #f8fafc;
+}
+
+/* Deskripsi Card */
+.rs-desc-images {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.rs-desc-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #e2e8f0;
+}
+
+/* Overlay and Modals */
+.rs-overlay {
+  position: fixed;
+  top: 0; 
+  left: 50%; 
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Bottom Sheet specifically for Cost Agreement */
+.rs-agreement-sheet {
+  background-color: #ffffff;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+  animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.rs-agreement-icon-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.rs-agreement-icon-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: #dcfce7;
+  color: #16a34a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rs-agreement-title {
+  text-align: center;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+
+.rs-agreement-subtitle {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin: 0 0 24px 0;
+}
+
+.rs-expandable-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  cursor: pointer;
+}
+
+.rs-expandable-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.rs-sub-items {
+  padding-left: 12px;
+  margin-bottom: 12px;
+}
+
+.rs-sub-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.rs-sub-item-bullet {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  background-color: #64748b;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+}

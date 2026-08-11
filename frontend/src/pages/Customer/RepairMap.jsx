@@ -1,26 +1,26 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowUp, Target, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Target, ArrowLeft } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Map from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import './ShoppingMap.css';
+import './ShoppingMap.css'; // Reusing the map styles
 
-export default function DeliveryMap() {
+export default function RepairMap() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnUrl = location.state?.returnUrl || '/customer/repair/checkout';
 
-  // Default coordinate (Makassar/Gowa border)
-  const defaultPosition = [-5.185, 119.452]; 
+  // Default coordinate
+  const defaultPosition = [-5.1325178, 119.4939223]; 
 
   const [currentAddress, setCurrentAddress] = useState({
-    name: 'Kabupaten Gowa',
-    address: 'Sulawesi Selatan, Indonesia',
+    name: 'Mencari lokasi...',
+    address: 'Sedang memuat alamat...',
     lat: defaultPosition[0],
     lng: defaultPosition[1]
   });
 
   const [isMapDragging, setIsMapDragging] = useState(false);
-  const [step, setStep] = useState('pickup'); // 'pickup' or 'dropoff'
-  const [pickupLocation, setPickupLocation] = useState(null);
 
   // Search States
   const [searchQuery, setSearchQuery] = useState('');
@@ -168,30 +168,16 @@ export default function DeliveryMap() {
         >
           <ArrowLeft size={24} color="#1e293b" />
         </button>
-        
         {/* Floating Top Search Card */}
         <div className="floating-top-card">
-        <div className="location-input-group">
-          <ArrowUp size={20} className="input-icon-up" />
-          <input 
-            type="text" 
-            className="location-input" 
-            placeholder={step === 'pickup' ? "Ketik lokasi pengambilan di sini" : "Lokasi pengambilan (Tersimpan)"}
-            value={step === 'pickup' ? searchQuery : (pickupLocation ? pickupLocation.name : '')}
-            onChange={step === 'pickup' ? handleSearch : undefined}
-            readOnly={step !== 'pickup'}
-          />
-        </div>
-        <div className="location-divider"></div>
         <div className="location-input-group">
           <Target size={20} className="input-icon-target" />
           <input 
             type="text" 
             className="location-input" 
-            placeholder={step === 'dropoff' ? "Ketik lokasi pengantaran di sini" : "Cari lokasi pengantaran"}
-            value={step === 'dropoff' ? searchQuery : ''}
-            onChange={step === 'dropoff' ? handleSearch : undefined}
-            readOnly={step !== 'dropoff'}
+            placeholder="Cari lokasi"
+            value={searchQuery}
+            onChange={handleSearch}
           />
         </div>
 
@@ -212,9 +198,7 @@ export default function DeliveryMap() {
       {/* Bottom Sheet */}
       <div className="bottom-sheet" style={{ zIndex: 1000 }}>
         <div className="bottom-sheet-header">
-          <h2 className="sheet-title">
-            {step === 'pickup' ? 'Set lokasi pengambilan' : 'Set lokasi pengantaran'}
-          </h2>
+          <h2 className="sheet-title">Set lokasi</h2>
           <button className="edit-btn">Edit</button>
         </div>
         
@@ -230,18 +214,7 @@ export default function DeliveryMap() {
           style={{ marginTop: '16px' }}
           disabled={isMapDragging || !currentAddress.address}
           onClick={() => {
-            if (step === 'pickup') {
-              setPickupLocation(currentAddress);
-              setStep('dropoff');
-              setSearchQuery('');
-            } else {
-              navigate('/customer/delivery/details', { 
-                state: { 
-                  pickupLocation: pickupLocation, 
-                  dropoffLocation: currentAddress 
-                } 
-              });
-            }
+            navigate(returnUrl, { state: { selectedLocation: currentAddress } });
           }}
         >
           {isMapDragging ? 'Mencari lokasi...' : 'Lanjut'}

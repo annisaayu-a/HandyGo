@@ -36,6 +36,12 @@ import CleaningMap from '../pages/Customer/CleaningMap';
 import CleaningCheckout from '../pages/Customer/CleaningCheckout';
 import CleaningStatus from '../pages/Customer/CleaningStatus';
 import CleaningPayment from '../pages/Customer/CleaningPayment';
+import Repair from '../pages/Customer/Repair';
+import RepairMap from '../pages/Customer/RepairMap';
+import RepairCheckout from '../pages/Customer/RepairCheckout';
+import RepairDetails from '../pages/Customer/RepairDetails';
+import RepairStatus from '../pages/Customer/RepairStatus';
+import RepairPayment from '../pages/Customer/RepairPayment';
 import Chat from '../pages/Customer/Chat';
 import ChatList from '../pages/Customer/ChatList';
 import Call from '../pages/Customer/Call';
@@ -167,6 +173,30 @@ export const router = createBrowserRouter([
       {
         path: 'cleaning/payment',
         element: <CleaningPayment />,
+      },
+      {
+        path: 'repair',
+        element: <Repair />,
+      },
+      {
+        path: 'repair/map',
+        element: <RepairMap />,
+      },
+      {
+        path: 'repair/checkout',
+        element: <RepairCheckout />,
+      },
+      {
+        path: 'repair/details',
+        element: <RepairDetails />,
+      },
+      {
+        path: 'repair/status',
+        element: <RepairStatus />,
+      },
+      {
+        path: 'repair/payment',
+        element: <RepairPayment />,
       },
       {
         path: 'chat',

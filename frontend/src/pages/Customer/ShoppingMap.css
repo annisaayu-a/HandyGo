@@ -10,16 +10,25 @@
   flex-direction: column;
 }
 
-.map-back-btn {
+.map-floating-header {
   position: absolute;
-  top: 52px; /* Centered between the two inputs (20px card top + 32px offset) */
+  top: 20px;
   left: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 1000;
+}
+
+.map-back-btn {
   background-color: #ffffff;
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 44px; /* Slightly larger to match standard mobile touch targets */
+  height: 44px;
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -52,10 +61,8 @@
 
 /* Floating Top Search Card */
 .floating-top-card {
-  position: absolute;
-  top: 20px; /* Space for status bar / notch */
-  left: 76px; /* Space for back button */
-  right: 20px;
+  position: relative; /* Changed from absolute to relative for flex container */
+  flex: 1;
   background-color: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(8px);
   border: 1px solid #e2e8f0;
@@ -63,7 +70,6 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  z-index: 10;
 }
 
 /* Reusing input styles from ShoppingOrder */
@@ -77,11 +83,13 @@
 .input-icon-up {
   color: #334155;
   flex-shrink: 0;
+  margin-left: 8px;
 }
 
 .input-icon-target {
   color: #034078;
   flex-shrink: 0;
+  margin-left: 8px; /* Added margin to push it away from the edge */
 }
 
 .location-input {

@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowUp, Target, Star, Clock, MapPin } from 'lucide-react';
-import 'leaflet/dist/leaflet.css';
 import './DeliveryLocation.css';
 
 export default function DeliveryLocation() {

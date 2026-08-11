@@ -8,7 +8,7 @@
 }
 
 /* Header */
-.cc-header {
+.rc-header {
   display: flex;
   align-items: center;
   padding: 24px;
@@ -18,7 +18,7 @@
   z-index: 10;
 }
 
-.cc-back-btn {
+.rc-back-btn {
   background: none;
   border: none;
   padding: 0;
@@ -30,7 +30,7 @@
   color: #1e293b;
 }
 
-.cc-title {
+.rc-title {
   font-family: 'Outfit', sans-serif;
   font-size: 1.25rem;
   font-weight: 700;
@@ -39,7 +39,7 @@
 }
 
 /* Content */
-.cc-content {
+.rc-content {
   padding: 0 24px;
   display: flex;
   flex-direction: column;
@@ -47,14 +47,14 @@
 }
 
 /* Location Card */
-.cc-location-card {
+.rc-location-card {
   background-color: #ffffff;
   border-radius: 16px;
   padding: 16px;
   border: 1px solid #e2e8f0;
 }
 
-.cc-location-header {
+.rc-location-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -62,11 +62,11 @@
   gap: 16px;
 }
 
-.cc-location-header > div {
+.rc-location-header > div {
   flex: 1;
 }
 
-.cc-location-title {
+.rc-location-title {
   font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
@@ -74,14 +74,14 @@
   margin: 0 0 4px 0;
 }
 
-.cc-location-address {
+.rc-location-address {
   font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: #334155;
   margin: 0;
 }
 
-.cc-ganti-lokasi {
+.rc-ganti-lokasi {
   background: none;
   border: none;
   color: #034078;
@@ -92,7 +92,7 @@
   flex-shrink: 0;
 }
 
-.cc-detail-input-wrapper {
+.rc-detail-input-wrapper {
   display: flex;
   align-items: center;
   background-color: #f8fafc;
@@ -101,11 +101,11 @@
   gap: 8px;
 }
 
-.cc-detail-icon {
+.rc-detail-icon {
   color: #94a3b8;
 }
 
-.cc-detail-input {
+.rc-detail-input {
   flex: 1;
   border: none;
   background: transparent;
@@ -115,18 +115,18 @@
   color: #334155;
 }
 
-.cc-detail-input::placeholder {
+.rc-detail-input::placeholder {
   color: #94a3b8;
 }
 
 /* Info Text */
-.cc-info-text-container {
+.rc-info-text-container {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.cc-info-text-top {
+.rc-info-text-top {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -134,13 +134,13 @@
   line-height: 1.4;
 }
 
-.cc-info-text-bottom {
+.rc-info-text-bottom {
   font-size: 0.75rem;
   color: #94a3b8;
 }
 
 /* Sections (Area, Kekotoran) */
-.cc-section-title {
+.rc-section-title {
   font-family: 'Outfit', sans-serif;
   font-size: 1rem;
   font-weight: 700;
@@ -148,12 +148,12 @@
   margin: 0 0 12px 0;
 }
 
-.cc-pill-group {
+.rc-pill-group {
   display: flex;
   gap: 8px;
 }
 
-.cc-pill {
+.rc-pill {
   flex: 1;
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
@@ -168,7 +168,7 @@
   text-align: center;
 }
 
-.cc-pill.active {
+.rc-pill.active {
   background-color: #034078;
   color: #ffffff;
   border-color: #034078;
@@ -176,7 +176,7 @@
 }
 
 /* Catatan Khusus */
-.cc-notes-input {
+.rc-notes-input {
   width: 100%;
   border: 1px solid #e2e8f0;
   border-radius: 24px;
@@ -190,35 +190,32 @@
   box-sizing: border-box;
 }
 
-.cc-notes-input::placeholder {
+.rc-notes-input::placeholder {
   color: #94a3b8;
 }
 
 /* Bottom Sheet */
-.cc-bottom-sheet {
+.rc-bottom-sheet {
   position: fixed;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 480px;
+  left: 0;
+  right: 0;
   background-color: #ffffff;
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
   padding: 24px;
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08);
   z-index: 20;
-  box-sizing: border-box;
 }
 
-.cc-price-row {
+.rc-price-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
 }
 
-.cc-price-label {
+.rc-price-label {
   display: flex;
   align-items: center;
   font-size: 0.85rem;
@@ -226,7 +223,7 @@
   gap: 12px;
 }
 
-.cc-price-icon-wrapper {
+.rc-price-icon-wrapper {
   width: 32px;
   height: 32px;
   display: flex;
@@ -236,41 +233,41 @@
   border-radius: 8px;
 }
 
-.cc-price-value {
+.rc-price-value {
   font-family: 'Outfit', sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
   color: #1e293b;
 }
 
-.cc-price-divider {
+.rc-price-divider {
   height: 1px;
   background-color: #e2e8f0;
   margin: 16px 0;
 }
 
-.cc-total-row {
+.rc-total-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
 }
 
-.cc-total-label {
+.rc-total-label {
   font-family: 'Outfit', sans-serif;
   font-size: 1rem;
   font-weight: 600;
   color: #1e293b;
 }
 
-.cc-total-value {
+.rc-total-value {
   font-family: 'Outfit', sans-serif;
   font-size: 1.25rem;
   font-weight: 700;
   color: #034078;
 }
 
-.cc-disclaimer {
+.rc-disclaimer {
   font-size: 0.7rem;
   color: #94a3b8;
   line-height: 1.5;
@@ -278,7 +275,7 @@
   text-align: justify;
 }
 
-.cc-submit-btn {
+.rc-submit-btn {
   width: 100%;
   background-color: #034078;
   color: #ffffff;
@@ -292,12 +289,12 @@
   box-shadow: 0 4px 12px rgba(3, 64, 120, 0.2);
 }
 
-.cc-submit-btn:hover {
+.rc-submit-btn:hover {
   opacity: 0.9;
 }
 
 /* Success Modal */
-.cc-modal-overlay {
+.rc-modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
@@ -308,7 +305,7 @@
   padding: 24px;
 }
 
-.cc-modal-content {
+.rc-modal-content {
   background-color: #ffffff;
   border-radius: 24px;
   padding: 32px 24px;
@@ -326,7 +323,7 @@
   100% { transform: scale(1); opacity: 1; }
 }
 
-.cc-modal-icon {
+.rc-modal-icon {
   width: 64px;
   height: 64px;
   background-color: #22c55e;
@@ -338,10 +335,57 @@
   color: #ffffff;
 }
 
-.cc-modal-title {
+.rc-modal-title {
   font-family: 'Outfit', sans-serif;
   font-size: 1.25rem;
   font-weight: 700;
   color: #1e293b;
   margin: 0;
+}
+
+.rc-type-card {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.rc-type-card:active {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.rc-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  margin-right: 16px;
+}
+
+.rc-type-content {
+  flex: 1;
+}
+
+.rc-type-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+
+.rc-type-desc {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.4;
 }

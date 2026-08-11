@@ -1,29 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
+import Map from 'react-map-gl/mapbox';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import './Location.css';
 
 // Default center (Makassar)
 const defaultPosition = [-5.147665, 119.432731];
-
-function MapController({ center, onMoveEnd, setIsDragging }) {
-  const map = useMapEvents({
-    dragstart: () => setIsDragging(true),
-    dragend: () => {
-      setIsDragging(false);
-      const newCenter = map.getCenter();
-      onMoveEnd(newCenter);
-    }
-  });
-
-  useEffect(() => {
-    map.flyTo(center, map.getZoom(), { animate: true, duration: 0.5 });
-  }, [center, map]);
-
-  return null;
-}
 
 export default function Location() {
   const navigate = useNavigate();
@@ -36,6 +19,7 @@ export default function Location() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const searchTimeoutRef = useRef(null);
+  const mapRef = useRef(null);
 
   // Load user data on mount
   useEffect(() => {
@@ -100,8 +84,18 @@ export default function Location() {
   const handleSelectResult = (result) => {
     setAddress(result.display_name);
     setSearchQuery(result.display_name);
-    setMapCenter([parseFloat(result.lat), parseFloat(result.lon)]);
+    const lat = parseFloat(result.lat);
+    const lon = parseFloat(result.lon);
+    mapRef.current?.flyTo({ center: [lon, lat], zoom: 16, duration: 1500 });
     setSearchResults([]);
+  };
+
+  const handleMoveStart = () => setIsDragging(true);
+
+  const handleMoveEnd = (e) => {
+    setIsDragging(false);
+    const { lng, lat } = e.viewState;
+    fetchAddressFromCoords({ lat, lng });
   };
 
   const handleSave = async () => {
@@ -203,22 +197,19 @@ export default function Location() {
         <div className="map-section-mini">
           <label className="location-label">Atau atur melalui peta</label>
           <div className="mini-map-container">
-            <MapContainer 
-              center={mapCenter} 
-              zoom={16} 
-              zoomControl={false}
+            <Map
+              ref={mapRef}
+              mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
+              initialViewState={{
+                longitude: defaultPosition[1],
+                latitude: defaultPosition[0],
+                zoom: 16
+              }}
               className="mini-map"
-            >
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; OpenStreetMap'
-              />
-              <MapController 
-                center={mapCenter} 
-                onMoveEnd={fetchAddressFromCoords} 
-                setIsDragging={setIsDragging}
-              />
-            </MapContainer>
+              mapStyle="mapbox://styles/mapbox/streets-v12"
+              onMoveStart={handleMoveStart}
+              onMoveEnd={handleMoveEnd}
+            />
             
             {/* Custom Center Pin */}
             <div className="mini-map-center-pin">

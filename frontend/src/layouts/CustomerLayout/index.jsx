@@ -30,7 +30,13 @@ export default function CustomerLayout() {
     '/customer/delivery/sender',
     '/customer/delivery/checkout',
     '/customer/delivery/status',
-    '/customer/delivery/map'
+    '/customer/delivery/map',
+    '/customer/repair',
+    '/customer/repair/map',
+    '/customer/repair/checkout',
+    '/customer/repair/details',
+    '/customer/repair/status',
+    '/customer/repair/payment'
   ];
   const shouldHideBottomNav = hideBottomNavPaths.includes(location.pathname);
 

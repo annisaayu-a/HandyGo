@@ -96,6 +96,8 @@ export default function CustomerHome() {
                   navigate('/customer/delivery');
                 } else if (service.id === 3) {
                   navigate('/customer/cleaning');
+                } else if (service.id === 4) {
+                  navigate('/customer/repair');
                 }
               }}
               style={{ cursor: 'pointer' }}

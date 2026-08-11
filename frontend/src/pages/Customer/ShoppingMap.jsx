@@ -1,65 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { ArrowUp, Target, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
+import Map from 'react-map-gl/mapbox';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import './ShoppingMap.css';
-
-// Komponen helper untuk melacak pergerakan peta
-function MapEvents({ setAddress, setIsDragging }) {
-  const map = useMapEvents({
-    dragstart: () => {
-      setIsDragging(true);
-      setAddress(prev => ({ ...prev, name: 'Mencari lokasi...', address: '' }));
-    },
-    dragend: async () => {
-      setIsDragging(false);
-      const center = map.getCenter();
-      try {
-        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${center.lat}&lon=${center.lng}&zoom=18&addressdetails=1`);
-        
-        if (!response.ok) {
-          if (response.status === 429 || response.status === 403) {
-            setAddress({ name: 'Terlalu banyak klik', address: 'Sistem peta membatasi akses sementara. Mohon tunggu 1-2 menit.', lat: center.lat, lng: center.lng });
-          } else {
-            setAddress({ name: 'Gagal memuat', address: 'Layanan peta sedang gangguan', lat: center.lat, lng: center.lng });
-          }
-          return;
-        }
-
-        const data = await response.json();
-        
-        if (data && data.display_name) {
-          const nameParts = data.display_name.split(', ');
-          const name = data.name || (data.address && data.address.road) || nameParts[0];
-          setAddress({
-            name: name,
-            address: data.display_name,
-            lat: center.lat,
-            lng: center.lng
-          });
-        } else {
-          setAddress({ name: 'Lokasi tidak dikenal', address: 'Tidak dapat menemukan alamat di titik ini', lat: center.lat, lng: center.lng });
-        }
-      } catch (err) {
-        console.error("Gagal mendapatkan lokasi:", err);
-        setAddress({ name: 'Gagal memuat', address: 'Periksa koneksi internet Anda', lat: center.lat, lng: center.lng });
-      }
-    }
-  });
-  return null;
-}
-
-// Komponen untuk animasi terbang ke lokasi pencarian
-function MapFlyTo({ center }) {
-  const map = useMapEvents({});
-  useEffect(() => {
-    if (center) {
-      map.flyTo(center, 17, { animate: true, duration: 1.5 });
-    }
-  }, [center, map]);
-  return null;
-}
 
 export default function ShoppingMap() {
   const navigate = useNavigate();
@@ -81,8 +25,8 @@ export default function ShoppingMap() {
   // Search States
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [mapTargetCenter, setMapTargetCenter] = useState(defaultPosition);
   const searchTimeoutRef = useRef(null);
+  const mapRef = useRef(null);
 
   useEffect(() => {
     fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${defaultPosition[0]}&lon=${defaultPosition[1]}`)
@@ -129,7 +73,7 @@ export default function ShoppingMap() {
     const lon = parseFloat(result.lon);
     
     // Terbang ke titik baru
-    setMapTargetCenter([lat, lon]);
+    mapRef.current?.flyTo({ center: [lon, lat], zoom: 17, duration: 1500 });
     setSearchResults([]);
     setSearchQuery('');
     
@@ -144,32 +88,63 @@ export default function ShoppingMap() {
     });
   };
 
+  const handleMoveStart = () => {
+    setIsMapDragging(true);
+    setCurrentAddress(prev => ({ ...prev, name: 'Mencari lokasi...', address: '' }));
+  };
+
+  const handleMoveEnd = async (e) => {
+    setIsMapDragging(false);
+    const { lng, lat } = e.viewState;
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
+      
+      if (!response.ok) {
+        if (response.status === 429 || response.status === 403) {
+          setCurrentAddress({ name: 'Terlalu banyak klik', address: 'Sistem peta membatasi akses sementara. Mohon tunggu 1-2 menit.', lat, lng });
+        } else {
+          setCurrentAddress({ name: 'Gagal memuat', address: 'Layanan peta sedang gangguan', lat, lng });
+        }
+        return;
+      }
+
+      const data = await response.json();
+      
+      if (data && data.display_name) {
+        const nameParts = data.display_name.split(', ');
+        const name = data.name || (data.address && data.address.road) || nameParts[0];
+        setCurrentAddress({
+          name: name,
+          address: data.display_name,
+          lat,
+          lng
+        });
+      } else {
+        setCurrentAddress({ name: 'Lokasi tidak dikenal', address: 'Tidak dapat menemukan alamat di titik ini', lat, lng });
+      }
+    } catch (err) {
+      console.error("Gagal mendapatkan lokasi:", err);
+      setCurrentAddress({ name: 'Gagal memuat', address: 'Periksa koneksi internet Anda', lat, lng });
+    }
+  };
+
   return (
     <div className="shopping-map-page animate-fade-in">
-      {/* Back Button */}
-      <button 
-        className="map-back-btn" 
-        onClick={() => navigate(-1)}
-        style={{ zIndex: 1000 }}
-      >
-        <ArrowLeft size={24} color="#1e293b" />
-      </button>
-
       {/* Full screen Map */}
       <div className="fullscreen-map" style={{ zIndex: 0 }}>
-        <MapContainer 
-          center={defaultPosition} 
-          zoom={16} 
+        <Map
+          ref={mapRef}
+          mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
+          initialViewState={{
+            longitude: defaultPosition[1],
+            latitude: defaultPosition[0],
+            zoom: 16
+          }}
           style={{ width: '100%', height: '100%' }}
-          zoomControl={false}
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-          <MapEvents setAddress={setCurrentAddress} setIsDragging={setIsMapDragging} />
-          <MapFlyTo center={mapTargetCenter} />
-        </MapContainer>
+          mapStyle="mapbox://styles/mapbox/streets-v12"
+          onMoveStart={handleMoveStart}
+          onMoveEnd={handleMoveEnd}
+        />
         
         {/* Custom Map Pin (Static in Center) */}
         <div className="map-pin-center" style={{ pointerEvents: 'none', zIndex: 400, position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -100%)' }}>
@@ -185,8 +160,17 @@ export default function ShoppingMap() {
         </div>
       </div>
 
-      {/* Floating Top Search Card */}
-      <div className="floating-top-card" style={{ zIndex: 1000 }}>
+      <div className="map-floating-header">
+        {/* Back Button */}
+        <button 
+          className="map-back-btn" 
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft size={24} color="#1e293b" />
+        </button>
+        
+        {/* Floating Top Search Card */}
+        <div className="floating-top-card">
         <div className="location-input-group">
           <ArrowUp size={20} className="input-icon-up" />
           <input 
@@ -222,6 +206,7 @@ export default function ShoppingMap() {
             ))}
           </div>
         )}
+      </div>
       </div>
 
       {/* Bottom Sheet */}
