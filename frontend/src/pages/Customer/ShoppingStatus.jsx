@@ -7,7 +7,7 @@ export default function ShoppingStatus() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { pesanan = 'Ayam Bakar Paha Atas (2), Ayam Bakar Dada (4)', total = 88000, paymentMethod = 'Tunai', orderStatus: initialStatus = 'disiapkan' } = location.state || {};
+  const { pesanan = 'Ayam Bakar Paha Atas (2), Ayam Bakar Dada (4)', total = 88000, paymentMethod = 'Tunai', orderStatus: initialStatus = 'disiapkan', orderId } = location.state || {};
 
   // State to simulate mitra changing order status ('disiapkan', 'diantar', 'selesai')
   const [orderStatus, setOrderStatus] = useState(initialStatus);
@@ -37,7 +37,7 @@ export default function ShoppingStatus() {
   const handleSelesaiClick = () => {
     if (orderStatus !== 'selesai') {
       navigate('/customer/shopping/payment', {
-        state: { totalBiaya: total, method: paymentMethod.toLowerCase().includes('qris') ? 'qris' : 'tunai', pesanan }
+        state: { totalBiaya: total, method: paymentMethod.toLowerCase().includes('qris') ? 'qris' : 'tunai', pesanan, orderId }
       });
     }
   };

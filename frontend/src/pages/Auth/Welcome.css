@@ -7,6 +7,26 @@
   overflow: hidden;
 }
 
+.welcome-back-btn {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.welcome-back-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
 .wave-header {
   position: absolute;
   top: 0;
@@ -71,6 +91,11 @@
   font-weight: 500;
   line-height: 1.4;
   max-width: 280px;
+}
+
+.role-tagline {
+  font-size: 1.05rem;
+  font-weight: 600;
 }
 
 .action-buttons {
@@ -169,6 +194,60 @@
 
 .register-link:hover {
   color: #022e5a;
+}
+
+/* Role Selection Cards */
+.role-cards-container {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 48px;
+}
+
+.role-card {
+  flex: 1;
+  background-color: #034078;
+  border-radius: 16px;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(3, 64, 120, 0.15);
+}
+
+.role-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(3, 64, 120, 0.25);
+}
+
+.role-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  color: #ffffff;
+}
+
+.role-icon-wrapper {
+  margin-bottom: 16px;
+}
+
+.role-emoji {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.role-desc {
+  font-size: 0.75rem;
+  line-height: 1.3;
+  margin: 0;
+  opacity: 0.9;
+  color: #ffffff;
 }
 
 /* Mobile Responsiveness adjustments if necessary */

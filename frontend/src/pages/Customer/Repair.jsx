@@ -1,6 +1,6 @@
 import { ChevronLeft, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import illustration from '../../assets/delivery_illustration.png'; // Using delivery illustration as per design placeholder
+import illustration from '../../assets/perbaikan.png';
 import './Repair.css';
 
 export default function Repair() {

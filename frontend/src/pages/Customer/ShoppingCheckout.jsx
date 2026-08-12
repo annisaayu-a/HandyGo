@@ -72,11 +72,14 @@ export default function ShoppingCheckout() {
       if (!response.ok) {
         throw new Error('Gagal membuat pesanan');
       }
+      
+      const responseData = await response.json();
+      const createdOrderId = responseData.order?.id;
 
       setShowModal(true);
       // Auto redirect back to status page after 3 seconds
       setTimeout(() => {
-        navigate('/customer/shopping/status', { state: { pesanan, total, paymentMethod } });
+        navigate('/customer/shopping/status', { state: { pesanan, total, paymentMethod, orderId: createdOrderId } });
       }, 3000);
     } catch (error) {
       alert("Terjadi kesalahan saat memproses pesanan. Pastikan server berjalan.");

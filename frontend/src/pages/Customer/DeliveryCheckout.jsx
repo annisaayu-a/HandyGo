@@ -36,9 +36,10 @@ export default function DeliveryCheckout() {
 
   const handleCheckout = async () => {
     const storedUser = JSON.parse(localStorage.getItem('handyGoUser') || '{}');
+    let createdOrderId = null;
     if (storedUser.id) {
       try {
-        await fetch('http://localhost:5000/api/orders', {
+        const response = await fetch('http://localhost:5000/api/orders', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -51,6 +52,8 @@ export default function DeliveryCheckout() {
             payment_method: paymentMethod
           })
         });
+        const data = await response.json();
+        createdOrderId = data.order?.id;
       } catch (err) {
         console.error("Failed to create order:", err);
       }
@@ -60,7 +63,7 @@ export default function DeliveryCheckout() {
     
     // Auto redirect to status page after 2 seconds
     setTimeout(() => {
-      navigate('/customer/delivery/status', { state: location.state });
+      navigate('/customer/delivery/status', { state: { ...location.state, orderId: createdOrderId } });
     }, 2000);
   };
 

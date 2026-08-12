@@ -9,7 +9,7 @@ export default function CustomerHistory() {
   const userName = storedUser.name || 'Ajel';
 
   const [historyData, setHistoryData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
 
   // Filter states
   const [showCategoryModal, setShowCategoryModal] = useState(false);

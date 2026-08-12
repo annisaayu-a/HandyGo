@@ -6,6 +6,7 @@ import './DeliveryStatus.css';
 export default function DeliveryStatus() {
   const navigate = useNavigate();
   const location = useLocation();
+  const orderId = location.state?.orderId;
 
   // State to simulate mitra changing order status ('menuju', 'mengantar', 'selesai')
   const [orderStatus, setOrderStatus] = useState('menuju');
@@ -79,7 +80,16 @@ export default function DeliveryStatus() {
               <div className={`dot ${orderStatus === 'selesai' ? 'active-dot' : ''}`}></div>
             </div>
 
-            <div className={`step ${orderStatus === 'selesai' ? 'active' : ''}`} onClick={() => setOrderStatus('selesai')}>
+            <div className={`step ${orderStatus === 'selesai' ? 'active' : ''}`} onClick={() => {
+              setOrderStatus('selesai');
+              if (orderId && orderStatus !== 'selesai') {
+                fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ status: 'selesai' })
+                }).catch(e => console.error(e));
+              }
+            }}>
               <div className="step-circle">3</div>
               <span className="step-label">Selesai</span>
             </div>

@@ -1,6 +1,6 @@
 import { ChevronLeft, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import illustration from '../../assets/Housekeeping team workers with tools _ Premium Vector.jpg';
+import illustration from '../../assets/bersih_bersih.png';
 import './Cleaning.css';
 
 export default function Cleaning() {

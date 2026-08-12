@@ -12,6 +12,7 @@ export default function ShoppingPayment() {
   const totalBiaya = location.state?.totalBiaya || 188000;
   const method = location.state?.method || 'cash';
   const pesanan = location.state?.pesanan || {};
+  const orderId = location.state?.orderId;
   
   // false = waiting, true = confirmed
   const [isConfirmed, setIsConfirmed] = useState(false);
@@ -43,13 +44,21 @@ export default function ShoppingPayment() {
 
   useEffect(() => {
     if (isConfirmed) {
+      if (orderId) {
+        fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'selesai' })
+        }).catch(err => console.error("Failed to update status", err));
+      }
+      
       // Auto redirect after 3 seconds of showing success
       const timer2 = setTimeout(() => {
         navigate('/customer/shopping/status', { state: { orderStatus: 'selesai', pesanan } });
       }, 3000);
       return () => clearTimeout(timer2);
     }
-  }, [isConfirmed, navigate]);
+  }, [isConfirmed, navigate, pesanan, orderId]);
 
   return (
     <div className="cleaning-payment-page">

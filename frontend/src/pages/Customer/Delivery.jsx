@@ -1,6 +1,6 @@
 import { ChevronLeft, ArrowUp, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import illustration from '../../assets/delivery_illustration.png';
+import illustration from '../../assets/antar_barang.png';
 import './Delivery.css';
 
 export default function Delivery() {

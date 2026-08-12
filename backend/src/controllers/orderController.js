@@ -66,3 +66,24 @@ exports.getOrders = async (req, res) => {
     res.status(500).json({ error: 'Terjadi kesalahan pada server saat mengambil pesanan' });
   }
 };
+
+exports.updateOrderStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ error: 'Status pesanan diperlukan' });
+    }
+
+    const order = await prisma.order.update({
+      where: { id },
+      data: { status }
+    });
+
+    res.status(200).json({ message: 'Status pesanan berhasil diperbarui', order });
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan pada server saat memperbarui pesanan' });
+  }
+};
