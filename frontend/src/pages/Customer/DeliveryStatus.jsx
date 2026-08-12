@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Phone, MessageCircle, Star, CheckCircle, Package } from 'lucide-react';
+import { ChevronLeft, Phone, MessageCircle, Star, CheckCircle2, Package } from 'lucide-react';
 import './DeliveryStatus.css';
+import './CompletedStatus.css';
 
 export default function DeliveryStatus() {
   const navigate = useNavigate();
@@ -9,10 +10,40 @@ export default function DeliveryStatus() {
   const orderId = location.state?.orderId;
 
   // State to simulate mitra changing order status ('menuju', 'mengantar', 'selesai')
-  const [orderStatus, setOrderStatus] = useState('menuju');
+  const [orderStatus, setOrderStatus] = useState(location.state?.orderStatus || 'menuju');
   
   // Rating state for 'selesai' step
   const [rating, setRating] = useState(0);
+  const [review, setReview] = useState('');
+
+  useEffect(() => {
+    if (orderId) {
+      const savedRatings = JSON.parse(localStorage.getItem('handyGoRatings') || '{}');
+      if (savedRatings[orderId]) {
+        setRating(savedRatings[orderId].rating || 0);
+        setReview(savedRatings[orderId].review || '');
+      }
+    }
+  }, [orderId]);
+
+  const handleRatingChange = (newRating) => {
+    setRating(newRating);
+    if (orderId) {
+      const savedRatings = JSON.parse(localStorage.getItem('handyGoRatings') || '{}');
+      savedRatings[orderId] = { ...savedRatings[orderId], rating: newRating, review };
+      localStorage.setItem('handyGoRatings', JSON.stringify(savedRatings));
+    }
+  };
+
+  const handleReviewChange = (e) => {
+    const val = e.target.value;
+    setReview(val);
+    if (orderId) {
+      const savedRatings = JSON.parse(localStorage.getItem('handyGoRatings') || '{}');
+      savedRatings[orderId] = { ...savedRatings[orderId], rating, review: val };
+      localStorage.setItem('handyGoRatings', JSON.stringify(savedRatings));
+    }
+  };
 
   // Dynamic ETA
   const [eta, setEta] = useState({ start: '', end: '', arrived: '' });
@@ -102,20 +133,6 @@ export default function DeliveryStatus() {
           {orderStatus === 'mengantar' && (
             <p className="status-message">Paket sedang dalam perjalanan.</p>
           )}
-          {orderStatus === 'selesai' && (
-            <div className="success-banner">
-              <div className="success-banner-content">
-                <CheckCircle size={20} color="#22c55e" fill="#dcfce7" />
-                <div>
-                  <h4 className="success-banner-title">Pesanan selesai!</h4>
-                  <p className="success-banner-text">Terima kasih telah menggunakan Handygo, cari kami kapan saja!</p>
-                </div>
-              </div>
-              <div className="success-banner-icon">
-                <Package size={32} color="#854d0e" />
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Dynamic Map for Mengantar */}
@@ -137,28 +154,41 @@ export default function DeliveryStatus() {
           </div>
         )}
 
-        {/* Detail Pesanan or Rating */}
         {orderStatus === 'selesai' ? (
-          <div className="post-order-details">
-            <div className="receipt-card">
-              <h3 className="receipt-title">Rincian Biaya</h3>
-              <div className="receipt-row">
-                <span>Biaya Pengiriman</span>
-                <span>Rp 23.000</span>
+          <>
+            {/* Success Banner */}
+            <div className="completed-banner">
+              <div className="completed-banner-text">
+                <div className="completed-banner-title">
+                  <CheckCircle2 size={20} /> Pesanan selesai!
+                </div>
+                <div className="completed-banner-subtitle">
+                  Terima kasih telah menggunakan Handygo, cari kami kapan saja!
+                </div>
               </div>
-              <div className="receipt-row">
-                <span>Biaya Layanan</span>
-                <span>Rp 7.000</span>
+              <div className="completed-banner-icon">📦</div>
+            </div>
+
+            {/* Rincian Biaya Card */}
+            <div className="cost-details-card">
+              <h2 className="cost-details-title">Rincian Biaya</h2>
+              <div className="cost-row">
+                <span className="cost-label">Biaya Pengiriman</span>
+                <span className="cost-value">Rp 23.000</span>
               </div>
-              <div className="receipt-divider"></div>
-              <div className="receipt-total-row">
+              <div className="cost-row">
+                <span className="cost-label">Biaya Layanan</span>
+                <span className="cost-value">Rp 7.000</span>
+              </div>
+              <hr className="cost-divider" />
+              <div className="cost-total-row">
                 <span>Total</span>
-                <span>Rp 30.000</span>
+                <span className="cost-total-value">Rp 30.000</span>
               </div>
             </div>
             
-            {/* Courier Card (Repeated for 'selesai') */}
-            <div className="courier-card" style={{ marginTop: '24px' }}>
+            {/* Courier Card (Disabled) */}
+            <div className="courier-card">
               <div className="courier-info-left">
                 <img 
                   src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" 
@@ -167,39 +197,57 @@ export default function DeliveryStatus() {
                 />
                 <div className="courier-text">
                   <h4 className="courier-name">Rafael gemam</h4>
-                  <p className="courier-subtitle"><Star size={12} fill="#fbbf24" color="#fbbf24" /> 4.9 (59 ulasan)</p>
+                  <div className="courier-rating">
+                    <span className="star" style={{color: '#fbbf24'}}>★</span> 4.9 <span className="reviews" style={{color: '#64748b'}}>(59 ulasan)</span>
+                  </div>
                 </div>
               </div>
               <div className="courier-actions">
-                <button className="icon-btn-round" onClick={() => navigate('/customer/call')}><Phone size={18} color="#034078" /></button>
-                <button className="icon-btn-round" onClick={() => navigate('/customer/chat', { state: { isFinished: true } })}>
-                  <MessageCircle size={18} color="#034078" />
+                <button className="courier-action-btn disabled">
+                  <Phone size={18} color="#94a3b8" />
+                </button>
+                <button className="courier-action-btn disabled">
+                  <MessageCircle size={18} color="#94a3b8" />
                 </button>
               </div>
             </div>
 
-            <div className="rating-section" style={{ marginTop: '24px' }}>
-              <h3 className="rating-title">Bagaimana pengalamanmu tadi?</h3>
-              <div className="stars-container">
+            {/* Rating Section */}
+            <div className="rating-section-new">
+              <h3 className="rating-title-new">Bagaimana pengalamanmu tadi?</h3>
+              <div className="stars-container-new">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <button 
+                  <svg 
                     key={star} 
-                    className="star-btn"
-                    onClick={() => setRating(star)}
+                    width="40" 
+                    height="40" 
+                    viewBox="0 0 24 24" 
+                    fill={star <= rating ? '#fbbf24' : '#e2e8f0'} 
+                    xmlns="http://www.w3.org/2000/svg"
+                    onClick={() => handleRatingChange(star)}
+                    className="star-icon"
                   >
-                    <Star 
-                      size={32} 
-                      fill={rating >= star ? "#fbbf24" : "#e2e8f0"} 
-                      color={rating >= star ? "#fbbf24" : "#e2e8f0"} 
-                    />
-                  </button>
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                  </svg>
                 ))}
               </div>
-              <div style={{ marginTop: '16px' }}>
-                <input type="text" className="feedback-input" placeholder="Tulis ulasan di sini" />
-              </div>
+              <textarea 
+                className="review-input-new"
+                placeholder="Tulis ulasan di sini"
+                rows="2"
+                value={review}
+                onChange={handleReviewChange}
+              />
+              {rating > 0 && (
+                <button 
+                  className="submit-rating-btn"
+                  onClick={() => navigate('/customer')}
+                >
+                  Kirim Rating
+                </button>
+              )}
             </div>
-          </div>
+          </>
         ) : (
           <div className="courier-card">
             <div className="courier-info-left">
@@ -210,7 +258,9 @@ export default function DeliveryStatus() {
               />
               <div className="courier-text">
                 <h4 className="courier-name">Rafael gemam</h4>
-                <p className="courier-subtitle"><Star size={12} fill="#fbbf24" color="#fbbf24" /> 4.9 (59 ulasan)</p>
+                <div className="courier-rating">
+                    <span className="star" style={{color: '#fbbf24'}}>★</span> 4.9 <span className="reviews" style={{color: '#64748b'}}>(59 ulasan)</span>
+                </div>
               </div>
             </div>
             <div className="courier-actions">

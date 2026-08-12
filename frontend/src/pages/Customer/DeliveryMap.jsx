@@ -38,7 +38,7 @@ export default function DeliveryMap() {
           setCurrentAddress(prev => ({ ...prev, name: name, address: data.display_name }));
         }
       }).catch(console.error);
-  }, []);
+  }, [defaultPosition]);
 
   // Fungsi Pencarian (Autocomplete)
   const handleSearch = (e) => {

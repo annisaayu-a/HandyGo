@@ -6,7 +6,7 @@ import './Home.css';
 
 export default function CustomerHome() {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
+
   
   const storedUser = JSON.parse(localStorage.getItem('handyGoUser') || '{}');
   const userName = storedUser.name || 'Ajel';

@@ -8,7 +8,11 @@ export default function RepairCheckout() {
   const location = useLocation();
   
   const [address, setAddress] = useState('');
-  const [detailLokasi, setDetailLokasi] = useState('');
+  const [detailLokasi, setDetailLokasi] = useState(sessionStorage.getItem('repairDetailLocation') || '');
+  
+  useEffect(() => {
+    sessionStorage.setItem('repairDetailLocation', detailLokasi);
+  }, [detailLokasi]);
   
   useEffect(() => {
     if (location.state && location.state.selectedLocation) {

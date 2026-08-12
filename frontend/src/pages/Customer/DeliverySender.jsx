@@ -13,6 +13,7 @@ export default function DeliverySender() {
 
   const [senderName, setSenderName] = useState('');
   const [senderPhone, setSenderPhone] = useState('');
+  const detailLocation = sessionStorage.getItem('deliveryDetailLocation') || '';
 
   const handlePhoneChange = (e) => {
     let value = e.target.value.replace(/\D/g, '');
@@ -71,6 +72,7 @@ export default function DeliverySender() {
               type="text" 
               className="detail-input"
               placeholder="Tambahin detail lokasi yuk!"
+              value={detailLocation}
               readOnly
             />
           </div>

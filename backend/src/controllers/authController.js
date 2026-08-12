@@ -293,3 +293,82 @@ exports.deleteProfilePicture = async (req, res) => {
     res.status(500).json({ error: 'Gagal menghapus foto profil' });
   }
 };
+
+const { OAuth2Client } = require('google-auth-library');
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+exports.googleAuth = async (req, res) => {
+  try {
+    const { access_token } = req.body;
+    
+    if (!access_token) {
+      return res.status(400).json({ error: 'Token Google tidak ditemukan' });
+    }
+
+    // Fetch user profile from google using access token
+    const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: {
+        Authorization: `Bearer ${access_token}`
+      }
+    });
+    
+    if (!response.ok) {
+      return res.status(401).json({ error: 'Token Google tidak valid' });
+    }
+    
+    const payload = await response.json();
+    const { sub: google_id, email, name, picture } = payload;
+
+    // Check if user exists by google_id or email
+    let user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { google_id: google_id },
+          { email: email }
+        ]
+      }
+    });
+
+    if (!user) {
+      // Create new user if not exists
+      user = await prisma.user.create({
+        data: {
+          full_name: name,
+          email: email,
+          google_id: google_id,
+          profile_picture: picture, // Use google profile picture
+          password_hash: null // No password for google users
+        }
+      });
+    } else if (!user.google_id) {
+      // If user exists with email but no google_id, link them
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: { 
+          google_id: google_id,
+          // Optional: update picture if they don't have one
+          profile_picture: user.profile_picture || picture
+        }
+      });
+    }
+
+    // Generate JWT token
+    const jwtToken = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
+
+    res.json({
+      message: 'Login Google berhasil',
+      token: jwtToken,
+      user: {
+        id: user.id,
+        full_name: user.full_name,
+        phone_number: user.phone_number,
+        email: user.email,
+        default_location: user.default_location,
+        profile_picture: user.profile_picture
+      }
+    });
+  } catch (error) {
+    console.error('Google auth error:', error);
+    res.status(401).json({ error: 'Autentikasi Google gagal' });
+  }
+};

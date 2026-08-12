@@ -9,7 +9,11 @@ export default function CleaningCheckout() {
   const location = useLocation();
   
   const [address, setAddress] = useState('');
-  const [detailLokasi, setDetailLokasi] = useState('');
+  const [detailLokasi, setDetailLokasi] = useState(sessionStorage.getItem('cleaningDetailLocation') || '');
+  
+  useEffect(() => {
+    sessionStorage.setItem('cleaningDetailLocation', detailLokasi);
+  }, [detailLokasi]);
   const [luasArea, setLuasArea] = useState(''); 
   const [tingkatKekotoran, setTingkatKekotoran] = useState(''); 
   const [catatan, setCatatan] = useState('');
@@ -52,23 +56,63 @@ export default function CleaningCheckout() {
 
   const isFormComplete = luasArea && tingkatKekotoran;
 
-  const handlePesan = () => {
+  const handlePesan = async () => {
     if (!isFormComplete) return;
-    setShowModal(true);
-    setTimeout(() => {
-      setShowModal(false);
-      navigate('/customer/cleaning/status', {
-        state: {
-          orderData: {
-            address: detailLokasi ? `${address} - ${detailLokasi}` : address,
-            luasArea,
-            tingkatKekotoran,
-            durasi,
-            catatan
-          }
-        }
+
+    const userStr = localStorage.getItem('handyGoUser');
+    let user = null;
+    if (userStr) {
+      try { user = JSON.parse(userStr); } catch (e) { }
+    }
+    
+    if (!user || !user.id) {
+      alert("Anda harus masuk (login) terlebih dahulu.");
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user.id,
+          service_name: 'Bersih-bersih',
+          pickup_location: detailLokasi ? `${address} - ${detailLokasi}` : address,
+          dropoff_location: detailLokasi ? `${address} - ${detailLokasi}` : address,
+          order_details: `Luas: ${luasArea}, Kotor: ${tingkatKekotoran}${catatan ? `, Catatan: ${catatan}` : ''}`,
+          estimated_price: totalHarga,
+          payment_method: 'cash'
+        })
       });
-    }, 2000);
+
+      let createdOrderId = null;
+      if (response.ok) {
+        const data = await response.json();
+        createdOrderId = data.order?.id;
+      }
+
+      setShowModal(true);
+      setTimeout(() => {
+        setShowModal(false);
+        navigate('/customer/cleaning/status', {
+          state: {
+            orderData: {
+              address: detailLokasi ? `${address} - ${detailLokasi}` : address,
+              luasArea,
+              tingkatKekotoran,
+              durasi,
+              catatan
+            },
+            totalPrice,
+            orderId: createdOrderId
+          }
+        });
+      }, 2000);
+    } catch (error) {
+      console.error("Gagal membuat pesanan:", error);
+      alert("Terjadi kesalahan, pesanan tidak dapat dibuat.");
+    }
   };
 
   return (

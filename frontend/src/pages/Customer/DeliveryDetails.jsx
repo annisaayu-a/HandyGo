@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Edit2 } from 'lucide-react';
 import './DeliveryDetails.css';
@@ -11,7 +11,11 @@ export default function DeliveryDetails() {
   const pickup = location.state?.pickupLocation || { name: 'Universitas Hasanuddin Fak...', address: 'Jl. Perintis Kemerdekaan' };
   const dropoff = location.state?.dropoffLocation || { name: 'Pondok Nabil', address: 'Jl. Sahabat' };
 
-  const [detailLocation, setDetailLocation] = useState('');
+  const [detailLocation, setDetailLocation] = useState(sessionStorage.getItem('deliveryDetailLocation') || '');
+  
+  useEffect(() => {
+    sessionStorage.setItem('deliveryDetailLocation', detailLocation);
+  }, [detailLocation]);
   const [selectedSize, setSelectedSize] = useState(null); // 'kecil', 'sedang', 'besar'
   const [weight, setWeight] = useState('');
   

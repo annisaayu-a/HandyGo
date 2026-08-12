@@ -1,5 +1,5 @@
 import { Outlet, Link } from 'react-router-dom';
-import { Briefcase, List, UserCheck, Settings, LogOut } from 'lucide-react';
+import { Briefcase, List, UserCheck, LogOut } from 'lucide-react';
 import logo from '../../assets/logo.png';
 
 export default function MitraLayout() {

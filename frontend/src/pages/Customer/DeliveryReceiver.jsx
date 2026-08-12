@@ -14,6 +14,7 @@ export default function DeliveryReceiver() {
   const [receiverName, setReceiverName] = useState('');
   const [receiverPhone, setReceiverPhone] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const detailLocation = sessionStorage.getItem('deliveryDetailLocation') || '';
 
   const categories = [
     { id: 'dokumen', label: 'Dokumen', icon: <FileText size={16} /> },
@@ -84,6 +85,7 @@ export default function DeliveryReceiver() {
               type="text" 
               className="detail-input"
               placeholder="Tambahin detail lokasi yuk!"
+              value={detailLocation}
               readOnly
             />
           </div>

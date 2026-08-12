@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Phone, MessageCircle, FileText, Clock, Wallet, Info } from 'lucide-react';
+import { ArrowLeft, Phone, MessageCircle, FileText, Clock, Wallet, Info, CheckCircle2 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './CleaningStatus.css';
+import './CompletedStatus.css';
 
 export default function CleaningStatus() {
   const navigate = useNavigate();
@@ -14,9 +15,43 @@ export default function CleaningStatus() {
     catatan: 'Kamar utama tidak usah'
   };
 
-  const [activeStep, setActiveStep] = useState(1);
+  const initialStep = location.state?.orderStatus === 'selesai' || location.state?.status === 'selesai' ? 3 : 1;
+  const [activeStep, setActiveStep] = useState(initialStep);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState('');
+  const [rating, setRating] = useState(0);
+  const [reviewText, setReviewText] = useState('');
+  const orderId = location.state?.orderId;
+  const isPaid = location.state?.isPaid || false;
+
+  useEffect(() => {
+    if (orderId) {
+      const savedRatings = JSON.parse(localStorage.getItem('handyGoRatings') || '{}');
+      if (savedRatings[orderId]) {
+        setRating(savedRatings[orderId].rating || 0);
+        setReviewText(savedRatings[orderId].review || '');
+      }
+    }
+  }, [orderId]);
+
+  const handleRatingChange = (newRating) => {
+    setRating(newRating);
+    if (orderId) {
+      const savedRatings = JSON.parse(localStorage.getItem('handyGoRatings') || '{}');
+      savedRatings[orderId] = { ...savedRatings[orderId], rating: newRating, review: reviewText };
+      localStorage.setItem('handyGoRatings', JSON.stringify(savedRatings));
+    }
+  };
+
+  const handleReviewChange = (e) => {
+    const val = e.target.value;
+    setReviewText(val);
+    if (orderId) {
+      const savedRatings = JSON.parse(localStorage.getItem('handyGoRatings') || '{}');
+      savedRatings[orderId] = { ...savedRatings[orderId], rating, review: val };
+      localStorage.setItem('handyGoRatings', JSON.stringify(savedRatings));
+    }
+  };
 
   // Dynamic ETA
   const [eta, setEta] = useState({ arriveStart: '', arriveEnd: '', finishStart: '', finishEnd: '', finished: '', started: '' });
@@ -44,6 +79,8 @@ export default function CleaningStatus() {
 
   // Auto-progress steps for demonstration
   useEffect(() => {
+    if (initialStep >= 3) return;
+    
     const timer1 = setTimeout(() => setActiveStep(2), 5000);
     // After 15 seconds, transition to step 3 (finished)
     const timer2 = setTimeout(() => setActiveStep(3), 15000);
@@ -51,7 +88,7 @@ export default function CleaningStatus() {
       clearTimeout(timer1);
       clearTimeout(timer2);
     };
-  }, []);
+  }, [initialStep]);
 
   useEffect(() => {
     let interval = null;
@@ -72,9 +109,10 @@ export default function CleaningStatus() {
     return `${hours.toString().padStart(2, '0')} : ${mins.toString().padStart(2, '0')} : ${secs.toString().padStart(2, '0')}`;
   };
 
+  const pesanan = location.state?.pesanan;
+  const totalBiaya = pesanan?.estimated_price || location.state?.totalPrice || 158000;
   const berjalanBiaya = Math.floor(elapsedSeconds / 60) * 1000;
-  const biayaLayanan = 8000;
-  const totalBiaya = berjalanBiaya + biayaLayanan;
+  const biayaLayanan = totalBiaya - berjalanBiaya; // For visual breakdown if needed
 
   const getStepText = () => {
     if (activeStep === 1) return 'Petugas sedang menuju lokasi.';
@@ -105,7 +143,7 @@ export default function CleaningStatus() {
         <div className="cs-stepper-container">
           <div className="cs-stepper-track">
             <div className={`cs-stepper-line ${activeStep >= 2 ? 'active' : ''}`} style={{ left: '16%', right: '50%' }}></div>
-            <div className={`cs-stepper-line ${activeStep >= 3 ? 'active' : ''}`} style={{ left: '50%', right: '16%' }}></div>
+            <div className={`cs-stepper-line ${activeStep >= 3 && isPaid ? 'active' : ''}`} style={{ left: '50%', right: '16%' }}></div>
           </div>
           
           <div className="cs-steps">
@@ -117,7 +155,7 @@ export default function CleaningStatus() {
               <div className="cs-step-circle">2</div>
               <div className="cs-step-label">Membersihkan</div>
             </div>
-            <div className={`cs-step ${activeStep >= 3 ? 'active' : ''}`}>
+            <div className={`cs-step ${activeStep >= 3 && isPaid ? 'active' : ''}`}>
               <div className="cs-step-circle">3</div>
               <div className="cs-step-label">Selesai</div>
             </div>
@@ -131,87 +169,186 @@ export default function CleaningStatus() {
         {/* --- STEP 3: PAYMENT SCREEN --- */}
         {activeStep === 3 && (
           <div className="cs-payment-screen">
-            {/* Success Banner */}
-            <div className="cs-success-banner">
-              <div className="cs-success-text">
-                <div className="cs-success-title">
-                  <div className="cs-success-icon-check">✓</div>
-                  Pekerjaan Selesai
+            {!isPaid ? (
+              <>
+                {/* Unpaid Selesai State */}
+                <div className="completed-banner" style={{backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0'}}>
+                  <div className="completed-banner-text">
+                    <div className="completed-banner-title" style={{color: '#15803d'}}>
+                      <CheckCircle2 size={20} color="#15803d" /> Pekerjaan Selesai
+                    </div>
+                    <div className="completed-banner-subtitle">
+                      Silahkan lakukan pembayaran untuk menyelesaikan pesanan
+                    </div>
+                  </div>
+                  <div className="completed-banner-icon">🧹</div>
                 </div>
-                <div className="cs-success-desc">Silahkan lakukan pembayaran untuk menyelesaikan pesanan</div>
-              </div>
-              <img src="/assets/hero.png" alt="Cleaning" className="cs-success-img" onError={(e) => e.target.style.display='none'} />
-            </div>
 
-            {/* Final Duration Card */}
-            <div className="cs-live-card" style={{ marginBottom: 16 }}>
-              <div className="cs-live-row">
-                <Clock size={16} color="#e2e8f0" />
-                <span className="cs-live-label">Durasi pengerjaan</span>
-              </div>
-              <div className="cs-live-time" style={{ marginTop: 8 }}>{formatTime(elapsedSeconds)}</div>
-              <div className="cs-live-subtext" style={{ marginTop: 4 }}>{eta.started} - {eta.finished} WITA</div>
-            </div>
-
-            {/* Final Cost Card */}
-            <div className="cs-card">
-              <h2 className="cs-card-title">Rincian Biaya</h2>
-              
-              <div className="cs-detail-row">
-                <span className="cs-detail-label">Tarif Bersih-bersih</span>
-                <span className="cs-detail-value">Rp {berjalanBiaya.toLocaleString('id-ID')}</span>
-              </div>
-              <div className="cs-detail-row">
-                <span className="cs-detail-label">Biaya Layanan</span>
-                <span className="cs-detail-value">Rp {biayaLayanan.toLocaleString('id-ID')}</span>
-              </div>
-              
-              <div className="cs-price-divider" style={{height: 1, backgroundColor: '#e2e8f0', margin: '16px 0'}}></div>
-              
-              <div className="cs-detail-row" style={{marginBottom: 0}}>
-                <span className="cs-detail-label" style={{fontWeight: 700, color: '#1e293b'}}>Total</span>
-                <span className="cs-detail-value" style={{fontWeight: 700, color: '#034078', fontSize: '1.1rem'}}>Rp {totalBiaya.toLocaleString('id-ID')}</span>
-              </div>
-            </div>
-
-            {/* Payment Methods */}
-            <div className="cs-payment-methods">
-              <h2 className="cs-card-title" style={{ marginTop: 8, fontSize: '0.95rem' }}>Pilih Metode Pembayaran</h2>
-              
-              <div 
-                className={`cs-payment-option ${paymentMethod === 'cash' ? 'selected' : ''}`}
-                onClick={() => setPaymentMethod('cash')}
-              >
-                <div className="cs-payment-icon">
-                  <Wallet size={20} color="#034078" />
+                {/* Final Duration Card */}
+                <div className="cs-live-card" style={{marginBottom: '24px', backgroundColor: '#034078'}}>
+                  <div className="cs-live-inner-card" style={{border: 'none', background: 'transparent', padding: '0', margin: 0}}>
+                    <div className="cs-live-row" style={{justifyContent: 'flex-start', gap: 8, color: '#f8fafc', marginBottom: '8px'}}>
+                      <Clock size={16} />
+                      <span style={{color: '#f8fafc'}}>Durasi pengerjaan</span>
+                    </div>
+                    <div className="cs-live-time" style={{fontSize: '2.5rem', color: '#ffffff', margin: '16px 0', fontWeight: 600}}>
+                      {formatTime(elapsedSeconds)}
+                    </div>
+                    <div className="cs-live-subtext" style={{color: '#cbd5e1', fontSize: '0.85rem'}}>
+                      {eta.started} - {eta.finished} WITA
+                    </div>
+                  </div>
                 </div>
-                <div className="cs-payment-name">Bayar di tempat</div>
-                <div className={`cs-radio-btn ${paymentMethod === 'cash' ? 'selected' : ''}`}>
-                  {paymentMethod === 'cash' && <div className="cs-radio-inner"></div>}
-                </div>
-              </div>
 
-              <div 
-                className={`cs-payment-option ${paymentMethod === 'qris' ? 'selected' : ''}`}
-                onClick={() => setPaymentMethod('qris')}
-              >
-                <div className="cs-payment-icon">
-                  <div style={{fontWeight: 'bold', color: '#034078', fontSize: '0.7rem'}}>QRIS</div>
+                {/* Rincian Biaya */}
+                <div className="cost-details-card">
+                  <h2 className="cost-details-title">Rincian Biaya</h2>
+                  <div className="cost-row">
+                    <span className="cost-label">Tarif Bersih-bersih</span>
+                    <span className="cost-value">Rp {berjalanBiaya.toLocaleString('id-ID')}</span>
+                  </div>
+                  <div className="cost-row">
+                    <span className="cost-label">Biaya Layanan</span>
+                    <span className="cost-value">Rp {biayaLayanan.toLocaleString('id-ID')}</span>
+                  </div>
+                  <hr className="cost-divider" />
+                  <div className="cost-total-row">
+                    <span>Total</span>
+                    <span className="cost-total-value">Rp {totalBiaya.toLocaleString('id-ID')}</span>
+                  </div>
                 </div>
-                <div className="cs-payment-name">QRIS</div>
-                <div className={`cs-radio-btn ${paymentMethod === 'qris' ? 'selected' : ''}`}>
-                  {paymentMethod === 'qris' && <div className="cs-radio-inner"></div>}
-                </div>
-              </div>
-            </div>
 
-            <button 
-              className="cs-pay-btn" 
-              disabled={!paymentMethod}
-              onClick={() => navigate('/customer/cleaning/payment', { state: { totalBiaya, method: paymentMethod } })}
-            >
-              Bayar Sekarang
-            </button>
+                {/* Payment Methods */}
+                <div className="cs-payment-methods">
+                  <h2 className="cs-card-title" style={{ marginTop: 8, fontSize: '0.95rem' }}>Pilih Metode Pembayaran</h2>
+                  
+                  <div 
+                    className={`cs-payment-option ${paymentMethod === 'cash' ? 'selected' : ''}`}
+                    onClick={() => setPaymentMethod('cash')}
+                  >
+                    <div className="cs-payment-icon">
+                      <Wallet size={20} color="#034078" />
+                    </div>
+                    <div className="cs-payment-name">Bayar di tempat</div>
+                    <div className={`cs-radio-btn ${paymentMethod === 'cash' ? 'selected' : ''}`}>
+                      {paymentMethod === 'cash' && <div className="cs-radio-inner"></div>}
+                    </div>
+                  </div>
+
+                  <div 
+                    className={`cs-payment-option ${paymentMethod === 'qris' ? 'selected' : ''}`}
+                    onClick={() => setPaymentMethod('qris')}
+                  >
+                    <div className="cs-payment-icon">
+                      <div style={{fontWeight: 'bold', color: '#034078', fontSize: '0.7rem'}}>QRIS</div>
+                    </div>
+                    <div className="cs-payment-name">QRIS</div>
+                    <div className={`cs-radio-btn ${paymentMethod === 'qris' ? 'selected' : ''}`}>
+                      {paymentMethod === 'qris' && <div className="cs-radio-inner"></div>}
+                    </div>
+                  </div>
+                </div>
+
+                <button 
+                  className="cs-pay-btn" 
+                  disabled={!paymentMethod}
+                  onClick={() => navigate('/customer/cleaning/payment', { state: { totalBiaya, method: paymentMethod, orderData, orderId } })}
+                >
+                  Bayar Sekarang
+                </button>
+              </>
+            ) : (
+              <>
+                {/* Paid Selesai State */}
+                <div className="completed-banner">
+                  <div className="completed-banner-text">
+                    <div className="completed-banner-title">
+                      <CheckCircle2 size={20} /> Layanan selesai!
+                    </div>
+                    <div className="completed-banner-subtitle">
+                      Terima kasih telah menggunakan Handygo, cari kami kapan saja!
+                    </div>
+                  </div>
+                  <div className="completed-banner-icon">🧹</div>
+                </div>
+
+                {/* Rincian Biaya */}
+                <div className="cost-details-card">
+                  <h2 className="cost-details-title">Rincian Biaya</h2>
+                  <div className="cost-row">
+                    <span className="cost-label">Tarif Bersih-bersih</span>
+                    <span className="cost-value">Rp {berjalanBiaya.toLocaleString('id-ID')}</span>
+                  </div>
+                  <div className="cost-row">
+                    <span className="cost-label">Biaya Layanan</span>
+                    <span className="cost-value">Rp {biayaLayanan.toLocaleString('id-ID')}</span>
+                  </div>
+                  <hr className="cost-divider" />
+                  <div className="cost-total-row">
+                    <span>Total</span>
+                    <span className="cost-total-value">Rp {totalBiaya.toLocaleString('id-ID')}</span>
+                  </div>
+                </div>
+
+                {/* Courier Card (Disabled) */}
+                <div className="courier-card" style={{ marginBottom: '24px' }}>
+                  <div className="courier-info-left">
+                    <img src="https://i.pravatar.cc/150?img=11" alt="Mitra" className="courier-avatar" />
+                    <div className="courier-text">
+                      <h4 className="courier-name">Rafael gemam</h4>
+                      <div className="courier-rating">
+                        <span className="star">★</span> 4.9 <span className="reviews">(59 ulasan)</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="courier-actions">
+                    <button className="courier-action-btn disabled">
+                      <Phone size={18} color="#94a3b8" />
+                    </button>
+                    <button className="courier-action-btn disabled">
+                      <MessageCircle size={18} color="#94a3b8" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Rating Box */}
+                <div className="rating-section-new">
+                  <h3 className="rating-title-new">Bagaimana pengalamanmu tadi?</h3>
+                  <div className="stars-container-new">
+                    {[1, 2, 3, 4, 5].map(i => (
+                      <svg 
+                        key={i} 
+                        width="40" 
+                        height="40" 
+                        viewBox="0 0 24 24" 
+                        fill={i <= rating ? '#fbbf24' : '#e2e8f0'} 
+                        xmlns="http://www.w3.org/2000/svg"
+                        onClick={() => handleRatingChange(i)}
+                        className="star-icon"
+                      >
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <textarea 
+                    className="review-input-new"
+                    placeholder="Tulis ulasan di sini"
+                    rows="2"
+                    value={reviewText}
+                    onChange={handleReviewChange}
+                  />
+                  
+                  {rating > 0 && (
+                    <button 
+                      className="submit-rating-btn"
+                      onClick={() => navigate('/customer')}
+                    >
+                      Kirim Rating
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         )}
 

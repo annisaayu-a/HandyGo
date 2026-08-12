@@ -11,6 +11,7 @@ export default function RepairPayment() {
   const location = useLocation();
   const totalBiaya = location.state?.totalBiaya || 188000;
   const method = location.state?.method || 'cash';
+  const orderId = location.state?.orderId;
   
   // false = waiting, true = confirmed
   const [isConfirmed, setIsConfirmed] = useState(false);
@@ -42,18 +43,27 @@ export default function RepairPayment() {
 
   useEffect(() => {
     if (isConfirmed) {
+      if (orderId) {
+        fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'selesai' })
+        }).catch(err => console.error("Failed to update status", err));
+      }
+
       // Auto redirect after 3 seconds of showing success
       const timer2 = setTimeout(() => {
         navigate('/customer/repair/status', {
           state: {
             ...(location.state?.orderDetails || {}),
-            status: 'working'
+            status: 'working',
+            orderId: orderId
           }
         });
       }, 3000);
       return () => clearTimeout(timer2);
     }
-  }, [isConfirmed, navigate]);
+  }, [isConfirmed, navigate, orderId]);
 
   return (
     <div className="repair-payment-page">

@@ -8,6 +8,9 @@ router.post('/register', authController.register);
 // Login route
 router.post('/login', authController.login);
 
+// Google Auth route
+router.post('/google', authController.googleAuth);
+
 // Update location route
 router.put('/location', authController.updateLocation);
 

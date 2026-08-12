@@ -15,7 +15,8 @@ model User {
   full_name       String
   phone_number    String?  @unique
   email           String?  @unique
-  password_hash   String
+  password_hash   String?
+  google_id       String?  @unique
   default_location String?
   profile_picture String?
   created_at      DateTime @default(now())

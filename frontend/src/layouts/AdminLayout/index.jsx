@@ -1,5 +1,5 @@
 import { Outlet, Link } from 'react-router-dom';
-import { LayoutDashboard, Users, UserCog, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, UserCog, LogOut } from 'lucide-react';
 import logo from '../../assets/logo.png';
 
 export default function AdminLayout() {

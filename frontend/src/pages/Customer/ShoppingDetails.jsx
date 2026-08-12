@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Edit3 } from 'lucide-react';
 import './ShoppingDetails.css';
@@ -15,7 +15,11 @@ export default function ShoppingDetails() {
 
   const [pesanan, setPesanan] = useState('');
   const [estimasiHarga, setEstimasiHarga] = useState('');
-  const [locationDetail, setLocationDetail] = useState('');
+  const [locationDetail, setLocationDetail] = useState(sessionStorage.getItem('shoppingDetailLocation') || '');
+  
+  useEffect(() => {
+    sessionStorage.setItem('shoppingDetailLocation', locationDetail);
+  }, [locationDetail]);
 
   const handlePriceChange = (e) => {
     // Remove all non-numeric characters

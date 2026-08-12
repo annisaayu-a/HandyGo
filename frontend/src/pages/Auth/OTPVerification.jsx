@@ -97,7 +97,7 @@ export default function OTPVerification() {
         }
 
         // Save user to localStorage
-        const user = { name: data.user.full_name, email: data.user.email, id: data.user.id };
+        const user = { name: data.user.full_name, email: data.user.email, phone: data.user.phone_number, id: data.user.id };
         localStorage.setItem('handyGoUser', JSON.stringify(user));
         localStorage.setItem('handyGoToken', data.token);
         

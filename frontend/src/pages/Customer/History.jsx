@@ -44,9 +44,11 @@ export default function CustomerHistory() {
         const response = await fetch(`http://localhost:5000/api/orders?user_id=${storedUser.id}`);
         const data = await response.json();
         if (response.ok) {
+          const savedRatings = JSON.parse(localStorage.getItem('handyGoRatings') || '{}');
           // Format data to match UI
           const formattedOrders = data.orders.map(order => {
             const isCanceled = order.status === 'batal';
+            const ratingData = savedRatings[order.id];
             
             // Format date 
             const dateObj = new Date(order.created_at);
@@ -57,7 +59,7 @@ export default function CustomerHistory() {
               service: order.service?.name || 'Layanan',
               status: order.status.charAt(0).toUpperCase() + order.status.slice(1),
               date: dateStr,
-              ratingText: 'Belum diberi rating',
+              ratingText: ratingData ? `Kamu memberi rating ★ ${ratingData.rating}.0` : 'Belum diberi rating',
               isCanceled: isCanceled,
               statusColor: isCanceled ? '#64748b' : '#1e293b',
               pesanan: order.order_details // Pass the details for the status page
@@ -103,16 +105,7 @@ export default function CustomerHistory() {
 
   // For the exact UI match, we will just hardcode the groups to match the Figma if historyData is empty or just use the grouped data
   // When applying filter to mockup data, we filter it as well
-  let displayGroups = historyData.length > 0 ? groupedHistory : {
-    'Juli 2026': [
-      { id: 1, service: 'Antar Barang', status: 'Sukses', date: 'Hari ini, 13:49', ratingText: 'Belum diberi rating', isCanceled: false, statusColor: '#1e293b' }
-    ],
-    'April 2026': [
-      { id: 2, service: 'Antar Jemput', status: 'Sukses', date: 'Kamis, 9 April, 15:23', ratingText: 'Kamu memberi rating ★ 4.9', isCanceled: false, statusColor: '#1e293b' },
-      { id: 3, service: 'Belanja', status: 'Dibatalkan', date: 'Selasa, 7 April, 20:19', ratingText: 'Toko tutup', isCanceled: true, statusColor: '#64748b' },
-      { id: 4, service: 'Perbaikan', status: 'Sukses', date: 'Sabtu, 4 April, 17:08', ratingText: 'Kamu memberi rating ★ 5.0', isCanceled: false, statusColor: '#1e293b' }
-    ]
-  };
+  let displayGroups = groupedHistory;
 
   if (historyData.length === 0 && (selectedCategory || selectedMonth)) {
     const filteredMockup = {};
@@ -223,10 +216,18 @@ export default function CustomerHistory() {
                 <div 
                   key={item.id} 
                   className={`history-card ${item.isCanceled ? 'canceled' : ''}`}
-                  style={{ cursor: item.status.toLowerCase() === 'menunggu' ? 'pointer' : 'default' }}
+                  style={{ cursor: (!item.isCanceled) ? 'pointer' : 'default' }}
                   onClick={() => {
+                    const serviceType = item.service.toLowerCase();
+                    let route = '/customer/shopping/status'; // default
+                    if (serviceType.includes('antar barang')) route = '/customer/delivery/status';
+                    else if (serviceType.includes('perbaikan')) route = '/customer/repair/status';
+                    else if (serviceType.includes('bersih')) route = '/customer/cleaning/status';
+
                     if (item.status.toLowerCase() === 'menunggu') {
-                      navigate('/customer/shopping/status', { state: { pesanan: item.pesanan } });
+                      navigate(route, { state: { pesanan: item.pesanan, orderStatus: 'disiapkan', status: 'coming', orderId: item.id } });
+                    } else if (!item.isCanceled) {
+                      navigate(route, { state: { pesanan: item.pesanan, orderStatus: 'selesai', status: 'finished', orderId: item.id } });
                     }
                   }}
                 >
@@ -250,8 +251,14 @@ export default function CustomerHistory() {
             <div className="history-empty-icon">
               <Clock size={20} color="#94a3b8" />
             </div>
-            <h4 className="history-empty-title">Belum ada pesanan untuk kategori ini</h4>
-            <p className="history-empty-subtitle">Coba pilih kategori lain untuk melihat riwayat pesanan</p>
+            {historyData.length === 0 ? (
+              <h4 className="history-empty-title">Belum ada riwayat</h4>
+            ) : (
+              <>
+                <h4 className="history-empty-title">Belum ada pesanan untuk kategori ini</h4>
+                <p className="history-empty-subtitle">Coba pilih kategori lain untuk melihat riwayat pesanan</p>
+              </>
+            )}
           </div>
         )}
       </div>

@@ -9,7 +9,13 @@ export default function RepairDetails() {
   const repairTypeTitle = location.state?.repairTypeTitle || 'Kelistrikan';
   
   const [address, setAddress] = useState('');
-  const [detailLokasi, setDetailLokasi] = useState(location.state?.detailLokasi || '');
+  const [detailLokasi, setDetailLokasi] = useState(
+    location.state?.detailLokasi || sessionStorage.getItem('repairDetailLocation') || ''
+  );
+  
+  useEffect(() => {
+    sessionStorage.setItem('repairDetailLocation', detailLokasi);
+  }, [detailLokasi]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedKategori, setSelectedKategori] = useState('');
   const [tingkatKerusakan, setTingkatKerusakan] = useState(''); 
@@ -65,21 +71,60 @@ export default function RepairDetails() {
     setShowEstimationSheet(true);
   };
 
-  const handlePesanSekarang = () => {
+  const handlePesanSekarang = async () => {
     setShowEstimationSheet(false);
-    setShowSuccessModal(true);
-    // In a real app, this would redirect or clear the form after a delay
-    setTimeout(() => {
-      navigate('/customer/repair/status', { 
-        state: { 
-          selectedLocation: location.state?.selectedLocation || { address: 'BTP Blok G 114' },
-          selectedKategori,
-          tingkatKerusakan,
-          deskripsi,
-          uploadedPhotos
-        } 
+    
+    const userStr = localStorage.getItem('handyGoUser');
+    let user = null;
+    if (userStr) {
+      try { user = JSON.parse(userStr); } catch (e) { }
+    }
+    
+    if (!user || !user.id) {
+      alert("Anda harus masuk (login) terlebih dahulu.");
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user.id,
+          service_name: 'Perbaikan',
+          pickup_location: location.state?.detailLokasi ? `${location.state?.selectedLocation?.address || location.state?.selectedLocation?.name || 'BTP Blok G 114'} - ${location.state.detailLokasi}` : (location.state?.selectedLocation?.address || location.state?.selectedLocation?.name || 'BTP Blok G 114'),
+          dropoff_location: location.state?.detailLokasi ? `${location.state?.selectedLocation?.address || location.state?.selectedLocation?.name || 'BTP Blok G 114'} - ${location.state.detailLokasi}` : (location.state?.selectedLocation?.address || location.state?.selectedLocation?.name || 'BTP Blok G 114'),
+          order_details: `Kategori: ${selectedKategori}, Rusak: ${tingkatKerusakan}, Desc: ${deskripsi}`,
+          estimated_price: 70000,
+          payment_method: 'cash'
+        })
       });
-    }, 2000);
+
+      let createdOrderId = null;
+      if (response.ok) {
+        const data = await response.json();
+        createdOrderId = data.order?.id;
+      }
+
+      setShowSuccessModal(true);
+      setTimeout(() => {
+        setShowSuccessModal(false);
+        navigate('/customer/repair/status', { 
+          state: { 
+            selectedLocation: location.state?.selectedLocation || { address: 'BTP Blok G 114' },
+            selectedKategori,
+            tingkatKerusakan,
+            deskripsi,
+            uploadedPhotos,
+            orderId: createdOrderId
+          } 
+        });
+      }, 2000);
+    } catch (error) {
+      console.error("Gagal membuat pesanan:", error);
+      alert("Terjadi kesalahan, pesanan tidak dapat dibuat.");
+    }
   };
 
   return (

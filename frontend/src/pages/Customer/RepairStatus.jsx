@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, Phone, MessageSquare, Handshake, ChevronRight, ChevronUp, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './RepairStatus.css';
+import './CompletedStatus.css';
 
 export default function RepairStatus() {
   const navigate = useNavigate();
@@ -13,14 +14,62 @@ export default function RepairStatus() {
   const [paymentMethod, setPaymentMethod] = useState('');
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
+  const orderId = location.state?.orderId;
 
-  const orderDetails = location.state?.orderDetails || location.state || {
+  useEffect(() => {
+    if (orderId) {
+      const savedRatings = JSON.parse(localStorage.getItem('handyGoRatings') || '{}');
+      if (savedRatings[orderId]) {
+        setRating(savedRatings[orderId].rating || 0);
+        setReviewText(savedRatings[orderId].review || '');
+      }
+    }
+  }, [orderId]);
+
+  const handleRatingChange = (newRating) => {
+    setRating(newRating);
+    if (orderId) {
+      const savedRatings = JSON.parse(localStorage.getItem('handyGoRatings') || '{}');
+      savedRatings[orderId] = { ...savedRatings[orderId], rating: newRating, review: reviewText };
+      localStorage.setItem('handyGoRatings', JSON.stringify(savedRatings));
+    }
+  };
+
+  const handleReviewChange = (e) => {
+    const val = e.target.value;
+    setReviewText(val);
+    if (orderId) {
+      const savedRatings = JSON.parse(localStorage.getItem('handyGoRatings') || '{}');
+      savedRatings[orderId] = { ...savedRatings[orderId], rating, review: val };
+      localStorage.setItem('handyGoRatings', JSON.stringify(savedRatings));
+    }
+  };
+
+  let orderDetails = {
     selectedLocation: { address: 'BTP Blok G 114' },
     selectedKategori: 'Saklar Rusak',
     tingkatKerusakan: 'Sedang',
     deskripsi: 'Saklarnya tidak berfungsi jadi saya buka sendiri dan terlepas seperti di foto',
     uploadedPhotos: []
   };
+
+  if (location.state) {
+    if (location.state.selectedLocation) {
+      // Coming from RepairDetails
+      orderDetails = { ...orderDetails, ...location.state };
+    } else if (location.state.pesanan) {
+      // Coming from History
+      const p = location.state.pesanan;
+      const parsedDetails = p.order_details ? p.order_details.split(', ') : [];
+      orderDetails = {
+        selectedLocation: { address: p.pickup_location || 'BTP Blok G 114' },
+        selectedKategori: parsedDetails[0]?.replace('Kategori: ', '') || 'Saklar Rusak',
+        tingkatKerusakan: parsedDetails[1]?.replace('Rusak: ', '') || 'Sedang',
+        deskripsi: parsedDetails[2]?.replace('Desc: ', '') || 'Tidak ada deskripsi',
+        uploadedPhotos: []
+      };
+    }
+  }
 
   // Dynamic ETA
   const [eta, setEta] = useState({ start: '', end: '' });
@@ -58,11 +107,16 @@ export default function RepairStatus() {
   const handlePay = () => {
     if (!paymentMethod) return;
     setShowAgreement(false);
+    
+    const pesanan = location.state?.pesanan;
+    const totalBiaya = pesanan?.estimated_price || location.state?.totalPrice || 125000;
+
     navigate('/customer/repair/payment', {
       state: {
-        totalBiaya: 125000,
+        totalBiaya: totalBiaya,
         method: paymentMethod,
-        orderDetails: orderDetails
+        orderDetails: orderDetails,
+        orderId: orderId
       }
     });
   };
@@ -122,16 +176,16 @@ export default function RepairStatus() {
 
         {/* Success Banner */}
         {statusPhase === 'finished' && (
-          <div style={{ width: '100%', backgroundColor: '#ecfccb', borderRadius: '16px', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: 'Outfit, sans-serif', fontSize: '1rem', fontWeight: 700, color: '#166534', marginBottom: '4px' }}>
-                <CheckCircle2 size={20} /> Layanan selesai!
+          <div className="completed-banner">
+            <div className="completed-banner-text">
+              <div className="completed-banner-title">
+                <CheckCircle2 size={20} /> Pesanan selesai!
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#3f6212', lineHeight: 1.4 }}>
+              <div className="completed-banner-subtitle">
                 Terima kasih telah menggunakan Handygo, cari kami kapan saja!
               </div>
             </div>
-            <div style={{ fontSize: '2rem' }}>👨‍🔧</div>
+            <div className="completed-banner-icon">👨‍🔧</div>
           </div>
         )}
 
@@ -228,86 +282,59 @@ export default function RepairStatus() {
         {/* Technician Card (Inline for Finished) */}
         {statusPhase === 'finished' && (
           <>
-            <div style={{ width: '100%', backgroundColor: '#ffffff', borderRadius: '30px', padding: '12px 16px', border: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', boxSizing: 'border-box', marginBottom: '24px' }}>
-              <img src="https://i.pravatar.cc/150?u=rafael" alt="Mitra" style={{ width: '48px', height: '48px', borderRadius: '50%', marginRight: '16px', objectFit: 'cover' }} />
-              <div style={{ flex: 1 }}>
-                <h3 style={{ margin: '0 0 4px 0', fontFamily: 'Outfit, sans-serif', fontSize: '1rem', fontWeight: 700 }}>Rafael gemam</h3>
-                <div style={{ fontSize: '0.8rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span style={{ color: '#eab308' }}>★</span>
-                  <span style={{ fontWeight: 600, color: '#1e293b' }}>4.9</span>
-                  <span>(59 ulasan)</span>
+            <div className="courier-card" style={{ marginBottom: '24px' }}>
+              <div className="courier-info-left">
+                <img src="https://i.pravatar.cc/150?u=rafael" alt="Mitra" className="courier-avatar" />
+                <div className="courier-text">
+                  <h4 className="courier-name">Rafael gemam</h4>
+                  <div className="courier-rating">
+                    <span className="star">★</span> 4.9 <span className="reviews">(59 ulasan)</span>
+                  </div>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <button style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                  <Phone size={20} color="#034078" />
+              <div className="courier-actions">
+                <button className="courier-action-btn disabled">
+                  <Phone size={18} color="#94a3b8" />
                 </button>
-                <button style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                  <MessageSquare size={20} color="#034078" />
+                <button className="courier-action-btn disabled">
+                  <MessageSquare size={18} color="#94a3b8" />
                 </button>
               </div>
             </div>
 
             {/* Rating Box */}
-            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '32px' }}>
-              <h3 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.05rem', fontWeight: 700, color: '#1e293b', marginBottom: '16px' }}>Bagaimana pengalamanmu tadi?</h3>
-              <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
+            <div className="rating-section-new">
+              <h3 className="rating-title-new">Bagaimana pengalamanmu tadi?</h3>
+              <div className="stars-container-new">
                 {[1, 2, 3, 4, 5].map(i => (
                   <svg 
                     key={i} 
-                    width="32" 
-                    height="32" 
+                    width="40" 
+                    height="40" 
                     viewBox="0 0 24 24" 
-                    fill={i <= rating ? '#eab308' : '#e2e8f0'} 
+                    fill={i <= rating ? '#fbbf24' : '#e2e8f0'} 
                     xmlns="http://www.w3.org/2000/svg"
-                    onClick={() => setRating(i)}
-                    style={{ cursor: 'pointer', transition: 'fill 0.2s' }}
+                    onClick={() => handleRatingChange(i)}
+                    className="star-icon"
                   >
                     <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
                   </svg>
                 ))}
               </div>
               <textarea 
-                style={{ 
-                  width: '100%', 
-                  padding: '16px', 
-                  borderRadius: '24px', 
-                  border: '1px solid #e2e8f0', 
-                  backgroundColor: '#ffffff', 
-                  color: '#1e293b', 
-                  fontSize: '0.9rem',
-                  fontFamily: 'Inter, sans-serif',
-                  outline: 'none',
-                  resize: 'none',
-                  boxSizing: 'border-box'
-                }} 
+                className="review-input-new"
                 placeholder="Tulis ulasan di sini"
-                rows="3"
+                rows="2"
                 value={reviewText}
-                onChange={(e) => setReviewText(e.target.value)}
+                onChange={handleReviewChange}
               />
               
               {rating > 0 && (
                 <button 
-                  onClick={() => {
-                    // Submit rating mock
-                    navigate('/customer');
-                  }}
-                  style={{
-                    width: '100%',
-                    backgroundColor: '#034078',
-                    color: '#ffffff',
-                    padding: '14px',
-                    borderRadius: '24px',
-                    fontFamily: 'Outfit, sans-serif',
-                    fontSize: '1rem',
-                    fontWeight: 600,
-                    border: 'none',
-                    marginTop: '16px',
-                    cursor: 'pointer'
-                  }}
+                  className="submit-rating-btn"
+                  onClick={() => navigate('/customer')}
                 >
-                  Kirim Ulasan
+                  Kirim Rating
                 </button>
               )}
             </div>
