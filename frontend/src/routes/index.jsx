@@ -44,6 +44,11 @@ import RepairCheckout from '../pages/Customer/RepairCheckout';
 import RepairDetails from '../pages/Customer/RepairDetails';
 import RepairStatus from '../pages/Customer/RepairStatus';
 import RepairPayment from '../pages/Customer/RepairPayment';
+import Transport from '../pages/Customer/Transport';
+import TransportLocation from '../pages/Customer/TransportLocation';
+import TransportMap from '../pages/Customer/TransportMap';
+import TransportDetails from '../pages/Customer/TransportDetails';
+import TransportPayment from '../pages/Customer/TransportPayment';
 import Chat from '../pages/Customer/Chat';
 import ChatList from '../pages/Customer/ChatList';
 import Call from '../pages/Customer/Call';
@@ -207,6 +212,26 @@ export const router = createBrowserRouter([
       {
         path: 'repair/payment',
         element: <RepairPayment />,
+      },
+      {
+        path: 'transport',
+        element: <Transport />,
+      },
+      {
+        path: 'transport/location',
+        element: <TransportLocation />,
+      },
+      {
+        path: 'transport/map',
+        element: <TransportMap />,
+      },
+      {
+        path: 'transport/details',
+        element: <TransportDetails />,
+      },
+      {
+        path: 'transport/payment',
+        element: <TransportPayment />,
       },
       {
         path: 'chat',

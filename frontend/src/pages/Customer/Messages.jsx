@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bell, MapPin } from 'lucide-react';
 import './Messages.css';
 
 export default function CustomerMessages() {
+  const navigate = useNavigate();
   const storedUser = JSON.parse(localStorage.getItem('handyGoUser') || '{}');
   const userName = storedUser.name || 'Ajel';
 
   const [activeChat, setActiveChat] = useState(null);
+  const [chatHistory, setChatHistory] = useState([]);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -14,18 +17,35 @@ export default function CustomerMessages() {
       try {
         const response = await fetch(`http://localhost:5000/api/orders?user_id=${storedUser.id}`);
         const data = await response.json();
-        if (response.ok && data.orders && data.orders.length > 0) {
-          const latestOrder = data.orders[0];
-          if (latestOrder.status !== 'selesai' && latestOrder.status !== 'batal') {
+        if (response.ok && data.orders) {
+          // Find active chat (first order that is not finished)
+          const activeOrder = data.orders.find(o => o.status !== 'selesai' && o.status !== 'batal');
+          if (activeOrder) {
             setActiveChat({
-              id: 'active-1',
+              id: activeOrder.id,
               name: 'Rafael gemam',
-              status: latestOrder.service?.name === 'Antar Barang' 
+              status: activeOrder.service?.name === 'Antar Barang' 
                 ? 'Kurir sedang menuju lokasi penjemputan.' 
                 : 'Mohon menunggu, pesananmu sedang disiapkan.',
               image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80',
             });
+          } else {
+            setActiveChat(null);
           }
+          
+          // Populate history chats
+          const finishedOrders = data.orders.filter(o => o.status === 'selesai' || o.status === 'batal');
+          const mockNames = ['Rama Wicaksono', 'Muhammad Alif', 'Rahmat Alam', 'Budi Santoso', 'Joko Susilo'];
+          const history = finishedOrders.map((order, index) => {
+            const mockName = mockNames[index % mockNames.length];
+            return {
+              id: order.id,
+              name: mockName,
+              status: order.status === 'batal' ? 'Pesanan dibatalkan, chat ditutup.' : 'Pesanan selesai, chat ditutup.',
+              image: `https://ui-avatars.com/api/?name=${mockName.replace(' ', '+')}&background=1e293b&color=fff`
+            };
+          });
+          setChatHistory(history);
         }
       } catch (err) {
         console.error("Failed to fetch orders for chat", err);
@@ -34,26 +54,7 @@ export default function CustomerMessages() {
     fetchOrders();
   }, [storedUser.id]);
 
-  const chatHistory = [
-    {
-      id: 1,
-      name: 'Rama Wicaksono',
-      status: 'Pesanan selesai, chat ditutup.',
-      image: 'https://ui-avatars.com/api/?name=Rama+Wicaksono&background=1e293b&color=fff'
-    },
-    {
-      id: 2,
-      name: 'Muhammad Alif',
-      status: 'Pesanan selesai, chat ditutup.',
-      image: 'https://ui-avatars.com/api/?name=Muhammad+Alif&background=1e293b&color=fff'
-    },
-    {
-      id: 3,
-      name: 'Rahmat Alam',
-      status: 'Pesanan selesai, chat ditutup.',
-      image: 'https://ui-avatars.com/api/?name=Rahmat+Alam&background=1e293b&color=fff'
-    }
-  ];
+
 
   return (
     <div className="customer-messages animate-fade-in">
@@ -81,7 +82,11 @@ export default function CustomerMessages() {
       
       {activeChat ? (
         <div className="active-chat-section">
-          <div className="chat-card active-chat-card">
+          <div 
+            className="chat-card active-chat-card" 
+            onClick={() => navigate('/customer/chat', { state: { isFinished: false } })}
+            style={{ cursor: 'pointer' }}
+          >
             <img src={activeChat.image} alt={activeChat.name} className="chat-avatar" />
             <div className="chat-details">
               <h3 className="chat-name">{activeChat.name}</h3>
@@ -101,15 +106,22 @@ export default function CustomerMessages() {
         </p>
 
         <div className="chat-list">
-          {chatHistory.map((chat) => (
-            <div key={chat.id} className="chat-card">
+          {chatHistory.length > 0 ? chatHistory.map((chat) => (
+            <div 
+              key={chat.id} 
+              className="chat-card" 
+              onClick={() => navigate('/customer/chat', { state: { isFinished: true } })}
+              style={{ cursor: 'pointer' }}
+            >
               <img src={chat.image} alt={chat.name} className="chat-avatar" />
               <div className="chat-details">
                 <h3 className="chat-name">{chat.name}</h3>
                 <p className="chat-status">{chat.status}</p>
               </div>
             </div>
-          ))}
+          )) : (
+            <p className="messages-subtitle" style={{ textAlign: 'center', marginTop: '20px' }}>Belum ada riwayat chat.</p>
+          )}
         </div>
       </div>
     </div>

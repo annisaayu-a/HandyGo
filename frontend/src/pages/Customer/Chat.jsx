@@ -24,16 +24,9 @@ export default function Chat() {
     },
     {
       id: 2,
-      sender: 'mitra',
-      text: 'Sy Mnuju ke lokasi sekarang kk',
+      sender: 'customer',
+      text: 'Hati hati pak',
       time: '12.00'
-    },
-    {
-      id: 3,
-      type: 'call_history',
-      title: 'Panggilan selesai',
-      duration: '01:56',
-      time: '12.05'
     }
   ]);
 
@@ -99,8 +92,8 @@ export default function Chat() {
           </div>
         </div>
 
-        <button className="chat-call-btn" onClick={() => navigate('/customer/call')}>
-          <Phone size={20} color="#034078" fill="currentColor" />
+        <button className="chat-call-btn" onClick={() => !isFinished && navigate('/customer/call')} disabled={isFinished} style={{ cursor: isFinished ? 'default' : 'pointer' }}>
+          <Phone size={20} color={isFinished ? "#cbd5e1" : "#034078"} fill="currentColor" />
         </button>
       </header>
 
@@ -169,7 +162,7 @@ export default function Chat() {
         <div className="chat-input-row">
           <div className="chat-input-wrapper">
             <button className="chat-icon-btn attachment-btn" onClick={handleAttachmentClick} disabled={isFinished}>
-              <Paperclip size={20} color="#64748b" />
+              <Paperclip size={20} color={isFinished ? "#e2e8f0" : "#64748b"} />
             </button>
             <input 
               type="text" 
@@ -188,7 +181,7 @@ export default function Chat() {
             </button>
           ) : (
             <button className="chat-icon-btn mic-btn" disabled={isFinished}>
-              <Mic size={20} color="#64748b" />
+              <Mic size={20} color={isFinished ? "#e2e8f0" : "#64748b"} />
             </button>
           )}
         </div>

@@ -98,6 +98,8 @@ export default function CustomerHome() {
                   navigate('/customer/cleaning');
                 } else if (service.id === 4) {
                   navigate('/customer/repair');
+                } else if (service.id === 6) {
+                  navigate('/customer/transport');
                 }
               }}
               style={{ cursor: 'pointer' }}
