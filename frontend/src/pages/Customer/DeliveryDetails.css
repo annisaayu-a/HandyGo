@@ -220,7 +220,7 @@
   margin: 0;
 }
 .weight-input-with-unit[type=number] {
-  -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .weight-unit {

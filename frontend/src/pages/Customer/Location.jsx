@@ -19,6 +19,7 @@ export default function Location() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const searchTimeoutRef = useRef(null);
+  const reverseGeocodeTimeoutRef = useRef(null);
   const mapRef = useRef(null);
 
   // Load user data on mount
@@ -33,25 +34,32 @@ export default function Location() {
     }
   }, []);
 
-  const fetchAddressFromCoords = async (center) => {
-    try {
-      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${center.lat}&lon=${center.lng}&zoom=18&addressdetails=1`);
-      
-      if (!response.ok) {
-        setAddress('Gagal mendapatkan lokasi dari peta');
-        return;
-      }
-
-      const data = await response.json();
-      if (data && data.display_name) {
-        const nameParts = data.display_name.split(', ');
-        const name = data.name || (data.address && data.address.road) || nameParts[0];
-        setAddress(data.display_name);
-        setSearchQuery(data.display_name);
-      }
-    } catch (err) {
-      console.error(err);
+  const fetchAddressFromCoords = (center) => {
+    if (reverseGeocodeTimeoutRef.current) {
+      clearTimeout(reverseGeocodeTimeoutRef.current);
     }
+    reverseGeocodeTimeoutRef.current = setTimeout(async () => {
+      try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${center.lat}&lon=${center.lng}&zoom=18&addressdetails=1&email=handygo-app@example.com`);
+        
+        if (!response.ok) {
+          if (response.status === 429 || response.status === 403) {
+            setAddress('Sistem peta membatasi akses sementara. Mohon tunggu.');
+          } else {
+            setAddress('Gagal mendapatkan lokasi dari peta');
+          }
+          return;
+        }
+
+        const data = await response.json();
+        if (data && data.display_name) {
+          setAddress(data.display_name);
+          setSearchQuery(data.display_name);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }, 500);
   };
 
   const handleSearch = (e) => {
@@ -66,11 +74,14 @@ export default function Location() {
     if (query.length > 2) {
       searchTimeoutRef.current = setTimeout(async () => {
         try {
-          const viewbox = '119.35,-5.05,119.55,-5.35';
-          const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=id&viewbox=${viewbox}&bounded=0&limit=5`);
+          const token = import.meta.env.VITE_MAPBOX_TOKEN;
+          const bbox = '119.35,-5.35,119.55,-5.05';
+          const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?country=id&bbox=${bbox}&access_token=${token}`);
           if (response.ok) {
             const data = await response.json();
-            setSearchResults(data);
+            if (data && data.features) {
+              setSearchResults(data.features);
+            }
           }
         } catch (err) {
           console.error(err);
@@ -82,10 +93,10 @@ export default function Location() {
   };
 
   const handleSelectResult = (result) => {
-    setAddress(result.display_name);
-    setSearchQuery(result.display_name);
-    const lat = parseFloat(result.lat);
-    const lon = parseFloat(result.lon);
+    setAddress(result.place_name);
+    setSearchQuery(result.place_name);
+    const lat = result.center[1];
+    const lon = result.center[0];
     mapRef.current?.flyTo({ center: [lon, lat], zoom: 16, duration: 1500 });
     setSearchResults([]);
   };
@@ -185,8 +196,8 @@ export default function Location() {
               <div className="search-results-dropdown-inline" style={{ marginTop: '5px' }}>
                 {searchResults.map((res, i) => (
                   <div key={i} className="search-result-item-inline" onClick={() => handleSelectResult(res)}>
-                    <div className="result-name-inline">{res.name || res.display_name.split(',')[0]}</div>
-                    <div className="result-address-inline">{res.display_name}</div>
+                    <div className="result-name-inline">{res.text}</div>
+                    <div className="result-address-inline">{res.place_name}</div>
                   </div>
                 ))}
               </div>

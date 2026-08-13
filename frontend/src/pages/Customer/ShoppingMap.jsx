@@ -26,10 +26,11 @@ export default function ShoppingMap() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const searchTimeoutRef = useRef(null);
+  const reverseGeocodeTimeoutRef = useRef(null);
   const mapRef = useRef(null);
 
   useEffect(() => {
-    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${defaultPosition[0]}&lon=${defaultPosition[1]}`)
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${defaultPosition[0]}&lon=${defaultPosition[1]}&zoom=18&addressdetails=1&email=handygo-app@example.com`)
       .then(res => res.json())
       .then(data => {
         if(data && data.display_name) {
@@ -52,11 +53,14 @@ export default function ShoppingMap() {
     if (query.length > 2) {
       searchTimeoutRef.current = setTimeout(async () => {
         try {
-          const viewbox = '119.35,-5.05,119.55,-5.35';
-          const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=id&viewbox=${viewbox}&bounded=0&limit=5`);
+          const token = import.meta.env.VITE_MAPBOX_TOKEN;
+          const bbox = '119.35,-5.35,119.55,-5.05';
+          const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?country=id&bbox=${bbox}&access_token=${token}`);
           if (response.ok) {
             const data = await response.json();
-            setSearchResults(data);
+            if (data && data.features) {
+              setSearchResults(data.features);
+            }
           }
         } catch (err) {
           console.error(err);
@@ -69,20 +73,17 @@ export default function ShoppingMap() {
 
   // Saat hasil pencarian dipilih
   const handleSelectResult = (result) => {
-    const lat = parseFloat(result.lat);
-    const lon = parseFloat(result.lon);
+    const lat = result.center[1];
+    const lon = result.center[0];
     
     // Terbang ke titik baru
     mapRef.current?.flyTo({ center: [lon, lat], zoom: 17, duration: 1500 });
     setSearchResults([]);
     setSearchQuery('');
     
-    const nameParts = result.display_name.split(', ');
-    const name = result.name || nameParts[0];
-    
     setCurrentAddress({
-      name: name,
-      address: result.display_name,
+      name: result.text,
+      address: result.place_name,
       lat: lat,
       lng: lon
     });
@@ -93,39 +94,46 @@ export default function ShoppingMap() {
     setCurrentAddress(prev => ({ ...prev, name: 'Mencari lokasi...', address: '' }));
   };
 
-  const handleMoveEnd = async (e) => {
+  const handleMoveEnd = (e) => {
     setIsMapDragging(false);
     const { lng, lat } = e.viewState;
-    try {
-      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
-      
-      if (!response.ok) {
-        if (response.status === 429 || response.status === 403) {
-          setCurrentAddress({ name: 'Terlalu banyak klik', address: 'Sistem peta membatasi akses sementara. Mohon tunggu 1-2 menit.', lat, lng });
-        } else {
-          setCurrentAddress({ name: 'Gagal memuat', address: 'Layanan peta sedang gangguan', lat, lng });
-        }
-        return;
-      }
-
-      const data = await response.json();
-      
-      if (data && data.display_name) {
-        const nameParts = data.display_name.split(', ');
-        const name = data.name || (data.address && data.address.road) || nameParts[0];
-        setCurrentAddress({
-          name: name,
-          address: data.display_name,
-          lat,
-          lng
-        });
-      } else {
-        setCurrentAddress({ name: 'Lokasi tidak dikenal', address: 'Tidak dapat menemukan alamat di titik ini', lat, lng });
-      }
-    } catch (err) {
-      console.error("Gagal mendapatkan lokasi:", err);
-      setCurrentAddress({ name: 'Gagal memuat', address: 'Periksa koneksi internet Anda', lat, lng });
+    
+    if (reverseGeocodeTimeoutRef.current) {
+      clearTimeout(reverseGeocodeTimeoutRef.current);
     }
+
+    reverseGeocodeTimeoutRef.current = setTimeout(async () => {
+      try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&email=handygo-app@example.com`);
+        
+        if (!response.ok) {
+          if (response.status === 429 || response.status === 403) {
+            setCurrentAddress({ name: 'Terlalu banyak klik', address: 'Sistem peta membatasi akses sementara. Mohon tunggu 1-2 menit.', lat, lng });
+          } else {
+            setCurrentAddress({ name: 'Gagal memuat', address: 'Layanan peta sedang gangguan', lat, lng });
+          }
+          return;
+        }
+
+        const data = await response.json();
+        
+        if (data && data.display_name) {
+          const nameParts = data.display_name.split(', ');
+          const name = data.name || (data.address && data.address.road) || nameParts[0];
+          setCurrentAddress({
+            name: name,
+            address: data.display_name,
+            lat,
+            lng
+          });
+        } else {
+          setCurrentAddress({ name: 'Lokasi tidak dikenal', address: 'Tidak dapat menemukan alamat di titik ini', lat, lng });
+        }
+      } catch (err) {
+        console.error("Gagal mendapatkan lokasi:", err);
+        setCurrentAddress({ name: 'Gagal memuat', address: 'Periksa koneksi internet Anda', lat, lng });
+      }
+    }, 500);
   };
 
   return (
@@ -200,8 +208,10 @@ export default function ShoppingMap() {
           <div className="search-results-dropdown">
             {searchResults.map((res, i) => (
               <div key={i} className="search-result-item" onClick={() => handleSelectResult(res)}>
-                <div className="result-name">{res.name || res.display_name.split(',')[0]}</div>
-                <div className="result-address">{res.display_name}</div>
+                <div className="search-result-info">
+                  <p className="search-result-name">{res.text}</p>
+                  <p className="search-result-address">{res.place_name}</p>
+                </div>
               </div>
             ))}
           </div>

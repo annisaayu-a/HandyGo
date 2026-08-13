@@ -30,11 +30,14 @@ export default function SearchLocation() {
     if (query.length > 2) {
       searchTimeoutRef.current = setTimeout(async () => {
         try {
-          const viewbox = '119.35,-5.05,119.55,-5.35';
-          const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=id&viewbox=${viewbox}&bounded=0&limit=5`);
+          const token = import.meta.env.VITE_MAPBOX_TOKEN;
+          const bbox = '119.35,-5.35,119.55,-5.05';
+          const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?country=id&bbox=${bbox}&access_token=${token}`);
           if (response.ok) {
             const data = await response.json();
-            setSearchResults(data);
+            if (data && data.features) {
+              setSearchResults(data.features);
+            }
           }
         } catch (err) {
           console.error(err);
@@ -46,7 +49,7 @@ export default function SearchLocation() {
   };
 
   const handleSelectResult = (result) => {
-    setSearchQuery(result.name || result.display_name?.split(',')[0] || result.address);
+    setSearchQuery(result.text || result.name || result.place_name || result.address);
     setIsFocused(false);
   };
   
@@ -93,8 +96,8 @@ export default function SearchLocation() {
                 <div key={i} className="sl-dropdown-item" onClick={() => handleSelectResult(res)}>
                   <MapPin size={18} className="sl-item-icon" />
                   <div className="sl-item-text">
-                    <div className="sl-item-name">{res.name || res.display_name.split(',')[0]}</div>
-                    <div className="sl-item-address">{res.display_name}</div>
+                    <div className="sl-item-name">{res.text}</div>
+                    <div className="sl-item-address">{res.place_name}</div>
                   </div>
                 </div>
               ))

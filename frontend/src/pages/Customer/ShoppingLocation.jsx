@@ -25,12 +25,14 @@ export default function ShoppingLocation() {
     if (query.length > 2) {
       searchTimeoutRef.current = setTimeout(async () => {
         try {
-          // viewbox for Makassar/Gowa area priority
-          const viewbox = '119.35,-5.05,119.55,-5.35';
-          const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=id&viewbox=${viewbox}&bounded=0&limit=5`);
+          const token = import.meta.env.VITE_MAPBOX_TOKEN;
+          const bbox = '119.35,-5.35,119.55,-5.05';
+          const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?country=id&bbox=${bbox}&access_token=${token}`);
           if (response.ok) {
             const data = await response.json();
-            setSearchResults(data);
+            if (data && data.features) {
+              setSearchResults(data.features);
+            }
           }
         } catch (err) {
           console.error(err);
@@ -42,13 +44,11 @@ export default function ShoppingLocation() {
   };
 
   const handleSelectResult = (result) => {
-    const nameParts = result.display_name.split(', ');
-    const name = result.name || nameParts[0];
     const locationData = {
-      name: name,
-      address: result.display_name,
-      lat: parseFloat(result.lat),
-      lng: parseFloat(result.lon)
+      name: result.text,
+      address: result.place_name,
+      lat: result.center[1],
+      lng: result.center[0]
     };
 
     if (activeInput === 'pickup') {
@@ -113,7 +113,7 @@ export default function ShoppingLocation() {
               <div key={i} className="search-result-item-inline" onClick={() => handleSelectResult(res)}>
                 <MapPin size={18} color="#cbd5e1" className="result-icon" />
                 <div className="result-text-container">
-                  <div className="result-name-inline">{res.name || res.display_name.split(',')[0]}</div>
+                  <div className="result-name-inline">{res.text}</div>
                 </div>
               </div>
             ))}
