@@ -31,7 +31,7 @@ export default function Login() {
         
         if (res.ok) {
           const data = await res.json();
-          const user = { name: data.user.full_name, email: data.user.email, phone: data.user.phone_number, id: data.user.id };
+          const user = { name: data.user.full_name, email: data.user.email, phone: data.user.phone_number, id: data.user.id, default_location: data.user.default_location, profile_picture: data.user.profile_picture };
           localStorage.setItem('handyGoUser', JSON.stringify(user));
           localStorage.setItem('handyGoToken', data.token);
           
@@ -119,7 +119,7 @@ export default function Login() {
         return;
       }
 
-      const user = { name: data.user.full_name, email: data.user.email, phone: data.user.phone_number, id: data.user.id };
+      const user = { name: data.user.full_name, email: data.user.email, phone: data.user.phone_number, id: data.user.id, default_location: data.user.default_location, profile_picture: data.user.profile_picture };
       localStorage.setItem('handyGoUser', JSON.stringify(user));
       localStorage.setItem('handyGoToken', data.token);
       navigate('/customer');
