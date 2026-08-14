@@ -5,8 +5,14 @@ const authController = require('../controllers/authController');
 // Register route
 router.post('/register', authController.register);
 
-// Send OTP route
+// Send OTP route (Old)
 router.post('/send-otp', authController.sendOtp);
+
+// Send Magic Link route
+router.post('/send-magic-link', authController.sendMagicLink);
+
+// Verify Magic Link route
+router.post('/verify-magic-link', authController.verifyMagicLink);
 
 // Login route
 router.post('/login', authController.login);

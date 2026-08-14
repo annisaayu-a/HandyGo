@@ -438,3 +438,145 @@ exports.sendOtp = async (req, res) => {
     res.status(500).json({ error: 'Gagal mengirim email OTP. Pastikan konfigurasi EMAIL_USER benar.' });
   }
 };
+
+exports.sendMagicLink = async (req, res) => {
+  try {
+    const { full_name, email, phone_number, password } = req.body;
+    if (!full_name || (!phone_number && !email) || !password) {
+      return res.status(400).json({ error: 'Data registrasi tidak lengkap' });
+    }
+    
+    // Check if user exists
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { phone_number: phone_number || undefined },
+          { email: email || undefined }
+        ]
+      }
+    });
+    
+    if (existingUser) {
+      return res.status(400).json({ error: 'Nomor Hp atau Email sudah terdaftar' });
+    }
+
+    // Sign registration data into a JWT token (expires in 15 minutes)
+    const magicToken = jwt.sign(
+      { full_name, email, phone_number, password }, 
+      JWT_SECRET, 
+      { expiresIn: '15m' }
+    );
+
+    // Send email using nodemailer
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    const magicLinkUrl = `https://handygo-app-smoky.vercel.app/verify-magic-link?token=${magicToken}`;
+
+    const mailOptions = {
+      from: `"HandyGo Security" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Tautan Ajaib (Magic Link) Pendaftaran HandyGo',
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; text-align: center;">
+          <h2 style="color: #034078;">Verifikasi Akun HandyGo</h2>
+          <p>Halo ${full_name},</p>
+          <p>Terima kasih telah mendaftar di HandyGo. Klik tombol di bawah ini untuk mengaktifkan akun Anda dan langsung masuk ke aplikasi:</p>
+          <a href="${magicLinkUrl}" style="display: inline-block; padding: 14px 24px; font-size: 16px; color: #ffffff; background-color: #0ea5e9; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: bold;">
+            Verifikasi Akun Saya
+          </a>
+          <p style="color: #64748b; font-size: 14px;">Tautan ini hanya berlaku selama 15 menit. Jika Anda tidak mendaftar di HandyGo, abaikan email ini.</p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    
+    res.json({ message: 'Tautan ajaib berhasil dikirim ke email' });
+  } catch (error) {
+    console.error('Send Magic Link error:', error);
+    res.status(500).json({ error: 'Gagal mengirim email tautan ajaib.' });
+  }
+};
+
+exports.verifyMagicLink = async (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(400).json({ error: 'Token tidak ditemukan' });
+    }
+
+    // Verify and decode token
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch (err) {
+      return res.status(400).json({ error: 'Tautan sudah kedaluwarsa atau tidak valid' });
+    }
+
+    const { full_name, email, phone_number, password } = decoded;
+
+    // Check again if user exists to prevent double registration
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { phone_number: phone_number || undefined },
+          { email: email || undefined }
+        ]
+      }
+    });
+
+    if (existingUser) {
+      // If user already exists (maybe they clicked the link twice), just log them in
+      const jwtToken = jwt.sign({ userId: existingUser.id }, JWT_SECRET, { expiresIn: '7d' });
+      return res.status(200).json({
+        message: 'Akun sudah terverifikasi',
+        token: jwtToken,
+        user: {
+          id: existingUser.id,
+          full_name: existingUser.full_name,
+          phone_number: existingUser.phone_number,
+          email: existingUser.email,
+          default_location: existingUser.default_location,
+          profile_picture: existingUser.profile_picture
+        }
+      });
+    }
+
+    // Hash password
+    const password_hash = await bcrypt.hash(password, 10);
+
+    // Create user
+    const newUser = await prisma.user.create({
+      data: {
+        full_name,
+        phone_number,
+        email,
+        password_hash
+      }
+    });
+
+    // Generate login token
+    const jwtToken = jwt.sign({ userId: newUser.id }, JWT_SECRET, { expiresIn: '7d' });
+
+    res.status(201).json({
+      message: 'Pendaftaran berhasil melalui Magic Link',
+      token: jwtToken,
+      user: {
+        id: newUser.id,
+        full_name: newUser.full_name,
+        phone_number: newUser.phone_number,
+        email: newUser.email,
+        default_location: newUser.default_location
+      }
+    });
+  } catch (error) {
+    console.error('Verify Magic Link error:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan saat memverifikasi tautan' });
+  }
+};
