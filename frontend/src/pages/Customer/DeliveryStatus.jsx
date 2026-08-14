@@ -114,7 +114,7 @@ export default function DeliveryStatus() {
             <div className={`step ${orderStatus === 'selesai' ? 'active' : ''}`} onClick={() => {
               setOrderStatus('selesai');
               if (orderId && orderStatus !== 'selesai') {
-                fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+                fetch(`https://handygo-api.vercel.app/api/orders/${orderId}/status`, {
                   method: 'PUT',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ status: 'selesai' })

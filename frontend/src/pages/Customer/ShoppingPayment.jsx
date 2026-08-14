@@ -45,7 +45,7 @@ export default function ShoppingPayment() {
   useEffect(() => {
     if (isConfirmed) {
       if (orderId) {
-        fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+        fetch(`https://handygo-api.vercel.app/api/orders/${orderId}/status`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: 'selesai' })

@@ -16,7 +16,7 @@ export default function Welcome() {
     onSuccess: async (tokenResponse) => {
       try {
         setIsLoading(true);
-        const res = await fetch('http://localhost:5000/api/auth/google', {
+        const res = await fetch('https://handygo-api.vercel.app/api/auth/google', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

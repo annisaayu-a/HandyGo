@@ -21,7 +21,7 @@ export default function Login() {
     onSuccess: async (tokenResponse) => {
       try {
         setIsLoading(true);
-        const res = await fetch('http://localhost:5000/api/auth/google', {
+        const res = await fetch('https://handygo-api.vercel.app/api/auth/google', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ export default function Login() {
     if (hasError) return;
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch('https://handygo-api.vercel.app/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, phone_number: phone, password })

@@ -116,7 +116,7 @@ export default function Location() {
     const user = JSON.parse(userStr);
     
     try {
-      const response = await fetch('http://localhost:5000/api/auth/location', {
+      const response = await fetch('https://handygo-api.vercel.app/api/auth/location', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -113,7 +113,7 @@ export default function ProfileDetail() {
       if (!userStr) return;
       const user = JSON.parse(userStr);
 
-      const response = await fetch('http://localhost:5000/api/auth/profile/picture', {
+      const response = await fetch('https://handygo-api.vercel.app/api/auth/profile/picture', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -158,7 +158,7 @@ export default function ProfileDetail() {
     const user = JSON.parse(userStr);
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/profile/picture', {
+      const response = await fetch('https://handygo-api.vercel.app/api/auth/profile/picture', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -212,7 +212,7 @@ export default function ProfileDetail() {
     const user = JSON.parse(userStr);
     
     try {
-      const response = await fetch('http://localhost:5000/api/auth/profile', {
+      const response = await fetch('https://handygo-api.vercel.app/api/auth/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -288,7 +288,7 @@ export default function ProfileDetail() {
         <div className="profile-pic-section">
           {profilePic ? (
             <img 
-              src={`http://localhost:5000${profilePic}`}
+              src={`https://handygo-api.vercel.app${profilePic}`}
               alt="Profile" 
               className="profile-pic-large"
             />

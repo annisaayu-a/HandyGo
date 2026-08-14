@@ -23,7 +23,7 @@ export default function CustomerSettings() {
       <div className="settings-header-large">
         {profilePic ? (
           <img 
-            src={`http://localhost:5000${profilePic}`}
+            src={`https://handygo-api.vercel.app${profilePic}`}
             alt="Profile" 
             className="settings-img-large"
             style={{ objectFit: 'cover' }}

@@ -15,7 +15,7 @@ export default function CustomerMessages() {
     const fetchOrders = async () => {
       if (!storedUser.id) return;
       try {
-        const response = await fetch(`http://localhost:5000/api/orders?user_id=${storedUser.id}`);
+        const response = await fetch(`https://handygo-api.vercel.app/api/orders?user_id=${storedUser.id}`);
         const data = await response.json();
         if (response.ok && data.orders) {
           // Find active chat (first order that is not finished)

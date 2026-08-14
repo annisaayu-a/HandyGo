@@ -28,7 +28,7 @@ export default function PhoneRegister() {
     if (step === 3) {
       const registerUser = async () => {
         try {
-          const response = await fetch('http://localhost:5000/api/auth/register', {
+          const response = await fetch('https://handygo-api.vercel.app/api/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ full_name: name, phone_number: phone, password: 'otp-login' })
