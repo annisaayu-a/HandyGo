@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, ArrowUp, Target, ChevronRight, Check } from 'lucide-react';
-import Map, { Marker } from 'react-map-gl/mapbox';
+import Map, { Marker, Source, Layer } from 'react-map-gl/mapbox';
+import { ArrowLeft, ArrowUp, Target, ChevronRight, Check, Phone, MessageSquare } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './TransportDetails.css';
 
@@ -17,10 +17,12 @@ export default function TransportDetails() {
   const [selectedVehicle, setSelectedVehicle] = useState('motor'); 
   const [isVehicleSheetOpen, setIsVehicleSheetOpen] = useState(false);
   const [isSearchingDriver, setIsSearchingDriver] = useState(false);
+  const [driverPhase, setDriverPhase] = useState(null); // 'heading', 'arriving', 'arrived'
   const [showQrisModal, setShowQrisModal] = useState(false);
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
   const searchTimeoutRef = React.useRef(null);
   const qrisTimeoutRef = React.useRef(null);
+  const trackingTimeoutRef = React.useRef(null);
 
   const vehicles = [
     { id: 'motor', name: 'Motor', desc: 'sampai dalam 2-4 menit', capacity: '1', price: 'Rp 18.000', priceValue: 18000, img: '🛵' },
@@ -36,6 +38,7 @@ export default function TransportDetails() {
     return () => {
       if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
       if (qrisTimeoutRef.current) clearTimeout(qrisTimeoutRef.current);
+      if (trackingTimeoutRef.current) clearTimeout(trackingTimeoutRef.current);
     };
   }, []);
 
@@ -66,18 +69,23 @@ export default function TransportDetails() {
     setIsSearchingDriver(true);
     searchTimeoutRef.current = setTimeout(() => {
       setIsSearchingDriver(false);
-      setShowSuccessModal(true);
-      setTimeout(() => {
-        navigate('/customer'); 
-      }, 2500);
-    }, 4000);
+      setDriverPhase('heading');
+      
+      trackingTimeoutRef.current = setTimeout(() => {
+        setDriverPhase('arriving');
+        
+        trackingTimeoutRef.current = setTimeout(() => {
+          setDriverPhase('arrived');
+        }, 4000);
+      }, 4000);
+    }, 3000);
   };
 
   const cancelSearch = () => {
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    if (trackingTimeoutRef.current) clearTimeout(trackingTimeoutRef.current);
     setIsSearchingDriver(false);
+    setDriverPhase(null);
   };
 
   return (
@@ -95,7 +103,7 @@ export default function TransportDetails() {
           mapStyle="mapbox://styles/mapbox/streets-v12"
         >
           {/* Default Markers */}
-          {!isSearchingDriver && (
+          {!isSearchingDriver && !driverPhase && (
             <>
               <Marker longitude={pickup.lng} latitude={pickup.lat}>
                 <div className="map-marker pickup">
@@ -129,6 +137,52 @@ export default function TransportDetails() {
               </Marker>
             </>
           )}
+
+          {/* Tracking Driver Markers & Route */}
+          {driverPhase && (
+            <>
+              {/* Route Line */}
+              <Source 
+                id="route" 
+                type="geojson" 
+                data={{
+                  type: 'Feature',
+                  geometry: {
+                    type: 'LineString',
+                    coordinates: [
+                      [pickup.lng - 0.003, pickup.lat + 0.003],
+                      [pickup.lng - 0.001, pickup.lat + 0.001],
+                      [pickup.lng, pickup.lat]
+                    ]
+                  }
+                }}
+              >
+                <Layer
+                  id="route-layer"
+                  type="line"
+                  paint={{
+                    'line-color': '#034078',
+                    'line-width': 4
+                  }}
+                />
+              </Source>
+
+              {/* Pickup Point (Destination of driver for now) */}
+              <Marker longitude={pickup.lng} latitude={pickup.lat}>
+                <div className="map-marker pickup">
+                  <ArrowUp size={14} color="#fff" />
+                </div>
+              </Marker>
+
+              {/* Driver Marker */}
+              <Marker 
+                longitude={driverPhase === 'heading' ? pickup.lng - 0.003 : driverPhase === 'arriving' ? pickup.lng - 0.001 : pickup.lng} 
+                latitude={driverPhase === 'heading' ? pickup.lat + 0.003 : driverPhase === 'arriving' ? pickup.lat + 0.001 : pickup.lat}
+              >
+                <div className="dummy-driver-marker">🛵</div>
+              </Marker>
+            </>
+          )}
         </Map>
       </div>
 
@@ -150,8 +204,14 @@ export default function TransportDetails() {
 
       {/* Bottom Sheet */}
       <div className="transport-bottom-sheet">
-        {!isSearchingDriver && (
+        {!isSearchingDriver && !driverPhase && (
           <button className="transport-back-btn floating-back-btn" onClick={() => navigate(-1)}>
+            <ArrowLeft size={24} color="#1e293b" />
+          </button>
+        )}
+
+        {driverPhase && (
+          <button className="transport-back-btn floating-back-btn" onClick={() => setDriverPhase(null)}>
             <ArrowLeft size={24} color="#1e293b" />
           </button>
         )}
@@ -162,6 +222,36 @@ export default function TransportDetails() {
             <button className="cancel-search-btn" onClick={cancelSearch}>
               Batalkan Pesanan
             </button>
+          </div>
+        ) : driverPhase ? (
+          <div className="driver-tracking-container animate-fade-in">
+            <p className="tracking-status-text">
+              {driverPhase === 'heading' && 'Driver sedang menuju lokasi penjemputan'}
+              {driverPhase === 'arriving' && 'Driver sudah dekat nih, bersiap di titik jemput ya'}
+              {driverPhase === 'arrived' && 'Driver sudah sampai nih'}
+            </p>
+            
+            {driverPhase !== 'arrived' && (
+              <div className="eta-container">
+                Akan sampai pada <strong>12:48 - 12:52</strong>
+              </div>
+            )}
+
+            <div className="driver-profile-card">
+              <img src="https://ui-avatars.com/api/?name=Rafael+Gemam&background=034078&color=fff" alt="Driver" className="driver-avatar" />
+              <div className="driver-profile-info">
+                <h4 className="driver-name">Rafael gemam</h4>
+                <div className="driver-rating">⭐ 4.9 <span className="reviews">(59 ulasan)</span></div>
+              </div>
+              <div className="driver-actions">
+                <button className="icon-btn phone-btn"><Phone size={18} /></button>
+                <button className="icon-btn chat-btn"><MessageSquare size={18} /></button>
+              </div>
+            </div>
+            
+            <div className="driver-vehicle-plate">
+              DD 1872 TU
+            </div>
           </div>
         ) : (
           <>
