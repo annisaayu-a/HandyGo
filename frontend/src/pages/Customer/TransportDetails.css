@@ -331,3 +331,5 @@
 }
 
 .floating-back-btn { position: absolute; bottom: calc(100% + 16px); left: 16px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+.searching-driver-container { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px 0 16px; gap: 24px; } .searching-driver-text { font-family: 'Inter', sans-serif; font-size: 0.95rem; color: #64748b; margin: 0; } .cancel-search-btn { width: 100%; padding: 14px; background: transparent; border: 1px solid var(--primary); border-radius: 25px; color: var(--primary); font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.2s; } .cancel-search-btn:active { background-color: rgba(3,64,120,0.05); transform: scale(0.98); }
