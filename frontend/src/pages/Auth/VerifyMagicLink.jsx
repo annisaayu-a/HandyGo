@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
-import api from '../../services/api';
 
 const VerifyMagicLink = () => {
   const [status, setStatus] = useState('Memverifikasi tautan...');
@@ -19,33 +17,30 @@ const VerifyMagicLink = () => {
 
     const verifyToken = async () => {
       try {
-        const response = await api.post('/auth/verify-magic-link', { token });
+        const response = await fetch('https://handygo-api.vercel.app/api/auth/verify-magic-link', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Tautan sudah kedaluwarsa atau tidak valid.');
+        }
         
         // Save user data and token
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
 
         setStatus('Verifikasi berhasil! Mengalihkan...');
         
-        Swal.fire({
-          icon: 'success',
-          title: 'Berhasil',
-          text: 'Akun Anda berhasil diverifikasi!',
-          timer: 2000,
-          showConfirmButton: false
-        });
-
         setTimeout(() => {
           navigate('/customer');
         }, 2000);
       } catch (error) {
         console.error('Verify error:', error);
         setStatus('Verifikasi gagal. Tautan mungkin kedaluwarsa.');
-        Swal.fire({
-          icon: 'error',
-          title: 'Verifikasi Gagal',
-          text: error.response?.data?.error || 'Tautan sudah kedaluwarsa atau tidak valid.',
-        });
       }
     };
 
