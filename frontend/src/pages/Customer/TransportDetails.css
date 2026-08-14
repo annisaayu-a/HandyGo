@@ -333,3 +333,84 @@
 .floating-back-btn { position: absolute; bottom: calc(100% + 16px); left: 16px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
 .searching-driver-container { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px 0 16px; gap: 24px; } .searching-driver-text { font-family: 'Inter', sans-serif; font-size: 0.95rem; color: #64748b; margin: 0; } .cancel-search-btn { width: 100%; padding: 14px; background: transparent; border: 1px solid var(--primary); border-radius: 25px; color: var(--primary); font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.2s; } .cancel-search-btn:active { background-color: rgba(3,64,120,0.05); transform: scale(0.98); }
+
+/* QRIS Modal */
+.transport-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.transport-qris-modal {
+  background: white;
+  width: 100%;
+  max-width: 320px;
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+.qris-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 16px 0;
+}
+.qris-image-wrapper {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 16px;
+}
+.qris-image {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+}
+.qris-instruction {
+  font-size: 1.1rem;
+  color: #334155;
+  margin: 0 0 8px 0;
+}
+.qris-instruction-small {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0 0 24px 0;
+}
+.qris-confirm-btn {
+  width: 100%;
+  padding: 14px;
+  background-color: #034078;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+.qris-cancel-btn {
+  width: 100%;
+  padding: 14px;
+  background-color: transparent;
+  color: #ef4444;
+  border: 1px solid #ef4444;
+  border-radius: 25px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+}
