@@ -43,7 +43,8 @@ export default function CustomerLayout() {
     '/customer/transport/location',
     '/customer/transport/map',
     '/customer/transport/details',
-    '/customer/transport/payment'
+    '/customer/transport/payment',
+    '/customer/transport/qris'
   ];
   const shouldHideBottomNav = hideBottomNavPaths.includes(location.pathname);
 
