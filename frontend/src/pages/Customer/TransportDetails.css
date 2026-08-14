@@ -414,3 +414,118 @@
   font-size: 1rem;
   cursor: pointer;
 }
+
+/* Driver Tracking UI Styling */
+.driver-tracking-container {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 20px 32px;
+  background: white;
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.tracking-status-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: #64748b;
+  text-align: center;
+  margin: 0 0 16px 0;
+}
+
+.eta-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 10px 16px;
+  margin: 0 auto 24px auto;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: #64748b;
+  width: fit-content;
+}
+
+.eta-container strong {
+  color: #1e293b;
+  margin-left: 6px;
+}
+
+.driver-info-box {
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.driver-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.driver-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.driver-profile-info {
+  flex: 1;
+}
+
+.driver-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+
+.driver-rating {
+  font-size: 0.8rem;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.reviews {
+  color: #94a3b8;
+  margin-left: 2px;
+}
+
+.driver-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.driver-actions .icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  cursor: pointer;
+}
+
+.driver-vehicle-plate {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}

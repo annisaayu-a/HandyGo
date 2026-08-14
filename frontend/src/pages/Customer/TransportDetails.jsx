@@ -334,26 +334,28 @@ export default function TransportDetails() {
             </p>
             
             {driverPhase !== 'arrived' && (
-              <div className="eta-container">
+            <div className="eta-container">
                 Akan sampai pada <strong>12:48 - 12:52</strong>
               </div>
             )}
 
-            <div className="driver-profile-card">
-              <img src="https://ui-avatars.com/api/?name=Rafael+Gemam&background=034078&color=fff" alt="Driver" className="driver-avatar" />
-              <div className="driver-profile-info">
-                <h4 className="driver-name">Rafael gemam</h4>
-                <div className="driver-rating">⭐ 4.9 <span className="reviews">(59 ulasan)</span></div>
+              <div className="driver-info-box">
+                <div className="driver-profile-card">
+                  <img src="https://ui-avatars.com/api/?name=Rafael+Gemam&background=034078&color=fff" alt="Driver" className="driver-avatar" />
+                  <div className="driver-profile-info">
+                    <h4 className="driver-name">Rafael gemam</h4>
+                    <div className="driver-rating"><Star size={14} color="#eab308" fill="#eab308" /> 4.9 <span className="reviews">(59 ulasan)</span></div>
+                  </div>
+                  <div className="driver-actions">
+                    <button className="icon-btn phone-btn"><Phone size={18} color="#034078" /></button>
+                    <button className="icon-btn chat-btn"><MessageSquare size={18} color="#034078" /></button>
+                  </div>
+                </div>
+                
+                <div className="driver-vehicle-plate">
+                  DD 1872 TU
+                </div>
               </div>
-              <div className="driver-actions">
-                <button className="icon-btn phone-btn"><Phone size={18} /></button>
-                <button className="icon-btn chat-btn"><MessageSquare size={18} /></button>
-              </div>
-            </div>
-            
-            <div className="driver-vehicle-plate">
-              DD 1872 TU
-            </div>
           </div>
         ) : (
           <>
