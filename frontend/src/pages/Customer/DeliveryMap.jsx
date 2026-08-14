@@ -171,13 +171,6 @@ export default function DeliveryMap() {
       </div>
 
       <div className="map-floating-header">
-        {/* Back Button */}
-        <button 
-          className="map-back-btn" 
-          onClick={() => navigate(-1)}
-        >
-          <ArrowLeft size={24} color="#1e293b" />
-        </button>
         
         {/* Floating Top Search Card */}
         <div className="floating-top-card">
@@ -223,6 +216,13 @@ export default function DeliveryMap() {
 
       {/* Bottom Sheet */}
       <div className="bottom-sheet" style={{ zIndex: 1000 }}>
+        {/* Floating Back Button */}
+        <button 
+          className="map-back-btn floating-back-btn" 
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft size={24} color="#1e293b" />
+        </button>
         <div className="bottom-sheet-header">
           <h2 className="sheet-title">
             {step === 'pickup' ? 'Set lokasi pengambilan' : 'Set lokasi pengantaran'}

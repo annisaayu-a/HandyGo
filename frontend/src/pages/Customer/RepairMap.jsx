@@ -171,13 +171,6 @@ export default function RepairMap() {
       </div>
 
       <div className="map-floating-header">
-        {/* Back Button */}
-        <button 
-          className="map-back-btn" 
-          onClick={() => navigate(-1)}
-        >
-          <ArrowLeft size={24} color="#1e293b" />
-        </button>
         {/* Floating Top Search Card */}
         <div className="floating-top-card">
         <div className="location-input-group">
@@ -209,6 +202,13 @@ export default function RepairMap() {
 
       {/* Bottom Sheet */}
       <div className="bottom-sheet" style={{ zIndex: 1000 }}>
+        {/* Floating Back Button */}
+        <button 
+          className="map-back-btn floating-back-btn" 
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft size={24} color="#1e293b" />
+        </button>
         <div className="bottom-sheet-header">
           <h2 className="sheet-title">Set lokasi</h2>
           <button className="edit-btn">Edit</button>

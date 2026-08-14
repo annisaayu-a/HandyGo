@@ -228,3 +228,5 @@
   margin: 0;
   line-height: 1.4;
 }
+
+.floating-back-btn { position: absolute; bottom: calc(100% + 16px); left: 16px; z-index: 1000; }

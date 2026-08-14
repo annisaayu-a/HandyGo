@@ -232,3 +232,5 @@
 /* Button */
 .submit-btn { background-color: #034078; color: #ffffff; border: none; border-radius: 12px; padding: 14px 24px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; }
 .submit-btn:disabled { background-color: #94a3b8; cursor: not-allowed; }
+
+.floating-back-btn { position: absolute; bottom: calc(100% + 16px); left: 16px; z-index: 1000; }
