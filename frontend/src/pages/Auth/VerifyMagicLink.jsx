@@ -32,9 +32,15 @@ const VerifyMagicLink = () => {
           throw new Error(data.error || 'Tautan sudah kedaluwarsa atau tidak valid.');
         }
         
-        // Save user data and token
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        // Save user data and token matching the rest of the app's keys
+        const userObj = { 
+          name: data.user.full_name, 
+          email: data.user.email, 
+          phone: data.user.phone_number, 
+          id: data.user.id 
+        };
+        localStorage.setItem('handyGoToken', data.token);
+        localStorage.setItem('handyGoUser', JSON.stringify(userObj));
 
         setIsSuccess(true);
         setStatus('Verifikasi berhasil!');
