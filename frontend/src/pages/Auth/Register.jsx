@@ -14,7 +14,8 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setError(''); // clear previous errors
@@ -31,13 +32,35 @@ export default function Register() {
       return;
     }
     
-      // Navigate to OTP page instead of registering directly
+    setIsSubmitting(true);
+    try {
+      const response = await fetch('https://handygo-api.vercel.app/api/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        setError(data.error || 'Gagal mengirim OTP ke email');
+        setIsSubmitting(false);
+        return;
+      }
+      
+      // Navigate to OTP page with otpToken
       navigate('/otp-verification', { 
         state: { 
           userData: { full_name: name, email, phone_number: phone, password },
+          otpToken: data.otpToken,
           source: 'register'
         } 
       });
+    } catch (err) {
+      console.error(err);
+      setError('Gagal menghubungi server');
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -154,8 +177,8 @@ export default function Register() {
 
           {error && <p style={{ color: '#ef4444', fontSize: '0.85rem', margin: '0', textAlign: 'center' }}>{error}</p>}
 
-          <button type="submit" className="submit-btn" style={{ marginTop: '8px' }}>
-            Daftar
+          <button type="submit" className="submit-btn" style={{ marginTop: '8px' }} disabled={isSubmitting}>
+            {isSubmitting ? 'Memproses...' : 'Daftar'}
           </button>
         </form>
 

@@ -1,28 +1,25 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
-import { auth } from '../../firebase';
 import './Login.css';
 import './OTPVerification.css';
 
 export default function OTPVerification() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { userData, source } = location.state || {};
+  const { userData, otpToken, source } = location.state || {};
   
-  // Firebase OTP is always 6 digits
+  // OTP is 6 digits
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [countdown, setCountdown] = useState(60);
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState('');
-  const [info, setInfo] = useState('Menginisialisasi sistem pengiriman SMS...');
+  const [info, setInfo] = useState('Kode OTP telah dikirim ke email Anda.');
   
   const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null)];
 
-  // Create reCAPTCHA and send SMS when component mounts
   useEffect(() => {
-    if (!userData || !userData.phone_number) {
+    if (!userData || !userData.email) {
       navigate('/register');
       return;
     }
@@ -32,49 +29,48 @@ export default function OTPVerification() {
       setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
 
-    // Initialize reCAPTCHA
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        'size': 'invisible',
-        'callback': (response) => {
-          // reCAPTCHA solved
-        }
-      });
-    }
-
-    sendOTP();
-
     return () => clearInterval(timer);
   }, [navigate, userData]);
 
-  const sendOTP = async () => {
+  const handleResend = async () => {
+    if (countdown > 0) return;
+    
+    setInfo('Mengirim ulang OTP ke email...');
+    setError('');
+    
     try {
-      setInfo('Mengirim SMS kode OTP ke HP Anda...');
-      setError('');
+      const response = await fetch('https://handygo-api.vercel.app/api/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: userData.email })
+      });
       
-      const appVerifier = window.recaptchaVerifier;
-      // Convert to international format if not already
-      let phoneNumber = userData.phone_number;
-      if (phoneNumber.startsWith('0')) {
-        phoneNumber = '+62' + phoneNumber.substring(1);
-      } else if (!phoneNumber.startsWith('+')) {
-        phoneNumber = '+' + phoneNumber;
+      const data = await response.json();
+      
+      if (!response.ok) {
+        setError(data.error || 'Gagal mengirim ulang OTP');
+        setInfo('');
+        return;
       }
       
-      const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
-      window.confirmationResult = confirmationResult;
-      setInfo('SMS berhasil dikirim! Silakan periksa HP Anda.');
-      setCountdown(60); // Reset timer
+      // Update otpToken in history state quietly
+      window.history.replaceState({
+        ...window.history.state,
+        usr: {
+          ...window.history.state.usr,
+          otpToken: data.otpToken
+        }
+      }, '');
+      
+      // Also update location state object reference for current render
+      location.state.otpToken = data.otpToken;
+
+      setInfo('OTP baru berhasil dikirim!');
+      setCountdown(60);
     } catch (err) {
       console.error(err);
-      setError('Error Firebase: ' + (err.message || 'Gagal mengirim SMS'));
+      setError('Gagal menghubungi server');
       setInfo('');
-    }
-  };
-
-  const handleResend = () => {
-    if (countdown === 0) {
-      sendOTP();
     }
   };
 
@@ -109,13 +105,6 @@ export default function OTPVerification() {
     setInfo('Memverifikasi kode...');
 
     try {
-      // 1. Verify OTP with Firebase
-      if (!window.confirmationResult) {
-        throw new Error("Sesi tidak valid, silakan kirim ulang OTP.");
-      }
-      await window.confirmationResult.confirm(enteredCode);
-      
-      // 2. If Firebase success, register/login in our backend
       if (source === 'register') {
         const response = await fetch('https://handygo-api.vercel.app/api/auth/register', {
           method: 'POST',
@@ -124,14 +113,16 @@ export default function OTPVerification() {
             full_name: userData.full_name, 
             email: userData.email, 
             phone_number: userData.phone_number, 
-            password: userData.password 
+            password: userData.password,
+            otpToken: location.state?.otpToken || otpToken,
+            otpCode: enteredCode
           })
         });
 
         const data = await response.json();
 
         if (!response.ok) {
-          setError(data.error || 'Terjadi kesalahan saat pendaftaran');
+          setError(data.error || 'Kode OTP salah atau terjadi kesalahan');
           setIsVerifying(false);
           setInfo('');
           return;
@@ -147,7 +138,7 @@ export default function OTPVerification() {
       }
     } catch (err) {
       console.error(err);
-      setError('Kode OTP salah atau kedaluwarsa.');
+      setError('Gagal menghubungi server.');
       setIsVerifying(false);
       setInfo('');
     }
@@ -161,9 +152,6 @@ export default function OTPVerification() {
 
   return (
     <div className="login-container">
-      {/* Container for invisible reCAPTCHA */}
-      <div id="recaptcha-container"></div>
-
       <button className="auth-back-btn" onClick={() => navigate(-1)}>
         <ArrowLeft size={24} color="#1e293b" />
       </button>
@@ -175,9 +163,9 @@ export default function OTPVerification() {
       </div>
 
       <div className="login-content animate-fade-in">
-        <h1 className="login-title">Masukkan Kode OTP</h1>
+        <h1 className="login-title">Verifikasi Akun</h1>
         <p className="otp-subtitle">
-          Dikirim ke <strong>{userData?.phone_number}</strong>
+          Kode telah dikirim ke email <strong>{userData?.email}</strong>
         </p>
 
         {info && !error && <p style={{ color: '#0ea5e9', fontSize: '0.875rem', marginBottom: '16px', textAlign: 'center' }}>{info}</p>}
@@ -188,7 +176,8 @@ export default function OTPVerification() {
             <input
               key={index}
               ref={inputRefs[index]}
-              type="tel"
+              type="text"
+              inputMode="numeric"
               className="otp-input"
               maxLength={1}
               value={digit}
@@ -200,18 +189,21 @@ export default function OTPVerification() {
         </div>
 
         <p className="otp-resend-text" style={{ marginTop: '24px' }}>
-          Kirim ulang kode <span 
+          Belum menerima email? <span 
             className="otp-timer" 
             onClick={handleResend}
             style={{ cursor: countdown === 0 ? 'pointer' : 'default', textDecoration: countdown === 0 ? 'underline' : 'none' }}
           >
-            {countdown > 0 ? formatTime(countdown) : 'Sekarang'}
+            {countdown > 0 ? `Tunggu ${formatTime(countdown)}` : 'Kirim Ulang'}
           </span>
+        </p>
+        <p style={{ fontSize: '0.75rem', color: '#64748b', textAlign: 'center', marginTop: '4px' }}>
+          *Cek folder Spam jika email tidak masuk
         </p>
 
         <button 
           className="submit-btn" 
-          style={{ marginTop: '32px' }}
+          style={{ marginTop: '24px' }}
           onClick={handleVerify}
           disabled={isVerifying}
         >
