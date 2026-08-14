@@ -17,7 +17,10 @@ export default function TransportDetails() {
   const [selectedVehicle, setSelectedVehicle] = useState('motor'); 
   const [isVehicleSheetOpen, setIsVehicleSheetOpen] = useState(false);
   const [isSearchingDriver, setIsSearchingDriver] = useState(false);
+  const [showQrisModal, setShowQrisModal] = useState(false);
+  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
   const searchTimeoutRef = React.useRef(null);
+  const qrisTimeoutRef = React.useRef(null);
 
   const vehicles = [
     { id: 'motor', name: 'Motor', desc: 'sampai dalam 2-4 menit', capacity: '1', price: 'Rp 18.000', priceValue: 18000, img: '🛵' },
@@ -32,25 +35,42 @@ export default function TransportDetails() {
   React.useEffect(() => {
     return () => {
       if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+      if (qrisTimeoutRef.current) clearTimeout(qrisTimeoutRef.current);
     };
   }, []);
 
   const handleOrder = () => {
-    if (paymentMethod === 'Tunai') {
-      setIsSearchingDriver(true);
-      searchTimeoutRef.current = setTimeout(() => {
-        setIsSearchingDriver(false);
-        setShowSuccessModal(true);
-        setTimeout(() => {
-          navigate('/customer'); 
-        }, 2500);
-      }, 4000);
+    if (paymentMethod === 'QRIS') {
+      setShowQrisModal(true);
+    } else if (paymentMethod === 'Tunai') {
+      startSearchingDriver();
     } else {
       setShowSuccessModal(true);
       setTimeout(() => {
         navigate('/customer'); 
       }, 2500);
     }
+  };
+
+  const handleQrisPaid = () => {
+    setShowQrisModal(false);
+    setShowPaymentSuccess(true);
+    
+    qrisTimeoutRef.current = setTimeout(() => {
+      setShowPaymentSuccess(false);
+      startSearchingDriver();
+    }, 2000);
+  };
+
+  const startSearchingDriver = () => {
+    setIsSearchingDriver(true);
+    searchTimeoutRef.current = setTimeout(() => {
+      setIsSearchingDriver(false);
+      setShowSuccessModal(true);
+      setTimeout(() => {
+        navigate('/customer'); 
+      }, 2500);
+    }, 4000);
   };
 
   const cancelSearch = () => {
@@ -208,7 +228,44 @@ export default function TransportDetails() {
         )}
       </div>
 
-      {/* Success Modal */}
+      {/* QRIS Modal */}
+      {showQrisModal && (
+        <div className="transport-modal-overlay animate-fade-in">
+          <div className="transport-qris-modal scale-up">
+            <h3 className="qris-title">Scan QRIS</h3>
+            <div className="qris-image-wrapper">
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" 
+                alt="QRIS Code" 
+                className="qris-image"
+              />
+            </div>
+            <p className="qris-instruction">Total: <strong>{activeVehicle.price}</strong></p>
+            <p className="qris-instruction-small">Silakan scan kode QR di atas dengan aplikasi pembayaran Anda.</p>
+            
+            <button className="qris-confirm-btn" onClick={handleQrisPaid}>
+              Saya sudah membayar
+            </button>
+            <button className="qris-cancel-btn" onClick={() => setShowQrisModal(false)}>
+              Batal
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Success Modal */}
+      {showPaymentSuccess && (
+        <div className="transport-modal-overlay animate-fade-in">
+          <div className="transport-success-modal scale-up">
+            <div className="success-icon-circle">
+              <Check size={40} color="white" strokeWidth={3} />
+            </div>
+            <h3 className="success-modal-title">Pembayaran Berhasil!</h3>
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal (Driver Found) */}
       {showSuccessModal && (
         <div className="transport-modal-overlay animate-fade-in">
           <div className="transport-success-modal scale-up">
