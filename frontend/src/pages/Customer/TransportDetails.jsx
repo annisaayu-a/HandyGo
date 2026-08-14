@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Map, { Marker, Source, Layer } from 'react-map-gl/mapbox';
-import { ArrowLeft, ArrowUp, Target, ChevronRight, Check, Phone, MessageSquare } from 'lucide-react';
+import { ArrowLeft, ArrowUp, Target, ChevronRight, Check, Phone, MessageSquare, Share2, Star, Copy, LogOut } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './TransportDetails.css';
 
@@ -17,9 +17,13 @@ export default function TransportDetails() {
   const [selectedVehicle, setSelectedVehicle] = useState('motor'); 
   const [isVehicleSheetOpen, setIsVehicleSheetOpen] = useState(false);
   const [isSearchingDriver, setIsSearchingDriver] = useState(false);
-  const [driverPhase, setDriverPhase] = useState(null); // 'heading', 'arriving', 'arrived'
+  const [driverPhase, setDriverPhase] = useState(null); // 'heading', 'arriving', 'arrived', 'in_trip', 'completed'
   const [showQrisModal, setShowQrisModal] = useState(false);
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [reviewText, setReviewText] = useState('');
+  
   const searchTimeoutRef = React.useRef(null);
   const qrisTimeoutRef = React.useRef(null);
   const trackingTimeoutRef = React.useRef(null);
@@ -76,6 +80,14 @@ export default function TransportDetails() {
         
         trackingTimeoutRef.current = setTimeout(() => {
           setDriverPhase('arrived');
+          
+          trackingTimeoutRef.current = setTimeout(() => {
+            setDriverPhase('in_trip');
+            
+            trackingTimeoutRef.current = setTimeout(() => {
+              setDriverPhase('completed');
+            }, 6000);
+          }, 4000);
         }, 4000);
       }, 4000);
     }, 3000);
@@ -87,6 +99,77 @@ export default function TransportDetails() {
     setIsSearchingDriver(false);
     setDriverPhase(null);
   };
+
+  if (driverPhase === 'completed') {
+    return (
+      <div className="transport-completed-page animate-fade-in">
+        <header className="completed-header">
+          <button className="back-btn" onClick={() => navigate('/customer')}>
+            <ArrowLeft size={24} color="#1e293b" />
+          </button>
+          <h1 className="header-title">Pesananmu</h1>
+        </header>
+
+        <div className="completed-content">
+          <div className="success-banner">
+            <div className="banner-text">
+              <h3 className="banner-title"><Check size={18} className="banner-icon" /> Layanan selesai!</h3>
+              <p className="banner-desc">Terima kasih telah menggunakan Handygo, cari kami kapan saja!</p>
+            </div>
+            <img src="/scooter-illustration.png" alt="Scooter" className="banner-img" onError={(e) => e.target.style.display = 'none'} />
+          </div>
+
+          <div className="cost-details-card">
+            <div className="cost-row">
+              <span className="cost-label">Rincian Biaya</span>
+              <span className="cost-value">{activeVehicle.name}</span>
+            </div>
+            <div className="cost-divider"></div>
+            <div className="cost-row total">
+              <span className="cost-label">Total</span>
+              <span className="cost-value-total">{activeVehicle.price}</span>
+            </div>
+          </div>
+
+          <div className="driver-profile-card">
+            <img src="https://ui-avatars.com/api/?name=Rafael+Gemam&background=034078&color=fff" alt="Driver" className="driver-avatar" />
+            <div className="driver-profile-info">
+              <h4 className="driver-name">Rafael gemam</h4>
+              <div className="driver-rating">⭐ 4.9 <span className="reviews">(59 ulasan)</span></div>
+            </div>
+            <div className="driver-actions">
+              <button className="icon-btn phone-btn"><Phone size={18} /></button>
+              <button className="icon-btn chat-btn"><MessageSquare size={18} /></button>
+            </div>
+          </div>
+
+          <div className="rating-section">
+            <h3 className="rating-title">Bagaimana pengalamanmu tadi?</h3>
+            <div className="stars-container">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button 
+                  key={star} 
+                  className={`star-btn ${rating >= star ? 'active' : ''}`}
+                  onClick={() => setRating(star)}
+                >
+                  <Star size={36} fill={rating >= star ? "#eab308" : "transparent"} color={rating >= star ? "#eab308" : "#cbd5e1"} />
+                </button>
+              ))}
+            </div>
+            
+            <div className="review-input-container">
+              <textarea 
+                className="review-input" 
+                placeholder="Tulis ulasan di sini"
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="transport-details-page animate-fade-in">
@@ -363,6 +446,33 @@ export default function TransportDetails() {
               <Check size={40} color="white" strokeWidth={3} />
             </div>
             <h3 className="success-modal-title">Pesananmu Berhasil!</h3>
+          </div>
+        </div>
+      )}
+
+      {/* Share Modal */}
+      {showShareModal && (
+        <div className="transport-modal-overlay animate-fade-in" onClick={() => setShowShareModal(false)}>
+          <div className="share-modal slide-up" onClick={e => e.stopPropagation()}>
+            <div className="drag-handle" onClick={() => setShowShareModal(false)}></div>
+            <h3 className="share-title">Bagikan Perjalanan</h3>
+            <div className="share-options">
+              <button className="share-option-btn">
+                <div className="share-icon whatsapp">
+                  <MessageSquare size={24} color="white" />
+                </div>
+                <span>WhatsApp</span>
+              </button>
+              <button className="share-option-btn" onClick={() => {
+                alert('Tautan disalin ke papan klip!');
+                setShowShareModal(false);
+              }}>
+                <div className="share-icon copy">
+                  <Copy size={24} color="#1e293b" />
+                </div>
+                <span>Salin Tautan</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
