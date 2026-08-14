@@ -30,13 +30,13 @@ export default function DeliveryMap() {
   const mapRef = useRef(null);
 
   useEffect(() => {
-    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${defaultPosition[0]}&lon=${defaultPosition[1]}&zoom=18&addressdetails=1&email=handygo-app@example.com`)
+    const token = import.meta.env.VITE_MAPBOX_TOKEN;
+    fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${defaultPosition[1]},${defaultPosition[0]}.json?access_token=${token}`)
       .then(res => res.json())
       .then(data => {
-        if(data && data.display_name) {
-          const nameParts = data.display_name.split(', ');
-          const name = data.name || (data.address && data.address.road) || nameParts[0];
-          setCurrentAddress(prev => ({ ...prev, name: name, address: data.display_name }));
+        if(data && data.features && data.features.length > 0) {
+          const result = data.features[0];
+          setCurrentAddress(prev => ({ ...prev, name: result.text, address: result.place_name }));
         }
       }).catch(console.error);
   }, [defaultPosition]);
@@ -104,25 +104,21 @@ export default function DeliveryMap() {
 
     reverseGeocodeTimeoutRef.current = setTimeout(async () => {
       try {
-        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&email=handygo-app@example.com`);
+        const token = import.meta.env.VITE_MAPBOX_TOKEN;
+        const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${token}`);
         
         if (!response.ok) {
-          if (response.status === 429 || response.status === 403) {
-            setCurrentAddress({ name: 'Terlalu banyak klik', address: 'Sistem peta membatasi akses sementara. Mohon tunggu 1-2 menit.', lat, lng });
-          } else {
-            setCurrentAddress({ name: 'Gagal memuat', address: 'Layanan peta sedang gangguan', lat, lng });
-          }
+          setCurrentAddress({ name: 'Gagal memuat', address: 'Layanan peta sedang gangguan', lat, lng });
           return;
         }
 
         const data = await response.json();
         
-        if (data && data.display_name) {
-          const nameParts = data.display_name.split(', ');
-          const name = data.name || (data.address && data.address.road) || nameParts[0];
+        if (data && data.features && data.features.length > 0) {
+          const result = data.features[0];
           setCurrentAddress({
-            name: name,
-            address: data.display_name,
+            name: result.text,
+            address: result.place_name,
             lat,
             lng
           });
