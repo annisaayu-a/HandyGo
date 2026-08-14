@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { ArrowLeft, Image as ImageIcon, Trash2 } from 'lucide-react';
+import { ArrowLeft, Image as ImageIcon, Trash2, Camera } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Cropper from 'react-easy-crop';
 import './ProfileDetail.css';
@@ -26,6 +26,9 @@ export default function ProfileDetail() {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const fileInputRef = useRef(null);
+  const cameraInputRef = useRef(null);
+
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
@@ -113,7 +116,7 @@ export default function ProfileDetail() {
       if (!userStr) return;
       const user = JSON.parse(userStr);
 
-      const response = await fetch('https://handygo-api.vercel.app/api/auth/profile/picture', {
+      const response = await fetch('/api/auth/profile/picture', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -158,7 +161,7 @@ export default function ProfileDetail() {
     const user = JSON.parse(userStr);
 
     try {
-      const response = await fetch('https://handygo-api.vercel.app/api/auth/profile/picture', {
+      const response = await fetch('/api/auth/profile/picture', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -212,7 +215,7 @@ export default function ProfileDetail() {
     const user = JSON.parse(userStr);
     
     try {
-      const response = await fetch('https://handygo-api.vercel.app/api/auth/profile', {
+      const response = await fetch(`${API_URL}/api/auth/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -288,7 +291,7 @@ export default function ProfileDetail() {
         <div className="profile-pic-section">
           {profilePic ? (
             <img 
-              src={`https://handygo-api.vercel.app${profilePic}`}
+              src={`${API_URL}${profilePic}`}
               alt="Profile" 
               className="profile-pic-large"
             />
@@ -312,6 +315,14 @@ export default function ProfileDetail() {
             ref={fileInputRef} 
             onChange={handleFileChange} 
             accept="image/*" 
+            style={{ display: 'none' }} 
+          />
+          <input 
+            type="file" 
+            ref={cameraInputRef} 
+            onChange={handleFileChange} 
+            accept="image/*"
+            capture="environment" 
             style={{ display: 'none' }} 
           />
         </div>
@@ -399,9 +410,13 @@ export default function ProfileDetail() {
           <div className="bottom-sheet-backdrop" onClick={() => setShowBottomSheet(false)}></div>
           <div className="bottom-sheet-menu animate-slide-up">
             <h3 className="bottom-sheet-title">Foto profil</h3>
-            <div className="bottom-sheet-item" onClick={() => fileInputRef.current.click()}>
+            <div className="bottom-sheet-item" onClick={() => { setShowBottomSheet(false); cameraInputRef.current.click(); }}>
+              <Camera size={20} color="#64748b" />
+              <span>Ambil gambar dari Kamera</span>
+            </div>
+            <div className="bottom-sheet-item" onClick={() => { setShowBottomSheet(false); fileInputRef.current.click(); }}>
               <ImageIcon size={20} color="#64748b" />
-              <span>Pilih dari galeri</span>
+              <span>Pilih dari Galeri</span>
             </div>
             <div className="bottom-sheet-item" onClick={handleDeletePhoto}>
               <Trash2 size={20} color="#ef4444" />
