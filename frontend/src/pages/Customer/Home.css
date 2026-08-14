@@ -183,14 +183,14 @@
 }
 
 .promo-card-main {
-  background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
-  border-radius: 20px;
+  background: linear-gradient(135deg, #7481df 0%, #5b69c4 100%);
+  border-radius: 12px;
   padding: 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: white;
-  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 8px 20px rgba(91, 105, 196, 0.15);
   overflow: hidden;
   position: relative;
 }
@@ -198,48 +198,48 @@
 .promo-content {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   position: relative;
   z-index: 2;
 }
 
 .promo-text {
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
-  font-weight: 500;
-  opacity: 0.9;
+  font-weight: 400;
+  color: #e2e8f0;
 }
 
 .promo-big {
   font-family: 'Outfit', sans-serif;
   font-size: 1.8rem;
-  font-weight: 700;
+  font-weight: 800;
   margin: 0;
-  line-height: 1;
+  line-height: 1.1;
+  color: #ffffff;
+}
+
+.promo-bg-shape {
+  position: absolute;
+  right: 18px;
+  top: 10px;
+  width: 95px;
+  height: 70px;
+  background-color: rgba(62, 73, 148, 0.45); /* Darker rotated shadow */
+  border-radius: 14px;
+  transform: rotate(-10deg);
+  z-index: 1;
 }
 
 .promo-icon-wrapper {
-  background-color: rgba(255, 255, 255, 0.9);
-  width: 70px;
-  height: 70px;
-  border-radius: 16px;
+  background-color: #eef2ff;
+  width: 85px;
+  height: 60px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   z-index: 2;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-  transform: rotate(-5deg);
-}
-
-/* Decorative background elements for promo card */
-.promo-card-main::before {
-  content: '';
-  position: absolute;
-  top: -20px;
-  right: -20px;
-  width: 150px;
-  height: 150px;
-  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
-  border-radius: 50%;
-  z-index: 1;
+  margin-right: 5px;
 }

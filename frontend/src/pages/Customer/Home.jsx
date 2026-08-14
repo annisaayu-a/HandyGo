@@ -112,8 +112,9 @@ export default function CustomerHome() {
             <span className="promo-text">Ongkir untuk semua layanan</span>
             <h2 className="promo-big">100% GRATIS</h2>
           </div>
+          <div className="promo-bg-shape"></div>
           <div className="promo-icon-wrapper">
-            <Percent size={40} color="#5b64df" strokeWidth={3} />
+            <Percent size={42} color="#5b69c4" strokeWidth={4} />
           </div>
         </div>
       </section>
