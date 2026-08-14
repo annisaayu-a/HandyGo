@@ -482,7 +482,7 @@ exports.sendMagicLink = async (req, res) => {
       }
     });
 
-    const magicLinkUrl = `https://handygo-app-smoky.vercel.app/verify-magic-link?token=${magicToken}`;
+    const magicLinkUrl = `https://handygo.id/verify-magic-link?token=${magicToken}`;
 
     const mailOptions = {
       from: `"HandyGo Security" <${process.env.EMAIL_USER}>`,
