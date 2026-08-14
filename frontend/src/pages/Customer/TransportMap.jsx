@@ -31,7 +31,7 @@ export default function TransportMap() {
 
   useEffect(() => {
     const token = import.meta.env.VITE_MAPBOX_TOKEN;
-    fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${defaultPosition[1]},${defaultPosition[0]}.json?access_token=${token}`)
+    fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${defaultPosition[1]},${defaultPosition[0]}.json?access_token=${token}&language=id`)
       .then(res => res.json())
       .then(data => {
         if(data && data.features && data.features.length > 0) {
@@ -105,7 +105,7 @@ export default function TransportMap() {
     reverseGeocodeTimeoutRef.current = setTimeout(async () => {
       try {
         const token = import.meta.env.VITE_MAPBOX_TOKEN;
-        const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${token}`);
+        const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${token}&language=id`);
         
         if (!response.ok) {
           setCurrentAddress({ name: 'Gagal memuat', address: 'Layanan peta sedang gangguan', lat, lng });
