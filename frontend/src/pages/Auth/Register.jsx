@@ -51,6 +51,7 @@ export default function Register() {
       // Navigate to OTP page which now just says "Check Email"
       navigate('/otp-verification', { 
         state: { 
+          userData: { full_name: name, email, phone_number: phone, password },
           source: 'register'
         } 
       });
