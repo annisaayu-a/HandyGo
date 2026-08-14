@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
+import { auth } from '../../firebase';
 import './Login.css';
 
 export default function PhoneRegister() {
@@ -9,55 +11,55 @@ export default function PhoneRegister() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [phoneError, setPhoneError] = useState('');
-  const [otp, setOtp] = useState(['', '', '', '']);
-  const [countdown, setCountdown] = useState(15 * 60); // 15 minutes in seconds
   
-  const otpRefs = [useRef(), useRef(), useRef(), useRef()];
+  // Firebase OTP is 6 digits
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [countdown, setCountdown] = useState(60);
+  const [info, setInfo] = useState('');
+  const [isVerifying, setIsVerifying] = useState(false);
+  
+  const otpRefs = [useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null)];
 
   useEffect(() => {
     let timer;
     if (step === 2 && countdown > 0) {
-      timer = setInterval(() => {
-        setCountdown((prev) => prev - 1);
-      }, 1000);
+      timer = setInterval(() => setCountdown(prev => prev - 1), 1000);
     }
     return () => clearInterval(timer);
   }, [step, countdown]);
-
-  useEffect(() => {
-    if (step === 3) {
-      const registerUser = async () => {
-        try {
-          const response = await fetch('https://handygo-api.vercel.app/api/auth/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ full_name: name, phone_number: phone, password: 'otp-login' })
-          });
-          const data = await response.json();
-          if (response.ok) {
-            const user = { name: data.user.full_name, phone: data.user.phone_number, id: data.user.id };
-            localStorage.setItem('handyGoUser', JSON.stringify(user));
-            localStorage.setItem('handyGoToken', data.token);
-          } else {
-            console.error('Registration failed:', data.error);
-          }
-        } catch (err) {
-          console.error('Failed to connect to backend', err);
-        }
-      };
-      
-      registerUser().then(() => {
-        setTimeout(() => {
-          navigate('/customer');
-        }, 2000);
-      });
-    }
-  }, [step, navigate, name, phone]);
 
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
     return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const setupRecaptcha = () => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'invisible'
+      });
+    }
+  };
+
+  const sendOTP = async () => {
+    try {
+      setupRecaptcha();
+      setInfo('Mengirim SMS OTP...');
+      const appVerifier = window.recaptchaVerifier;
+      
+      let phoneNumber = phone.startsWith('0') ? '+62' + phone.slice(1) : (phone.startsWith('+') ? phone : '+' + phone);
+      
+      const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+      window.confirmationResult = confirmationResult;
+      setInfo('SMS berhasil dikirim! Silakan periksa pesan masuk.');
+      setStep(2);
+      setCountdown(60);
+    } catch (err) {
+      console.error(err);
+      setPhoneError('Gagal mengirim SMS. Pastikan nomor valid.');
+      setStep(1);
+    }
   };
 
   const handleNextStep = (e) => {
@@ -67,35 +69,17 @@ export default function PhoneRegister() {
         setPhoneError('No. Hp tidak boleh kosong.');
         return;
       }
-      if (!phone.startsWith('+628')) {
-        setPhoneError('Nomor telepon harus diawali angka 8.');
-        return;
-      }
-      if (phone.length < 12 || phone.length > 16) {
-        setPhoneError('No. Hp yang dimasukkan salah.');
-        return;
-      }
       setPhoneError('');
-      setStep(2);
-      setCountdown(15 * 60); // reset countdown
-    } else if (step === 2) {
-      // Validate OTP here in a real app
-      setStep(3);
+      sendOTP();
     }
   };
 
   const handleOtpChange = (index, value) => {
-    // Only allow numbers
     if (value && !/^\d+$/.test(value)) return;
-    
     const newOtp = [...otp];
-    newOtp[index] = value.substring(value.length - 1); // keep only last char if they type fast
+    newOtp[index] = value.substring(value.length - 1);
     setOtp(newOtp);
-
-    // Auto-focus next input
-    if (value && index < 3) {
-      otpRefs[index + 1].current.focus();
-    }
+    if (value && index < 5) otpRefs[index + 1].current.focus();
   };
 
   const handleOtpKeyDown = (index, e) => {
@@ -104,22 +88,57 @@ export default function PhoneRegister() {
     }
   };
 
-  const handleResend = () => {
-    if (countdown === 0) {
-      setCountdown(15 * 60);
-      setOtp(['', '', '', '']);
-      otpRefs[0].current.focus();
+  const handleVerifyOTP = async (e) => {
+    if(e) e.preventDefault();
+    const enteredCode = otp.join('');
+    if (enteredCode.length < 6) {
+      setInfo('Masukkan 6 digit kode OTP');
+      return;
     }
+    
+    setIsVerifying(true);
+    setInfo('Memverifikasi kode Firebase...');
+
+    try {
+      if (!window.confirmationResult) throw new Error("Sesi tidak valid");
+      await window.confirmationResult.confirm(enteredCode);
+      
+      // Verification success, register in backend
+      const response = await fetch('https://handygo-api.vercel.app/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ full_name: name, phone_number: phone, password: 'otp-login' })
+      });
+      const data = await response.json();
+      
+      if (response.ok) {
+        const user = { name: data.user.full_name, phone: data.user.phone_number, id: data.user.id };
+        localStorage.setItem('handyGoUser', JSON.stringify(user));
+        localStorage.setItem('handyGoToken', data.token);
+        navigate('/customer');
+      } else {
+        setInfo(data.error || 'Gagal mendaftar di server.');
+        setIsVerifying(false);
+      }
+    } catch (err) {
+      console.error(err);
+      setInfo('Kode OTP salah atau kedaluwarsa.');
+      setIsVerifying(false);
+    }
+  };
+
+  const handleResend = () => {
+    if (countdown === 0) sendOTP();
   };
 
   return (
     <div className="login-container">
-      {/* Back Button */}
+      <div id="recaptcha-container"></div>
+
       <button className="auth-back-btn" onClick={() => navigate(-1)}>
         <ArrowLeft size={24} color="#1e293b" />
       </button>
 
-      {/* Wavy Header Background */}
       <div className="wave-header">
         <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="wave-svg">
           <path fill="#034078" fillOpacity="1" d="M0,96L60,117.3C120,139,240,181,360,181.3C480,181,600,139,720,112C840,85,960,75,1080,85.3C1200,96,1320,128,1380,144L1440,160L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path>
@@ -127,23 +146,16 @@ export default function PhoneRegister() {
       </div>
 
       <div className="login-content animate-fade-in">
-        {step !== 3 && <h1 className="login-title">Daftar</h1>}
+        <h1 className="login-title">Daftar OTP Firebase</h1>
 
-        <form className="login-form" onSubmit={handleNextStep}>
+        <form className="login-form" onSubmit={step === 1 ? handleNextStep : handleVerifyOTP}>
           
           {step === 1 && (
             <div className="animate-fade-in">
               <div className="form-group" style={{ marginBottom: '20px' }}>
                 <label className="form-label">Nama</label>
                 <div className="input-wrapper">
-                  <input 
-                    type="text" 
-                    className="form-input" 
-                    placeholder="Masukkan nama" 
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required 
-                  />
+                  <input type="text" className="form-input" placeholder="Masukkan nama" value={name} onChange={(e) => setName(e.target.value)} required />
                 </div>
               </div>
 
@@ -181,10 +193,11 @@ export default function PhoneRegister() {
             <div className="animate-fade-in" style={{ width: '100%' }}>
               <div style={{ textAlign: 'center', marginBottom: '8px' }}>
                 <h3 style={{ color: '#034078', fontFamily: 'Outfit', fontWeight: '700', margin: '0 0 4px 0', fontSize: '1.2rem' }}>Masukkan Kode OTP</h3>
-                <p style={{ color: '#94a3b8', fontSize: '0.85rem', margin: 0 }}>Dikirim ke <span style={{ color: '#034078', fontWeight: '600' }}>{phone || '+62 812 1234 5678'}</span></p>
+                <p style={{ color: '#94a3b8', fontSize: '0.85rem', margin: 0 }}>Dikirim ke <span style={{ color: '#034078', fontWeight: '600' }}>{phone}</span></p>
+                {info && <p style={{ color: '#0ea5e9', fontSize: '0.85rem', marginTop: '4px' }}>{info}</p>}
               </div>
 
-              <div className="otp-container">
+              <div className="otp-container" style={{ display: 'flex', justifyContent: 'center', gap: '6px' }}>
                 {otp.map((digit, index) => (
                   <input
                     key={index}
@@ -196,6 +209,7 @@ export default function PhoneRegister() {
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(index, e)}
                     className="otp-input"
+                    style={{ width: '35px', height: '45px', padding: 0 }}
                     required
                   />
                 ))}
@@ -207,40 +221,12 @@ export default function PhoneRegister() {
                 </span>
               </p>
 
-              <button type="submit" className="submit-btn">
-                Daftar
+              <button type="submit" className="submit-btn" disabled={isVerifying}>
+                {isVerifying ? 'Memverifikasi...' : 'Verifikasi'}
               </button>
             </div>
           )}
-
-          {step === 3 && (
-            <div className="animate-fade-in" style={{ width: '100%', marginTop: '40px' }}>
-              <div className="success-icon-container">
-                <div style={{ 
-                  backgroundColor: '#16a34a', 
-                  width: '140px', 
-                  height: '140px', 
-                  borderRadius: '50%', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center',
-                  boxShadow: '0 8px 24px rgba(22, 163, 74, 0.3)'
-                }}>
-                  <Check size={80} color="white" strokeWidth={4} />
-                </div>
-              </div>
-              <h2 className="success-title">Sukses!</h2>
-            </div>
-          )}
         </form>
-
-        {step !== 3 && (
-          <div className="social-login-section" style={{ position: 'absolute', bottom: '40px', width: '100%', left: '0' }}>
-            <p className="register-text">
-              Sudah memiliki akun? <span className="register-link" onClick={() => navigate('/login')}>Masuk</span>
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
