@@ -66,10 +66,6 @@ export default function TransportDetails() {
 
       {/* Top UI */}
       <div className="transport-top-ui">
-        <button className="transport-back-btn" onClick={() => navigate(-1)}>
-          <ArrowLeft size={24} color="#1e293b" />
-        </button>
-
         {/* Floating Top Card */}
         <div className="floating-location-card">
           <div className="location-row">
@@ -86,6 +82,9 @@ export default function TransportDetails() {
 
       {/* Bottom Sheet */}
       <div className="transport-bottom-sheet">
+        <button className="transport-back-btn floating-back-btn" onClick={() => navigate(-1)}>
+          <ArrowLeft size={24} color="#1e293b" />
+        </button>
         {/* Vehicle Selection Area */}
         {isVehicleSheetOpen ? (
           <div className="vehicle-options-container">
