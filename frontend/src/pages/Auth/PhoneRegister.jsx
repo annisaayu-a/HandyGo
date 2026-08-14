@@ -112,7 +112,7 @@ export default function PhoneRegister() {
       const data = await response.json();
       
       if (response.ok) {
-        const user = { name: data.user.full_name, phone: data.user.phone_number, id: data.user.id };
+        const user = { name: data.user.full_name, phone: data.user.phone_number, id: data.user.id, default_location: data.user.default_location, profile_picture: data.user.profile_picture };
         localStorage.setItem('handyGoUser', JSON.stringify(user));
         localStorage.setItem('handyGoToken', data.token);
         navigate('/customer');

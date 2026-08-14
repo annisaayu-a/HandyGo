@@ -37,7 +37,9 @@ const VerifyMagicLink = () => {
           name: data.user.full_name, 
           email: data.user.email, 
           phone: data.user.phone_number, 
-          id: data.user.id 
+          id: data.user.id,
+          default_location: data.user.default_location,
+          profile_picture: data.user.profile_picture
         };
         localStorage.setItem('handyGoToken', data.token);
         localStorage.setItem('handyGoUser', JSON.stringify(userObj));

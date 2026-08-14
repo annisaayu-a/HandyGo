@@ -37,7 +37,23 @@ export default function Welcome() {
           };
           localStorage.setItem('handyGoToken', data.token);
           localStorage.setItem('handyGoUser', JSON.stringify(userObj));
-          navigate('/customer'); // Arahkan ke beranda customer
+          
+          // Hapus cache service worker agar browser mengambil kode terbaru
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+              for(let registration of registrations) {
+                registration.unregister();
+              } 
+            });
+          }
+          if ('caches' in window) {
+            caches.keys().then((keyList) => {
+              return Promise.all(keyList.map((key) => caches.delete(key)));
+            });
+          }
+
+          // Gunakan window.location.href untuk memaksa reload halaman penuh
+          window.location.href = '/customer'; 
         } else {
           const errorData = await res.json();
           alert('Login gagal: ' + (errorData.error || 'Terjadi kesalahan'));

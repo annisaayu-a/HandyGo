@@ -122,7 +122,22 @@ export default function Login() {
       const user = { name: data.user.full_name, email: data.user.email, phone: data.user.phone_number, id: data.user.id, default_location: data.user.default_location, profile_picture: data.user.profile_picture };
       localStorage.setItem('handyGoUser', JSON.stringify(user));
       localStorage.setItem('handyGoToken', data.token);
-      navigate('/customer');
+
+      // Hapus cache service worker agar browser mengambil kode terbaru
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+          } 
+        });
+      }
+      if ('caches' in window) {
+        caches.keys().then((keyList) => {
+          return Promise.all(keyList.map((key) => caches.delete(key)));
+        });
+      }
+
+      window.location.href = '/customer';
     } catch (err) {
       setError('Gagal menghubungi server. Pastikan server backend berjalan.');
       console.error(err);
