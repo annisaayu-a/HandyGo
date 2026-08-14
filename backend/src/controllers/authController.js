@@ -124,7 +124,9 @@ exports.login = async (req, res) => {
         full_name: user.full_name,
         phone_number: user.phone_number,
         email: user.email,
-        default_location: user.default_location
+        default_location: user.default_location,
+        profile_picture: user.profile_picture,
+        role: user.role
       }
     });
   } catch (error) {
@@ -212,7 +214,8 @@ exports.updateProfile = async (req, res) => {
         phone_number: updatedUser.phone_number,
         email: updatedUser.email,
         default_location: updatedUser.default_location,
-        profile_picture: updatedUser.profile_picture
+        profile_picture: updatedUser.profile_picture,
+        role: updatedUser.role
       }
     });
   } catch (error) {
@@ -264,7 +267,8 @@ exports.uploadProfilePicture = async (req, res) => {
       message: 'Foto profil berhasil diperbarui',
       user: {
         id: updatedUser.id,
-        profile_picture: updatedUser.profile_picture
+        profile_picture: updatedUser.profile_picture,
+        role: updatedUser.role
       }
     });
 
@@ -379,7 +383,8 @@ exports.googleAuth = async (req, res) => {
         phone_number: user.phone_number,
         email: user.email,
         default_location: user.default_location,
-        profile_picture: user.profile_picture
+        profile_picture: user.profile_picture,
+        role: user.role
       }
     });
   } catch (error) {
@@ -544,7 +549,8 @@ exports.verifyMagicLink = async (req, res) => {
             phone_number: existingPhone.phone_number,
             email: existingPhone.email,
             default_location: existingPhone.default_location,
-            profile_picture: existingPhone.profile_picture
+            profile_picture: existingPhone.profile_picture,
+        role: existingPhone.role
           }
         });
       }
@@ -567,7 +573,8 @@ exports.verifyMagicLink = async (req, res) => {
             phone_number: existingEmail.phone_number,
             email: existingEmail.email,
             default_location: existingEmail.default_location,
-            profile_picture: existingEmail.profile_picture
+            profile_picture: existingEmail.profile_picture,
+        role: existingEmail.role
           }
         });
       }
