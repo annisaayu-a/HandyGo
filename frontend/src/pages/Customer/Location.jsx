@@ -156,13 +156,13 @@ export default function Location() {
         },
         body: JSON.stringify({
           userId: user.id,
-          location: currentAddress.address
+          location: currentAddress.name
         })
       });
 
       if (response.ok) {
         // Update localStorage
-        user.default_location = currentAddress.address;
+        user.default_location = currentAddress.name;
         localStorage.setItem('handyGoUser', JSON.stringify(user));
         
         setToastMessage('Lokasi berhasil disimpan.');
