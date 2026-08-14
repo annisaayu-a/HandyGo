@@ -4,6 +4,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import bucketIllustration from '../../assets/hero.png'; // Fallback image if we don't have bucket icon
 import './CleaningCheckout.css';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 export default function CleaningCheckout() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -72,7 +74,7 @@ export default function CleaningCheckout() {
     }
 
     try {
-      const response = await fetch('https://handygo-api.vercel.app/api/orders', {
+      const response = await fetch(`${API_URL}/api/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -104,7 +106,7 @@ export default function CleaningCheckout() {
               durasi,
               catatan
             },
-            totalPrice,
+            totalPrice: totalHarga,
             orderId: createdOrderId
           }
         });
