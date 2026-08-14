@@ -1,30 +1,26 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, MapPin } from 'lucide-react';
-import { FaShoppingBag, FaBox, FaBroom, FaWrench, FaTruck, FaMotorcycle } from 'react-icons/fa';
+import { Search, Bell, MapPin, Percent } from 'lucide-react';
+import { FaShoppingBasket, FaBox, FaBroom, FaWrench, FaTruck, FaMotorcycle } from 'react-icons/fa';
 import './Home.css';
 
 export default function CustomerHome() {
   const navigate = useNavigate();
 
-  
   const storedUser = JSON.parse(localStorage.getItem('handyGoUser') || '{}');
   const userName = storedUser.name || 'Ajel';
   const profilePic = storedUser.profile_picture;
   const userLocation = storedUser.default_location || 'Atur lokasimu di sini';
   
-  // Format location to be shorter for Home screen if it's too long
   const displayLocation = userLocation === 'Atur lokasimu di sini' ? userLocation : userLocation.split(',')[0];
 
-  const iconProps = { size: 28, color: "#034078" };
-
   const services = [
-    { id: 1, name: 'Belanja', icon: <FaShoppingBag {...iconProps} /> },
-    { id: 2, name: 'Antar Barang', icon: <FaBox {...iconProps} /> },
-    { id: 3, name: 'Bersih-Bersih', icon: <FaBroom {...iconProps} /> },
-    { id: 4, name: 'Perbaikan', icon: <FaWrench {...iconProps} /> },
-    { id: 5, name: 'Pindahan', icon: <FaTruck {...iconProps} /> },
-    { id: 6, name: 'Antar Jemput', icon: <FaMotorcycle {...iconProps} /> }
+    { id: 1, name: 'Belanja', icon: <FaShoppingBasket size={26} color="#e11d48" />, bg: '#fff1f2' },
+    { id: 2, name: 'Antar Barang', icon: <FaBox size={26} color="#16a34a" />, bg: '#f0fdf4' },
+    { id: 3, name: 'Bersih-Bersih', icon: <FaBroom size={26} color="#3b82f6" />, bg: '#eff6ff' },
+    { id: 4, name: 'Perbaikan', icon: <FaWrench size={26} color="#ea580c" />, bg: '#fff7ed' },
+    { id: 5, name: 'Pindahan', icon: <FaTruck size={26} color="#6366f1" />, bg: '#eef2ff' },
+    { id: 6, name: 'Antar Jemput', icon: <FaMotorcycle size={26} color="#0284c7" />, bg: '#f0f9ff' }
   ];
 
   return (
@@ -40,7 +36,7 @@ export default function CustomerHome() {
             />
           ) : (
             <img 
-              src={`https://ui-avatars.com/api/?name=${userName}&background=034078&color=fff`} 
+              src={`https://ui-avatars.com/api/?name=${userName}&background=f1f5f9&color=0f172a`} 
               alt="Profile" 
               className="profile-img"
             />
@@ -58,20 +54,20 @@ export default function CustomerHome() {
           </div>
         </div>
         <button className="notification-btn">
-          <Bell size={20} />
+          <Bell size={22} color="#0f172a" />
         </button>
       </header>
 
       {/* Greeting Section */}
       <section className="greeting-section">
-        <h1 className="greeting-title">Hai, {userName}!</h1>
+        <h1 className="greeting-title">Selamat Datang!</h1>
         <h2 className="greeting-subtitle">Mau dibantu apa hari ini?</h2>
       </section>
 
       {/* Search Bar */}
       <section className="search-section" onClick={() => navigate('/customer/search')} style={{ cursor: 'pointer' }}>
         <div className="search-bar" style={{ pointerEvents: 'none' }}>
-          <Search size={20} className="search-icon" />
+          <Search size={20} className="search-icon" color="#94a3b8" />
           <input 
             type="text" 
             placeholder="Cari kebutuhanmu di sini"
@@ -90,21 +86,16 @@ export default function CustomerHome() {
               key={service.id} 
               className="service-item"
               onClick={() => {
-                if (service.id === 1) {
-                  navigate('/customer/shopping');
-                } else if (service.id === 2) {
-                  navigate('/customer/delivery');
-                } else if (service.id === 3) {
-                  navigate('/customer/cleaning');
-                } else if (service.id === 4) {
-                  navigate('/customer/repair');
-                } else if (service.id === 6) {
-                  navigate('/customer/transport');
-                }
+                if (service.id === 1) navigate('/customer/shopping');
+                else if (service.id === 2) navigate('/customer/delivery');
+                else if (service.id === 3) navigate('/customer/cleaning');
+                else if (service.id === 4) navigate('/customer/repair');
+                else if (service.id === 5) navigate('/customer/transport'); // Using transport for pindahan
+                else if (service.id === 6) navigate('/customer/transport');
               }}
               style={{ cursor: 'pointer' }}
             >
-              <div className="service-icon-wrapper">
+              <div className="service-icon-wrapper" style={{ backgroundColor: service.bg }}>
                 {service.icon}
               </div>
               <span className="service-name">{service.name}</span>
@@ -115,32 +106,14 @@ export default function CustomerHome() {
 
       {/* Promo Section */}
       <section className="promo-section">
-        <div className="promo-header">
-          <h3 className="section-title">Promo Untukmu</h3>
-          <a href="#" className="see-all-link">Lihat Semua</a>
-        </div>
-        
-        <div className="promo-scroll">
-          <div className="promo-card">
-            <div className="promo-left">
-              <span className="promo-value">20%</span>
-              <span className="promo-type">diskon</span>
-            </div>
-            <div className="promo-right">
-              <h4 className="promo-title">Layanan Kebersihan</h4>
-              <p className="promo-expiry">Berakhir besok 23:59</p>
-            </div>
+        <h3 className="section-title">Promo Untukmu</h3>
+        <div className="promo-card-main">
+          <div className="promo-content">
+            <span className="promo-text">Ongkir untuk semua layanan</span>
+            <h2 className="promo-big">100% GRATIS</h2>
           </div>
-          
-          <div className="promo-card">
-            <div className="promo-left">
-              <span className="promo-value">FREE</span>
-              <span className="promo-type">ongkir</span>
-            </div>
-            <div className="promo-right">
-              <h4 className="promo-title">Seluruh Layanan</h4>
-              <p className="promo-expiry">Berakhir hari ini 23:59</p>
-            </div>
+          <div className="promo-icon-wrapper">
+            <Percent size={40} color="#5b64df" strokeWidth={3} />
           </div>
         </div>
       </section>
