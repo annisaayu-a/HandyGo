@@ -1,6 +1,8 @@
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
 
 const prisma = new PrismaClient({
   datasourceUrl: process.env.DATABASE_URL
@@ -9,11 +11,25 @@ const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkeyhandygo';
 
 exports.register = async (req, res) => {
   try {
-    const { full_name, phone_number, email, password } = req.body;
+    const { full_name, phone_number, email, password, otpToken, otpCode } = req.body;
 
     // Validate input
     if (!full_name || (!phone_number && !email) || !password) {
       return res.status(400).json({ error: 'Nama, Email/No. Hp, dan Password wajib diisi' });
+    }
+
+    // Verify OTP if provided
+    if (otpToken && otpCode) {
+      try {
+        const decoded = jwt.verify(otpToken, JWT_SECRET);
+        if (decoded.otp !== otpCode) {
+          return res.status(400).json({ error: 'Kode OTP salah' });
+        }
+      } catch (err) {
+        return res.status(400).json({ error: 'Sesi OTP tidak valid atau kedaluwarsa' });
+      }
+    } else if (process.env.EMAIL_USER && email) {
+      return res.status(400).json({ error: 'Kode OTP wajib diisi' });
     }
 
     // Check if user exists
@@ -370,5 +386,56 @@ exports.googleAuth = async (req, res) => {
   } catch (error) {
     console.error('Google auth error:', error);
     res.status(401).json({ error: 'Autentikasi Google gagal' });
+  }
+};
+
+exports.sendOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'Email wajib diisi' });
+    }
+    
+    // Check if user exists
+    const existingUser = await prisma.user.findFirst({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ error: 'Email sudah terdaftar' });
+    }
+
+    // Generate 6 digit OTP
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Sign OTP into a JWT token (expires in 5 minutes)
+    const otpToken = jwt.sign({ otp: otpCode, email }, JWT_SECRET, { expiresIn: '5m' });
+
+    // Send email using nodemailer
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    const mailOptions = {
+      from: `"HandyGo Security" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Kode OTP Pendaftaran HandyGo',
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; text-align: center;">
+          <h2 style="color: #034078;">Verifikasi Akun HandyGo</h2>
+          <p>Terima kasih telah mendaftar di HandyGo. Berikut adalah kode OTP Anda:</p>
+          <h1 style="font-size: 36px; letter-spacing: 5px; color: #1e293b; background: #f1f5f9; padding: 10px; border-radius: 8px; display: inline-block;">${otpCode}</h1>
+          <p style="color: #64748b; font-size: 14px;">Kode ini hanya berlaku selama 5 menit. Jangan berikan kode ini kepada siapapun.</p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    
+    res.json({ message: 'OTP berhasil dikirim ke email', otpToken });
+  } catch (error) {
+    console.error('Send OTP error:', error);
+    res.status(500).json({ error: 'Gagal mengirim email OTP. Pastikan konfigurasi EMAIL_USER benar.' });
   }
 };
