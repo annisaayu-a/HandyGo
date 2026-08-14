@@ -128,33 +128,35 @@ export default function TransportDetails() {
         <div className="completed-content">
           <div className="success-banner">
             <div className="banner-text">
-              <h3 className="banner-title"><Check size={18} className="banner-icon" /> Layanan selesai!</h3>
+              <h3 className="banner-title"><Check size={16} className="banner-icon" strokeWidth={3} /> Layanan selesai!</h3>
               <p className="banner-desc">Terima kasih telah menggunakan Handygo, cari kami kapan saja!</p>
             </div>
-            <img src="/scooter-illustration.png" alt="Scooter" className="banner-img" onError={(e) => e.target.style.display = 'none'} />
+            <div className="banner-img-emoji">{activeVehicle?.img || '🛵'}</div>
           </div>
 
           <div className="cost-details-card">
             <div className="cost-row">
               <span className="cost-label">Rincian Biaya</span>
-              <span className="cost-value">{activeVehicle.name}</span>
+              <span className="cost-value">{activeVehicle?.name || 'Motor'}</span>
             </div>
             <div className="cost-divider"></div>
             <div className="cost-row total">
               <span className="cost-label">Total</span>
-              <span className="cost-value-total">{activeVehicle.price}</span>
+              <span className="cost-value-total">{activeVehicle?.price || 'Rp 18.000'}</span>
             </div>
           </div>
 
-          <div className="driver-profile-card">
-            <img src="https://ui-avatars.com/api/?name=Rafael+Gemam&background=034078&color=fff" alt="Driver" className="driver-avatar" />
-            <div className="driver-profile-info">
-              <h4 className="driver-name">Rafael gemam</h4>
-              <div className="driver-rating">⭐ 4.9 <span className="reviews">(59 ulasan)</span></div>
-            </div>
-            <div className="driver-actions">
-              <button className="icon-btn phone-btn"><Phone size={18} /></button>
-              <button className="icon-btn chat-btn"><MessageSquare size={18} /></button>
+          <div className="driver-info-box">
+            <div className="driver-profile-card">
+              <img src="https://ui-avatars.com/api/?name=Rafael+Gemam&background=034078&color=fff" alt="Driver" className="driver-avatar" />
+              <div className="driver-profile-info">
+                <h4 className="driver-name">Rafael gemam</h4>
+                <div className="driver-rating"><Star size={14} color="#eab308" fill="#eab308" /> 4.9 <span className="reviews">(59 ulasan)</span></div>
+              </div>
+              <div className="driver-actions">
+                <button className="icon-btn phone-btn"><Phone size={18} color="#034078" /></button>
+                <button className="icon-btn chat-btn"><MessageSquare size={18} color="#034078" /></button>
+              </div>
             </div>
           </div>
 
