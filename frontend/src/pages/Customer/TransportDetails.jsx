@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Map, { Marker, Source, Layer } from 'react-map-gl/mapbox';
 import { ArrowLeft, ArrowUp, Target, ChevronRight, Check, Phone, MessageSquare, Share2, Star, Copy, LogOut } from 'lucide-react';
@@ -27,9 +27,9 @@ export default function TransportDetails() {
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
   
-  const searchTimeoutRef = React.useRef(null);
-  const qrisTimeoutRef = React.useRef(null);
-  const trackingTimeoutRef = React.useRef(null);
+  const searchTimeoutRef = useRef(null);
+  const qrisTimeoutRef = useRef(null);
+  const trackingTimeoutRef = useRef(null);
 
   const vehicles = [
     { id: 'motor', name: 'Motor', desc: 'sampai dalam 2-4 menit', capacity: '1', price: 'Rp 18.000', priceValue: 18000, img: '🛵' },
@@ -41,7 +41,7 @@ export default function TransportDetails() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // Clean up timeout on unmount
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
       if (qrisTimeoutRef.current) clearTimeout(qrisTimeoutRef.current);
