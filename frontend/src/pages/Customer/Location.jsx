@@ -106,7 +106,7 @@ export default function Location() {
 
   const handleMoveEnd = (e) => {
     setIsMapDragging(false);
-    const { lng, lat } = e.viewState;
+    const { longitude: lng, latitude: lat } = e.viewState;
     
     if (reverseGeocodeTimeoutRef.current) {
       clearTimeout(reverseGeocodeTimeoutRef.current);
