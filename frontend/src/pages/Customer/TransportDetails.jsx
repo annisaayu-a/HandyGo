@@ -21,14 +21,11 @@ export default function TransportDetails() {
   const [isVehicleSheetOpen, setIsVehicleSheetOpen] = useState(false);
   const [isSearchingDriver, setIsSearchingDriver] = useState(false);
   const [driverPhase, setDriverPhase] = useState(null); // 'heading', 'arriving', 'arrived', 'in_trip', 'completed'
-  const [showQrisModal, setShowQrisModal] = useState(false);
-  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
   
   const searchTimeoutRef = useRef(null);
-  const qrisTimeoutRef = useRef(null);
   const trackingTimeoutRef = useRef(null);
 
   const vehicles = [
@@ -44,14 +41,39 @@ export default function TransportDetails() {
   useEffect(() => {
     return () => {
       if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
-      if (qrisTimeoutRef.current) clearTimeout(qrisTimeoutRef.current);
       if (trackingTimeoutRef.current) clearTimeout(trackingTimeoutRef.current);
     };
   }, []);
 
+  // Check if we returned from payment and should start searching
+  useEffect(() => {
+    if (location.state?.startSearch && !isSearchingDriver && !driverPhase) {
+      // Clear the startSearch flag from history state to prevent looping on refresh
+      navigate(location.pathname, { 
+        replace: true, 
+        state: { ...location.state, startSearch: false } 
+      });
+      
+      // Give UI a tiny bit of time to settle, then start searching
+      setTimeout(() => {
+        startSearchingDriver();
+      }, 300);
+    }
+  }, [location.state?.startSearch, isSearchingDriver, driverPhase, navigate]);
+
   const handleOrder = () => {
     if (paymentMethod === 'QRIS') {
-      setShowQrisModal(true);
+      const priceNum = activeVehicle.priceValue || parseInt(activeVehicle.price.replace(/[^0-9]/g, ''), 10) || 18000;
+      navigate('/customer/transport/qris', {
+        state: {
+          ...location.state,
+          pickupLocation: pickup,
+          dropoffLocation: dropoff,
+          selectedVehicle,
+          paymentMethod,
+          totalBiaya: priceNum
+        }
+      });
     } else if (paymentMethod === 'Tunai') {
       startSearchingDriver();
     } else {
@@ -60,16 +82,6 @@ export default function TransportDetails() {
         navigate('/customer'); 
       }, 2500);
     }
-  };
-
-  const handleQrisPaid = () => {
-    setShowQrisModal(false);
-    setShowPaymentSuccess(true);
-    
-    qrisTimeoutRef.current = setTimeout(() => {
-      setShowPaymentSuccess(false);
-      startSearchingDriver();
-    }, 2000);
   };
 
   const startSearchingDriver = () => {
@@ -407,43 +419,6 @@ export default function TransportDetails() {
           </>
         )}
       </div>
-
-      {/* QRIS Modal */}
-      {showQrisModal && (
-        <div className="transport-modal-overlay animate-fade-in">
-          <div className="transport-qris-modal scale-up">
-            <h3 className="qris-title">Scan QRIS</h3>
-            <div className="qris-image-wrapper">
-              <img 
-                src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" 
-                alt="QRIS Code" 
-                className="qris-image"
-              />
-            </div>
-            <p className="qris-instruction">Total: <strong>{activeVehicle.price}</strong></p>
-            <p className="qris-instruction-small">Silakan scan kode QR di atas dengan aplikasi pembayaran Anda.</p>
-            
-            <button className="qris-confirm-btn" onClick={handleQrisPaid}>
-              Saya sudah membayar
-            </button>
-            <button className="qris-cancel-btn" onClick={() => setShowQrisModal(false)}>
-              Batal
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Payment Success Modal */}
-      {showPaymentSuccess && (
-        <div className="transport-modal-overlay animate-fade-in">
-          <div className="transport-success-modal scale-up">
-            <div className="success-icon-circle">
-              <Check size={40} color="white" strokeWidth={3} />
-            </div>
-            <h3 className="success-modal-title">Pembayaran Berhasil!</h3>
-          </div>
-        </div>
-      )}
 
       {/* Success Modal (Driver Found) */}
       {showSuccessModal && (

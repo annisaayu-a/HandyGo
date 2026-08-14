@@ -50,6 +50,7 @@ import TransportLocation from '../pages/Customer/TransportLocation';
 import TransportMap from '../pages/Customer/TransportMap';
 import TransportDetails from '../pages/Customer/TransportDetails';
 import TransportPayment from '../pages/Customer/TransportPayment';
+import TransportQris from '../pages/Customer/TransportQris';
 import Chat from '../pages/Customer/Chat';
 import ChatList from '../pages/Customer/ChatList';
 import Call from '../pages/Customer/Call';
@@ -237,6 +238,10 @@ export const router = createBrowserRouter([
       {
         path: 'transport/payment',
         element: <TransportPayment />,
+      },
+      {
+        path: 'transport/qris',
+        element: <TransportQris />,
       },
       {
         path: 'chat',
