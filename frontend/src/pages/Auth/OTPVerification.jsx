@@ -67,7 +67,7 @@ export default function OTPVerification() {
       setCountdown(60); // Reset timer
     } catch (err) {
       console.error(err);
-      setError('Gagal mengirim SMS. Pastikan format nomor benar (contoh: +628...)');
+      setError('Error Firebase: ' + (err.message || 'Gagal mengirim SMS'));
       setInfo('');
     }
   };
