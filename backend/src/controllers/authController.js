@@ -2,7 +2,6 @@ const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-const nodemailer = require('nodemailer');
 
 const prisma = new PrismaClient({
   datasourceUrl: process.env.DATABASE_URL
