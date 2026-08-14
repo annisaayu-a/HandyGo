@@ -25,6 +25,9 @@ export default function TransportDetails() {
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
   
+  const [createdOrderId, setCreatedOrderId] = useState(location.state?.orderId || null);
+  const user = JSON.parse(localStorage.getItem('handyGoUser') || '{}');
+  
   const searchTimeoutRef = useRef(null);
   const trackingTimeoutRef = useRef(null);
 
@@ -77,14 +80,38 @@ export default function TransportDetails() {
     } else if (paymentMethod === 'Tunai') {
       startSearchingDriver();
     } else {
-      setShowSuccessModal(true);
-      setTimeout(() => {
-        navigate('/customer'); 
-      }, 2500);
+      startSearchingDriver();
     }
   };
 
-  const startSearchingDriver = () => {
+  const startSearchingDriver = async () => {
+    let newOrderId = createdOrderId;
+    if (!newOrderId && user.id) {
+      try {
+        const priceNum = activeVehicle.priceValue || parseInt(activeVehicle.price.replace(/[^0-9]/g, ''), 10) || 18000;
+        const response = await fetch('https://handygo-api.vercel.app/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: user.id,
+            service_name: 'Antar Jemput',
+            pickup_location: pickup.name,
+            dropoff_location: dropoff.name,
+            order_details: `Kendaraan: ${activeVehicle.name}`,
+            estimated_price: priceNum,
+            payment_method: paymentMethod
+          })
+        });
+        if (response.ok) {
+          const responseData = await response.json();
+          newOrderId = responseData.order?.id;
+          setCreatedOrderId(newOrderId);
+        }
+      } catch (err) {
+        console.error("Gagal membuat pesanan:", err);
+      }
+    }
+
     setIsSearchingDriver(true);
     searchTimeoutRef.current = setTimeout(() => {
       setIsSearchingDriver(false);
@@ -99,8 +126,17 @@ export default function TransportDetails() {
           trackingTimeoutRef.current = setTimeout(() => {
             setDriverPhase('in_trip');
             
-            trackingTimeoutRef.current = setTimeout(() => {
+            trackingTimeoutRef.current = setTimeout(async () => {
               setDriverPhase('completed');
+              if (newOrderId) {
+                try {
+                  await fetch(`https://handygo-api.vercel.app/api/orders/${newOrderId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'selesai' })
+                  });
+                } catch(e) { console.error(e); }
+              }
             }, 6000);
           }, 4000);
         }, 4000);

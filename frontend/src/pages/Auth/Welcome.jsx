@@ -26,9 +26,17 @@ export default function Welcome() {
         
         if (res.ok) {
           const data = await res.json();
-          // Simpan token dan user info di localStorage (sesuaikan dengan mekanisme login yang ada)
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('user', JSON.stringify(data.user));
+          // Simpan token dan user info di localStorage
+          const userObj = { 
+            name: data.user.full_name, 
+            email: data.user.email, 
+            phone: data.user.phone_number, 
+            id: data.user.id, 
+            default_location: data.user.default_location, 
+            profile_picture: data.user.profile_picture 
+          };
+          localStorage.setItem('handyGoToken', data.token);
+          localStorage.setItem('handyGoUser', JSON.stringify(userObj));
           navigate('/customer'); // Arahkan ke beranda customer
         } else {
           const errorData = await res.json();
