@@ -9,8 +9,11 @@ export default function TransportDetails() {
   const navigate = useNavigate();
   const location = useLocation();
   
-  const pickup = location.state?.pickupLocation || { name: 'Universitas Hasanuddin Fakultas Tekni...', lat: -5.1332, lng: 119.4975 };
-  const dropoff = location.state?.dropoffLocation || { name: 'Pondok Nabil', lat: -5.1382, lng: 119.5015 };
+  const rawPickup = location.state?.pickupLocation || { name: 'Universitas Hasanuddin Fakultas Tekni...', lat: -5.1332, lng: 119.4975 };
+  const rawDropoff = location.state?.dropoffLocation || { name: 'Pondok Nabil', lat: -5.1382, lng: 119.5015 };
+  
+  const pickup = { ...rawPickup, lat: Number(rawPickup.lat), lng: Number(rawPickup.lng) || Number(rawPickup.lon) };
+  const dropoff = { ...rawDropoff, lat: Number(rawDropoff.lat), lng: Number(rawDropoff.lng) || Number(rawDropoff.lon) };
   
   const paymentMethod = location.state?.paymentMethod || 'Tunai';
 
