@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, ChevronRight, Check } from 'lucide-react';
 import mapRoutePlaceholder from '../../assets/map_route_placeholder.png';
+import Map, { Marker } from 'react-map-gl/mapbox';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import './DeliveryCheckout.css';
 
 export default function DeliveryCheckout() {
@@ -23,6 +25,18 @@ export default function DeliveryCheckout() {
   const [paymentMethod, setPaymentMethod] = useState('Tunai');
   const [isPaymentSheetOpen, setIsPaymentSheetOpen] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  
+  const [userName, setUserName] = useState('');
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('handyGoUser');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setUserName(user.name || user.full_name || 'Pengirim');
+      } catch (e) {}
+    }
+  }, []);
 
   const formatSize = (size) => {
     if (!size) return '';
@@ -86,7 +100,7 @@ export default function DeliveryCheckout() {
           
           <div className="location-item">
             <p className="location-label">Diambil di</p>
-            <p className="location-person">{senderName}</p>
+            <p className="location-person">{userName || senderName}</p>
             <p className="location-address-light">{pickup.name}</p>
           </div>
 
@@ -117,8 +131,25 @@ export default function DeliveryCheckout() {
           
           <div className="map-preview-section">
             <p className="time-estimate">Diperkirakan sampai pada 18:10 - 18:44</p>
-            <div className="map-image-wrapper">
-              <img src={mapRoutePlaceholder} alt="Route Map" className="map-image" />
+            <div className="map-image-wrapper" style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#e2e8f0', height: '120px', borderRadius: '12px' }}>
+              {(pickup.lat && dropoff.lat) ? (
+                <Map
+                  mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
+                  initialViewState={{
+                    longitude: (Number(pickup.lng || pickup.lon) + Number(dropoff.lng || dropoff.lon)) / 2,
+                    latitude: (Number(pickup.lat) + Number(dropoff.lat)) / 2,
+                    zoom: 12
+                  }}
+                  mapStyle="mapbox://styles/mapbox/streets-v12"
+                  style={{ width: '100%', height: '100%' }}
+                  interactive={false}
+                >
+                  <Marker longitude={Number(pickup.lng || pickup.lon)} latitude={Number(pickup.lat)} color="#034078" />
+                  <Marker longitude={Number(dropoff.lng || dropoff.lon)} latitude={Number(dropoff.lat)} color="#ef4444" />
+                </Map>
+              ) : (
+                <img src={mapRoutePlaceholder} alt="Route Map" className="map-image" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              )}
             </div>
           </div>
         </div>
