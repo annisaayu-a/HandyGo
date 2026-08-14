@@ -212,11 +212,11 @@ export default function TransportDetails() {
               </Marker>
               
               <Marker longitude={pickup.lng + 0.003} latitude={pickup.lat + 0.002}>
-                <div className="dummy-driver-marker">🛵</div>
+                <div className="dummy-driver-marker">{activeVehicle?.img || '🛵'}</div>
               </Marker>
               
               <Marker longitude={pickup.lng - 0.002} latitude={pickup.lat + 0.004}>
-                <div className="dummy-driver-marker">🛵</div>
+                <div className="dummy-driver-marker">{activeVehicle?.img || '🛵'}</div>
               </Marker>
             </>
           )}
@@ -232,7 +232,11 @@ export default function TransportDetails() {
                   type: 'Feature',
                   geometry: {
                     type: 'LineString',
-                    coordinates: [
+                    coordinates: driverPhase === 'in_trip' ? [
+                      [pickup.lng, pickup.lat],
+                      [(pickup.lng + dropoff.lng)/2, (pickup.lat + dropoff.lat)/2],
+                      [dropoff.lng, dropoff.lat]
+                    ] : [
                       [pickup.lng - 0.003, pickup.lat + 0.003],
                       [pickup.lng - 0.001, pickup.lat + 0.001],
                       [pickup.lng, pickup.lat]
@@ -259,10 +263,10 @@ export default function TransportDetails() {
 
               {/* Driver Marker */}
               <Marker 
-                longitude={driverPhase === 'heading' ? pickup.lng - 0.003 : driverPhase === 'arriving' ? pickup.lng - 0.001 : pickup.lng} 
-                latitude={driverPhase === 'heading' ? pickup.lat + 0.003 : driverPhase === 'arriving' ? pickup.lat + 0.001 : pickup.lat}
+                longitude={driverPhase === 'in_trip' ? (pickup.lng + dropoff.lng)/2 : driverPhase === 'heading' ? pickup.lng - 0.003 : driverPhase === 'arriving' ? pickup.lng - 0.001 : pickup.lng} 
+                latitude={driverPhase === 'in_trip' ? (pickup.lat + dropoff.lat)/2 : driverPhase === 'heading' ? pickup.lat + 0.003 : driverPhase === 'arriving' ? pickup.lat + 0.001 : pickup.lat}
               >
-                <div className="dummy-driver-marker">🛵</div>
+                <div className="dummy-driver-marker">{activeVehicle?.img || '🛵'}</div>
               </Marker>
             </>
           )}
