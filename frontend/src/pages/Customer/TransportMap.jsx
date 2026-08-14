@@ -139,6 +139,7 @@ export default function TransportMap() {
         <Map
           ref={mapRef}
           mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
+          maxBounds={[[119.30, -5.30], [119.55, -5.00]]}
           initialViewState={{
             longitude: defaultPosition[1],
             latitude: defaultPosition[0],
