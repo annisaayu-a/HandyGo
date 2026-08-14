@@ -104,12 +104,14 @@ export default function Location() {
     });
   };
 
-  const handleMoveStart = () => {
+  const handleMoveStart = (e) => {
+    if (!e?.originalEvent) return;
     setIsMapDragging(true);
     setCurrentAddress(prev => ({ ...prev, name: 'Mencari lokasi...', address: '' }));
   };
 
   const handleMoveEnd = (e) => {
+    if (!e?.originalEvent) return;
     setIsMapDragging(false);
     const { longitude: lng, latitude: lat } = e.viewState;
     
@@ -119,8 +121,7 @@ export default function Location() {
 
     reverseGeocodeTimeoutRef.current = setTimeout(async () => {
       try {
-        const token = import.meta.env.VITE_MAPBOX_TOKEN;
-        const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${token}&language=id`);
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1&email=handygo-app@example.com`);
         
         if (!response.ok) {
           setCurrentAddress({ name: 'Gagal memuat', address: 'Layanan peta sedang gangguan', lat, lng });
@@ -129,11 +130,12 @@ export default function Location() {
 
         const data = await response.json();
         
-        if (data && data.features && data.features.length > 0) {
-          const result = data.features[0];
+        if (data && data.display_name) {
+          const nameParts = data.display_name.split(', ');
+          const name = data.name || (data.address && data.address.road) || nameParts[0];
           setCurrentAddress({
-            name: result.text,
-            address: result.place_name,
+            name: name,
+            address: data.display_name,
             lat,
             lng
           });
