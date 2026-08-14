@@ -10,6 +10,7 @@ import Welcome from '../pages/Auth/Welcome';
 import Login from '../pages/Auth/Login';
 import Register from '../pages/Auth/Register';
 import OTPVerification from '../pages/Auth/OTPVerification';
+import VerifyMagicLink from '../pages/Auth/VerifyMagicLink';
 import CustomerHome from '../pages/Customer/Home';
 import CustomerLocation from '../pages/Customer/Location';
 import SearchLocation from '../pages/Customer/SearchLocation';
@@ -71,6 +72,10 @@ export const router = createBrowserRouter([
   {
     path: '/otp-verification',
     element: <OTPVerification />,
+  },
+  {
+    path: '/verify-magic-link',
+    element: <VerifyMagicLink />,
   },
   // Customer Routes
   {

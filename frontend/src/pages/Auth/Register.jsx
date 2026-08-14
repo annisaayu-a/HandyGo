@@ -34,25 +34,23 @@ export default function Register() {
     
     setIsSubmitting(true);
     try {
-      const response = await fetch('https://handygo-api.vercel.app/api/auth/send-otp', {
+      const response = await fetch('https://handygo-api.vercel.app/api/auth/send-magic-link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ full_name: name, email, phone_number: phone, password })
       });
       
       const data = await response.json();
       
       if (!response.ok) {
-        setError(data.error || 'Gagal mengirim OTP ke email');
+        setError(data.error || 'Gagal mengirim tautan ke email');
         setIsSubmitting(false);
         return;
       }
       
-      // Navigate to OTP page with otpToken
+      // Navigate to OTP page which now just says "Check Email"
       navigate('/otp-verification', { 
         state: { 
-          userData: { full_name: name, email, phone_number: phone, password },
-          otpToken: data.otpToken,
           source: 'register'
         } 
       });
