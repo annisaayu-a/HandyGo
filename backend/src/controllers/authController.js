@@ -446,18 +446,24 @@ exports.sendMagicLink = async (req, res) => {
       return res.status(400).json({ error: 'Data registrasi tidak lengkap' });
     }
     
-    // Check if user exists
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { phone_number: phone_number || undefined },
-          { email: email || undefined }
-        ]
+    // Check if phone number exists
+    if (phone_number) {
+      const existingPhone = await prisma.user.findFirst({
+        where: { phone_number: phone_number }
+      });
+      if (existingPhone) {
+        return res.status(400).json({ error: 'Nomor HP ini sudah digunakan oleh akun lain' });
       }
-    });
+    }
     
-    if (existingUser) {
-      return res.status(400).json({ error: 'Nomor Hp atau Email sudah terdaftar' });
+    // Check if email exists
+    if (email) {
+      const existingEmail = await prisma.user.findFirst({
+        where: { email: email }
+      });
+      if (existingEmail) {
+        return res.status(400).json({ error: 'Email ini sudah terdaftar' });
+      }
     }
 
     // Sign registration data into a JWT token (expires in 15 minutes)
@@ -521,31 +527,50 @@ exports.verifyMagicLink = async (req, res) => {
 
     const { full_name, email, phone_number, password } = decoded;
 
-    // Check again if user exists to prevent double registration
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { phone_number: phone_number || undefined },
-          { email: email || undefined }
-        ]
-      }
-    });
-
-    if (existingUser) {
-      // If user already exists (maybe they clicked the link twice), just log them in
-      const jwtToken = jwt.sign({ userId: existingUser.id }, JWT_SECRET, { expiresIn: '7d' });
-      return res.status(200).json({
-        message: 'Akun sudah terverifikasi',
-        token: jwtToken,
-        user: {
-          id: existingUser.id,
-          full_name: existingUser.full_name,
-          phone_number: existingUser.phone_number,
-          email: existingUser.email,
-          default_location: existingUser.default_location,
-          profile_picture: existingUser.profile_picture
-        }
+    // Check if phone number exists
+    if (phone_number) {
+      const existingPhone = await prisma.user.findFirst({
+        where: { phone_number: phone_number }
       });
+      if (existingPhone) {
+        // If user already exists (maybe they clicked the link twice), just log them in
+        const jwtToken = jwt.sign({ userId: existingPhone.id }, JWT_SECRET, { expiresIn: '7d' });
+        return res.status(200).json({
+          message: 'Akun sudah terverifikasi',
+          token: jwtToken,
+          user: {
+            id: existingPhone.id,
+            full_name: existingPhone.full_name,
+            phone_number: existingPhone.phone_number,
+            email: existingPhone.email,
+            default_location: existingPhone.default_location,
+            profile_picture: existingPhone.profile_picture
+          }
+        });
+      }
+    }
+    
+    // Check if email exists
+    if (email) {
+      const existingEmail = await prisma.user.findFirst({
+        where: { email: email }
+      });
+      if (existingEmail) {
+        // If user already exists (maybe they clicked the link twice), just log them in
+        const jwtToken = jwt.sign({ userId: existingEmail.id }, JWT_SECRET, { expiresIn: '7d' });
+        return res.status(200).json({
+          message: 'Akun sudah terverifikasi',
+          token: jwtToken,
+          user: {
+            id: existingEmail.id,
+            full_name: existingEmail.full_name,
+            phone_number: existingEmail.phone_number,
+            email: existingEmail.email,
+            default_location: existingEmail.default_location,
+            profile_picture: existingEmail.profile_picture
+          }
+        });
+      }
     }
 
     // Hash password
