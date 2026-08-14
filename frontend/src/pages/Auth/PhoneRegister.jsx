@@ -222,7 +222,7 @@ export default function PhoneRegister() {
               </p>
 
               <button type="submit" className="submit-btn" disabled={isVerifying}>
-                {isVerifying ? 'Memverifikasi...' : 'Verifikasi'}
+                {isVerifying ? 'Memverifikasi...' : 'Verifikasi OTP'}
               </button>
             </div>
           )}

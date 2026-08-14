@@ -215,7 +215,7 @@ export default function OTPVerification() {
           onClick={handleVerify}
           disabled={isVerifying}
         >
-          {isVerifying ? 'Memverifikasi...' : 'Verifikasi Firebase'}
+          {isVerifying ? 'Memverifikasi...' : 'Verifikasi OTP'}
         </button>
       </div>
     </div>
