@@ -53,10 +53,10 @@
 }
 
 .history-month-title {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: #475569;
-  margin-bottom: 12px;
+  color: #334155;
+  margin: 0 0 12px 0;
 }
 
 .history-list {
@@ -275,15 +275,14 @@
 
 .history-card {
   display: flex;
-  align-items: center;
-  background-color: white;
-  border-radius: 16px;
+  align-items: flex-start;
   padding: 16px;
-  gap: 16px;
-  box-shadow: 0 4px 12px rgba(3, 64, 120, 0.04);
-  border: 1px solid #f1f5f9;
-  transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 12px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  background-color: white;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .history-card:hover {
@@ -292,15 +291,15 @@
 }
 
 .history-icon {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 12px;
-  background-color: rgba(3, 64, 120, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--primary);
   flex-shrink: 0;
+  margin-right: 16px;
+  background-color: transparent;
 }
 
 .history-details {
@@ -311,22 +310,25 @@
 
 .history-service-name {
   font-family: 'Outfit', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: 1.05rem;
+  font-weight: 600;
   color: #1e293b;
-  margin: 0;
+  margin: 0 0 2px 0;
 }
 
 .history-status {
   font-size: 0.8rem;
   color: #64748b;
-  margin: 0;
+  margin: 0 0 12px 0;
 }
 
 .history-rating {
   font-size: 0.85rem;
-  color: #64748b;
-  margin: 4px 0 0;
+  color: #94a3b8;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* Canceled style */
@@ -334,6 +336,13 @@
   opacity: 0.7;
 }
 .history-card.canceled .history-icon {
-  background-color: #f1f5f9;
+  opacity: 0.5;
+}
+
+.history-rating.rated {
   color: #64748b;
+}
+.star-icon {
+  color: #fbbf24;
+  font-size: 1.1rem;
 }

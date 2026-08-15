@@ -50,16 +50,34 @@ export default function CustomerHistory() {
             const isCanceled = order.status === 'batal';
             const ratingData = savedRatings[order.id];
             
-            // Format date 
             const dateObj = new Date(order.created_at);
-            const dateStr = dateObj.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) + ' WITA';
+            const now = new Date();
+            const isToday = dateObj.getDate() === now.getDate() && dateObj.getMonth() === now.getMonth() && dateObj.getFullYear() === now.getFullYear();
+            
+            const timeStr = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
+            
+            let dateStr = '';
+            if (isToday) {
+              dateStr = `Hari ini, ${timeStr}`;
+            } else {
+              const dayStr = dateObj.toLocaleDateString('id-ID', { weekday: 'long' });
+              const dateMonthStr = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'long' });
+              dateStr = `${dayStr}, ${dateMonthStr}, ${timeStr}`;
+            }
+
+            const monthYearGroup = dateObj.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+
+            let displayStatus = order.status.charAt(0).toUpperCase() + order.status.slice(1);
+            if (order.status === 'selesai') displayStatus = 'Sukses';
+            if (isCanceled) displayStatus = 'Dibatalkan';
 
             return {
               id: order.id,
               service: order.service?.name || 'Layanan',
-              status: order.status.charAt(0).toUpperCase() + order.status.slice(1),
+              status: displayStatus,
               date: dateStr,
-              ratingText: ratingData ? `Kamu memberi rating ★ ${ratingData.rating}.0` : 'Belum diberi rating',
+              monthYearGroup: monthYearGroup,
+              ratingValue: ratingData ? ratingData.rating : null,
               isCanceled: isCanceled,
               statusColor: isCanceled ? '#64748b' : '#1e293b',
               pesanan: order.order_details // Pass the details for the status page
@@ -78,10 +96,10 @@ export default function CustomerHistory() {
   }, [storedUser.id]);
 
   const getServiceIcon = (serviceName) => {
-    if (serviceName.toLowerCase().includes('belanja')) return <ShoppingBag size={20} color="#ffffff" />;
-    if (serviceName.toLowerCase().includes('antar')) return <Bike size={20} color="#ffffff" />;
-    if (serviceName.toLowerCase().includes('perbaikan')) return <Wrench size={20} color="#ffffff" />;
-    return <ShoppingBag size={20} color="#ffffff" />;
+    if (serviceName.toLowerCase().includes('belanja')) return <ShoppingBag size={24} color="#034078" />;
+    if (serviceName.toLowerCase().includes('antar')) return <Bike size={24} color="#034078" />;
+    if (serviceName.toLowerCase().includes('perbaikan')) return <Wrench size={24} color="#034078" />;
+    return <ShoppingBag size={24} color="#034078" />;
   };
 
   // Apply filters (Category + Month)
@@ -95,11 +113,9 @@ export default function CustomerHistory() {
 
   // Group by month
   const groupedHistory = filteredData.reduce((acc, item) => {
-    // We can extract month/year from item.date or just use a dummy grouping for UI purposes
-    // Since we formatted date to string, we'll use a regex or just mock it for the demo
-    const monthYear = item.date.includes('Agustus') ? 'Agustus 2026' : (item.date.includes('Juli') ? 'Juli 2026' : 'Hari ini');
-    if (!acc[monthYear]) acc[monthYear] = [];
-    acc[monthYear].push(item);
+    const groupKey = item.monthYearGroup;
+    if (!acc[groupKey]) acc[groupKey] = [];
+    acc[groupKey].push(item);
     return acc;
   }, {});
 
@@ -231,15 +247,21 @@ export default function CustomerHistory() {
                     }
                   }}
                 >
-                  <div className="history-icon" style={{ backgroundColor: item.isCanceled ? '#f1f5f9' : '#034078' }}>
+                  <div className="history-icon">
                     {getServiceIcon(item.service)}
                   </div>
                   <div className="history-details">
                     <h3 className="history-service-name">{item.service}</h3>
                     <p className="history-status">
-                      <span style={{ color: item.statusColor, fontWeight: '600' }}>{item.status}</span> • {item.date}
+                      <span style={{ color: item.statusColor, fontWeight: '500' }}>{item.status}</span> • {item.date}
                     </p>
-                    <p className="history-rating">{item.ratingText}</p>
+                    {item.ratingValue ? (
+                      <p className="history-rating rated">
+                        Kamu memberi rating <span className="star-icon">★</span> {item.ratingValue.toFixed(1)}
+                      </p>
+                    ) : (
+                      <p className="history-rating">{item.isCanceled ? (item.pesanan?.cancel_reason || 'Toko tutup') : 'Belum diberi rating'}</p>
+                    )}
                   </div>
                 </div>
               ))}
