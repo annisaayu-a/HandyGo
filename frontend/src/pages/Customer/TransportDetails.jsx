@@ -20,14 +20,66 @@ export default function TransportDetails() {
 
   const [selectedVehicle, setSelectedVehicle] = useState('motor'); 
   const [isVehicleSheetOpen, setIsVehicleSheetOpen] = useState(false);
-  const [isSearchingDriver, setIsSearchingDriver] = useState(false);
-  const [driverPhase, setDriverPhase] = useState(null); // 'heading', 'arriving', 'arrived', 'in_trip', 'completed'
+  const [isSearchingDriver, setIsSearchingDriver] = useState(location.state?.isSearchingDriver || false);
+  const [driverPhase, setDriverPhase] = useState(location.state?.driverPhase || null); // 'heading', 'arriving', 'arrived', 'in_trip', 'completed'
   const [showShareModal, setShowShareModal] = useState(false);
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
   
   const [createdOrderId, setCreatedOrderId] = useState(location.state?.orderId || null);
   const user = JSON.parse(localStorage.getItem('handyGoUser') || '{}');
+
+  useEffect(() => {
+    if (
+      location.state?.isSearchingDriver !== isSearchingDriver || 
+      location.state?.driverPhase !== driverPhase ||
+      location.state?.orderId !== createdOrderId
+    ) {
+      navigate('.', { 
+        replace: true, 
+        state: { ...location.state, isSearchingDriver, driverPhase, orderId: createdOrderId } 
+      });
+    }
+  }, [isSearchingDriver, driverPhase, createdOrderId, navigate, location.state]);
+
+  useEffect(() => {
+    let timer;
+    if (isSearchingDriver) {
+      timer = setTimeout(() => {
+        setIsSearchingDriver(false);
+        setDriverPhase('heading');
+      }, 3000);
+    } else if (driverPhase === 'heading') {
+      timer = setTimeout(() => {
+        setDriverPhase('arriving');
+      }, 4000);
+    } else if (driverPhase === 'arriving') {
+      timer = setTimeout(() => {
+        setDriverPhase('arrived');
+      }, 4000);
+    } else if (driverPhase === 'arrived') {
+      timer = setTimeout(() => {
+        setDriverPhase('in_trip');
+      }, 4000);
+    } else if (driverPhase === 'in_trip') {
+      timer = setTimeout(async () => {
+        setDriverPhase('completed');
+        if (createdOrderId) {
+          try {
+            await fetch(`https://handygo-api.vercel.app/api/orders/${createdOrderId}/status`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: 'selesai' })
+            });
+          } catch(e) { console.error(e); }
+        }
+      }, 6000);
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [isSearchingDriver, driverPhase, createdOrderId]);
   
   const searchTimeoutRef = useRef(null);
   const trackingTimeoutRef = useRef(null);
@@ -114,35 +166,6 @@ export default function TransportDetails() {
     }
 
     setIsSearchingDriver(true);
-    searchTimeoutRef.current = setTimeout(() => {
-      setIsSearchingDriver(false);
-      setDriverPhase('heading');
-      
-      trackingTimeoutRef.current = setTimeout(() => {
-        setDriverPhase('arriving');
-        
-        trackingTimeoutRef.current = setTimeout(() => {
-          setDriverPhase('arrived');
-          
-          trackingTimeoutRef.current = setTimeout(() => {
-            setDriverPhase('in_trip');
-            
-            trackingTimeoutRef.current = setTimeout(async () => {
-              setDriverPhase('completed');
-              if (newOrderId) {
-                try {
-                  await fetch(`https://handygo-api.vercel.app/api/orders/${newOrderId}/status`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: 'selesai' })
-                  });
-                } catch(e) { console.error(e); }
-              }
-            }, 6000);
-          }, 4000);
-        }, 4000);
-      }, 4000);
-    }, 3000);
   };
 
   const cancelSearch = () => {
