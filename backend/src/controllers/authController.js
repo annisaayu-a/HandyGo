@@ -504,7 +504,7 @@ exports.sendMagicLink = async (req, res) => {
     });
 
     // Selalu arahkan tautan ke live app agar bisa dibuka dari HP
-    const frontendUrl = process.env.FRONTEND_URL || 'https://www.handygo.id';
+    const frontendUrl = 'https://www.handygo.id';
     const magicLinkUrl = `${frontendUrl}/verify-magic-link?token=${magicToken}`;
 
     const mailOptions = {
@@ -564,7 +564,7 @@ exports.verifyMagicLink = async (req, res) => {
         return res.status(200).json({
           message: 'Akun sudah terverifikasi',
           token: jwtToken,
-          user: existingPhone
+          user: { ...existingPhone, role: isMitra ? 'mitra' : 'customer' }
         });
       }
     }
@@ -580,7 +580,7 @@ exports.verifyMagicLink = async (req, res) => {
         return res.status(200).json({
           message: 'Akun sudah terverifikasi',
           token: jwtToken,
-          user: existingEmail
+          user: { ...existingEmail, role: isMitra ? 'mitra' : 'customer' }
         });
       }
     }
@@ -604,7 +604,7 @@ exports.verifyMagicLink = async (req, res) => {
     res.status(201).json({
       message: 'Pendaftaran berhasil melalui Magic Link',
       token: jwtToken,
-      user: newRecord
+      user: { ...newRecord, role: isMitra ? 'mitra' : 'customer' }
     });
   } catch (error) {
     console.error('Verify Magic Link error:', error);
