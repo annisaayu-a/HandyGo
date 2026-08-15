@@ -503,7 +503,8 @@ exports.sendMagicLink = async (req, res) => {
       }
     });
 
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const origin = req.headers.origin || (req.headers.referer ? new URL(req.headers.referer).origin : null);
+    const frontendUrl = process.env.FRONTEND_URL || origin || 'http://localhost:5173';
     const magicLinkUrl = `${frontendUrl}/verify-magic-link?token=${magicToken}`;
 
     const mailOptions = {
