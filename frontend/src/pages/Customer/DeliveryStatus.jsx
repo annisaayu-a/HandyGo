@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Phone, MessageCircle, Star, CheckCircle2, Package } from 'lucide-react';
 import './DeliveryStatus.css';
 import './CompletedStatus.css';
+import DriverTrackingMap from '../../components/DriverTrackingMap';
 
 export default function DeliveryStatus() {
   const navigate = useNavigate();
@@ -135,22 +136,23 @@ export default function DeliveryStatus() {
           )}
         </div>
 
-        {/* Dynamic Map for Mengantar */}
+        {/* Real-time Driver Tracking Map */}
         {orderStatus === 'mengantar' && (
-          <div className="tracking-map-container">
-            <img 
-              src="https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
-              alt="Map Route" 
-              className="tracking-map-img"
+          <div style={{ width: '100%', padding: '0 0 8px 0' }}>
+            <DriverTrackingMap
+              pickupCoords={
+                location.state?.pickupLocation
+                  ? { lat: location.state.pickupLocation.lat, lng: location.state.pickupLocation.lng }
+                  : { lat: -5.165, lng: 119.431 }
+              }
+              dropoffCoords={
+                location.state?.dropoffLocation
+                  ? { lat: location.state.dropoffLocation.lat, lng: location.state.dropoffLocation.lng }
+                  : { lat: -5.147, lng: 119.432 }
+              }
+              isActive={orderStatus === 'mengantar'}
+              height="240px"
             />
-            {/* Overlay to make map look like route map */}
-            <div className="tracking-map-overlay">
-              <svg viewBox="0 0 100 100" className="route-line" preserveAspectRatio="none">
-                <path d="M 80 20 L 50 50 L 55 70 L 30 80" fill="none" stroke="#034078" strokeWidth="3" strokeDasharray="5,5" />
-                <circle cx="80" cy="20" r="4" fill="#034078" />
-                <circle cx="30" cy="80" r="4" fill="#1e293b" />
-              </svg>
-            </div>
           </div>
         )}
 

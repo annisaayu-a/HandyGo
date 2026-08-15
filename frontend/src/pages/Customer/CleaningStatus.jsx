@@ -3,6 +3,7 @@ import { ArrowLeft, Phone, MessageCircle, FileText, Clock, Wallet, Info, CheckCi
 import { useNavigate, useLocation } from 'react-router-dom';
 import './CleaningStatus.css';
 import './CompletedStatus.css';
+import DriverTrackingMap from '../../components/DriverTrackingMap';
 
 export default function CleaningStatus() {
   const navigate = useNavigate();
@@ -162,6 +163,22 @@ export default function CleaningStatus() {
           </div>
           <p className="cs-step-desc">{getStepText()}</p>
         </div>
+
+        {/* Real-time Driver Tracking Map — shows when driver is on the way (step 1) */}
+        {activeStep === 1 && (
+          <div style={{ width: '100%', marginBottom: '8px' }}>
+            <DriverTrackingMap
+              pickupCoords={{ lat: -5.163, lng: 119.430 }}
+              dropoffCoords={
+                orderData?.lat
+                  ? { lat: orderData.lat, lng: orderData.lng }
+                  : { lat: -5.150, lng: 119.435 }
+              }
+              isActive={activeStep === 1}
+              height="220px"
+            />
+          </div>
+        )}
 
         {/* Divider */}
         <div className="cs-divider"></div>

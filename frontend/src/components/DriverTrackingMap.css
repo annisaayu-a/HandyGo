@@ -1,0 +1,118 @@
+.driver-tracking-map-wrapper {
+  position: relative;
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(3, 64, 120, 0.15);
+  margin-bottom: 16px;
+}
+
+/* Pickup marker — green */
+.dtm-pickup-marker {
+  width: 26px;
+  height: 26px;
+  background-color: #22c55e;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.5);
+  border: 2px solid #ffffff;
+}
+
+.dtm-pickup-marker svg {
+  transform: rotate(45deg);
+}
+
+/* Dropoff marker — dark blue */
+.dtm-dropoff-marker {
+  width: 26px;
+  height: 26px;
+  background-color: #1e293b;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(30, 41, 59, 0.5);
+  border: 2px solid #ffffff;
+}
+
+.dtm-dropoff-marker svg {
+  transform: rotate(45deg);
+}
+
+/* Driver marker — animated */
+.dtm-driver-marker {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 3px 6px rgba(3, 64, 120, 0.4));
+  transition: transform 0.8s ease;
+}
+
+/* Pulsing ring around driver */
+.dtm-driver-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(3, 64, 120, 0.5);
+  transform: translate(-50%, -50%);
+  animation: dtm-pulse 1.5s ease-out infinite;
+}
+
+@keyframes dtm-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* Progress bar at bottom of map */
+.dtm-progress-bar-wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 10;
+}
+
+.dtm-progress-bar {
+  flex: 1;
+  height: 5px;
+  background-color: #e2e8f0;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.dtm-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #034078, #0ea5e9);
+  border-radius: 99px;
+  transition: width 1.2s ease;
+}
+
+.dtm-progress-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+}

@@ -3,6 +3,7 @@ import { ArrowLeft, Phone, MessageSquare, Handshake, ChevronRight, ChevronUp, Al
 import { useNavigate, useLocation } from 'react-router-dom';
 import './RepairStatus.css';
 import './CompletedStatus.css';
+import DriverTrackingMap from '../../components/DriverTrackingMap';
 
 export default function RepairStatus() {
   const navigate = useNavigate();
@@ -171,6 +172,22 @@ export default function RepairStatus() {
             </p>
           )}
         </div>
+
+        {/* Real-time Driver Tracking Map — shows when driver is coming */}
+        {statusPhase === 'coming' && (
+          <div style={{ width: '100%', marginBottom: '16px' }}>
+            <DriverTrackingMap
+              pickupCoords={{ lat: -5.163, lng: 119.430 }}
+              dropoffCoords={
+                orderDetails?.selectedLocation?.lat
+                  ? { lat: orderDetails.selectedLocation.lat, lng: orderDetails.selectedLocation.lng }
+                  : { lat: -5.148, lng: 119.434 }
+              }
+              isActive={statusPhase === 'coming'}
+              height="220px"
+            />
+          </div>
+        )}
 
         <div className="rs-divider" style={{ width: '100vw', marginLeft: '-24px', height: '8px', backgroundColor: '#f1f5f9', marginBottom: '24px' }}></div>
 
