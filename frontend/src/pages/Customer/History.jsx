@@ -8,7 +8,14 @@ export default function CustomerHistory() {
   const storedUser = JSON.parse(localStorage.getItem('handyGoUser') || '{}');
   const userName = storedUser.name || 'Ajel';
 
-  const [historyData, setHistoryData] = useState([]);
+  const [historyData, setHistoryData] = useState(() => {
+    // ⚡ Load cached history instantly on first render (no loading delay)
+    try {
+      const cached = localStorage.getItem(`handyGoHistory_${storedUser.id}`);
+      if (cached) return JSON.parse(cached);
+    } catch (e) { /* ignore */ }
+    return [];
+  });
   const [, setLoading] = useState(true);
 
   // Filter states
@@ -43,7 +50,7 @@ export default function CustomerHistory() {
       try {
         const response = await fetch(`https://handygo-api.vercel.app/api/orders?user_id=${storedUser.id}`);
         const data = await response.json();
-        if (response.ok) {
+      if (response.ok) {
           const savedRatings = JSON.parse(localStorage.getItem('handyGoRatings') || '{}');
           // Format data to match UI
           const formattedOrders = data.orders.map(order => {
@@ -83,6 +90,10 @@ export default function CustomerHistory() {
               pesanan: order.order_details // Pass the details for the status page
             };
           });
+          // ⚡ Save to localStorage for instant load next time
+          try {
+            localStorage.setItem(`handyGoHistory_${storedUser.id}`, JSON.stringify(formattedOrders));
+          } catch (e) { /* ignore quota errors */ }
           setHistoryData(formattedOrders);
         }
       } catch (err) {
