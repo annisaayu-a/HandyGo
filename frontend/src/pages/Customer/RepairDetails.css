@@ -57,13 +57,14 @@
 .rd-location-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 12px;
   gap: 16px;
 }
 
 .rd-location-header > div {
   flex: 1;
+  min-width: 0;
 }
 
 .rd-location-title {
@@ -79,6 +80,9 @@
   font-size: 0.85rem;
   color: #334155;
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rd-ganti-lokasi {
@@ -95,9 +99,9 @@
 .rd-detail-input-wrapper {
   display: flex;
   align-items: center;
-  background-color: #ffffff;
-  border-radius: 12px;
-  padding: 10px 12px;
+  background-color: #f8fafc;
+  border-radius: 24px;
+  padding: 12px 16px;
   gap: 8px;
 }
 
