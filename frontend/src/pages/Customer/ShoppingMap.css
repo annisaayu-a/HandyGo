@@ -93,6 +93,7 @@
 }
 
 .location-input {
+  padding: 12px 0;
   flex: 1;
   border: none;
   font-family: 'Inter', sans-serif;
