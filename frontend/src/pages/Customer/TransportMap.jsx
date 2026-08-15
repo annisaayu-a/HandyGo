@@ -293,14 +293,14 @@ export default function TransportMap() {
           title="Gunakan lokasi saya"
         >
           {isFetchingLocation ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#034078" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
               <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
             </svg>
           ) : (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#034078" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="3"/>
-              <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
-              <circle cx="12" cy="12" r="8" opacity="0.2" fill="#034078"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="6"/>
+              <circle cx="12" cy="12" r="2.5" fill="#3b82f6"/>
+              <path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
             </svg>
           )}
         </button>
