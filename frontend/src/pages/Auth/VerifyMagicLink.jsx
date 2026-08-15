@@ -32,24 +32,43 @@ const VerifyMagicLink = () => {
           throw new Error(data.error || 'Tautan sudah kedaluwarsa atau tidak valid.');
         }
         
-        // Save user data and token matching the rest of the app's keys
-        const userObj = { 
-          name: data.user.full_name, 
-          email: data.user.email, 
-          phone: data.user.phone_number, 
-          id: data.user.id,
-          default_location: data.user.default_location,
-          profile_picture: data.user.profile_picture
-        };
-        localStorage.setItem('handyGoToken', data.token);
-        localStorage.setItem('handyGoUser', JSON.stringify(userObj));
+        if (data.user.role === 'mitra') {
+          // Save mitra data and token
+          const mitraObj = { 
+            name: data.user.full_name, 
+            email: data.user.email, 
+            phone: data.user.phone_number, 
+            id: data.user.id
+          };
+          localStorage.setItem('handyGoMitraToken', data.token);
+          localStorage.setItem('handyGoMitra', JSON.stringify(mitraObj));
+          
+          setIsSuccess(true);
+          setStatus('Verifikasi berhasil!');
+          
+          setTimeout(() => {
+            navigate('/partner-welcome');
+          }, 2000);
+        } else {
+          // Save customer user data and token
+          const userObj = { 
+            name: data.user.full_name, 
+            email: data.user.email, 
+            phone: data.user.phone_number, 
+            id: data.user.id,
+            default_location: data.user.default_location,
+            profile_picture: data.user.profile_picture
+          };
+          localStorage.setItem('handyGoToken', data.token);
+          localStorage.setItem('handyGoUser', JSON.stringify(userObj));
 
-        setIsSuccess(true);
-        setStatus('Verifikasi berhasil!');
-        
-        setTimeout(() => {
-          navigate('/customer');
-        }, 2000);
+          setIsSuccess(true);
+          setStatus('Verifikasi berhasil!');
+          
+          setTimeout(() => {
+            navigate('/customer');
+          }, 2000);
+        }
       } catch (error) {
         console.error('Verify error:', error);
         setStatus('Verifikasi gagal. Tautan mungkin kedaluwarsa.');
