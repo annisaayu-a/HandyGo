@@ -18,6 +18,20 @@
   align-items: center;
 }
 
+.pc-back-btn {
+  position: absolute;
+  top: 40px;
+  left: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  z-index: 10;
+}
+
 .pc-instruction {
   margin-top: 80px;
   color: #ffffff;

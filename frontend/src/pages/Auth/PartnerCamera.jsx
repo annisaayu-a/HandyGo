@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Info } from 'lucide-react';
+import { Info, ChevronLeft } from 'lucide-react';
 import ktpMock from '../../assets/ktp_mock.png';
 import simMock from '../../assets/sim_mock.png';
 import './PartnerCamera.css';
@@ -48,6 +48,10 @@ export default function PartnerCamera() {
   return (
     <div className="partner-camera-container animate-fade-in">
       <div className="pc-overlay">
+        <button className="pc-back-btn" onClick={() => navigate(-1)}>
+          <ChevronLeft size={32} color="#ffffff" />
+        </button>
+        
         <p className="pc-instruction">
           {docType === 'ktp' ? 'Sesuaikan e-KTP di dalam kotak ya!' : 'Sesuaikan SIM di dalam kotak ya!'}
         </p>
