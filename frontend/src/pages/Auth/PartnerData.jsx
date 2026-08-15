@@ -24,7 +24,7 @@ export default function PartnerData() {
 
   const handleNext = () => {
     if (fullName && accountNumber) {
-      navigate('/partner-upload');
+      navigate('/partner-upload', { state: { vehicle } });
     }
   };
 

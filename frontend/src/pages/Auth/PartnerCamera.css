@@ -26,6 +26,14 @@
   font-weight: 500;
 }
 
+.pc-sub-instruction {
+  color: #cbd5e1;
+  font-size: 0.75rem;
+  margin: 8px 24px 0;
+  text-align: center;
+  line-height: 1.4;
+}
+
 .pc-cutout-container {
   margin-top: 80px;
   width: 100%;
@@ -99,6 +107,12 @@
   height: 80px;
   border: 2px dashed #94a3b8;
   border-radius: 12px;
+}
+
+/* For SIM, the photo is on the left side */
+.sim-frame .pc-face-placeholder {
+  right: auto;
+  left: 24px;
 }
 
 .pc-ktp-image-wrapper {

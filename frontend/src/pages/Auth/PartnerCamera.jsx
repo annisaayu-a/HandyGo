@@ -1,43 +1,64 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Info } from 'lucide-react';
 import ktpMock from '../../assets/ktp_mock.png';
+import simMock from '../../assets/sim_mock.png';
 import './PartnerCamera.css';
 
 export default function PartnerCamera() {
   const navigate = useNavigate();
-  // 'scan' | 'error' | 'success'
+  const location = useLocation();
+  const docType = location.state?.docType || 'ktp';
+  const vehicle = location.state?.vehicle || 'motor';
+  
+  // existing verifications to preserve them when navigating back
+  const ktpVerified = location.state?.ktpVerified;
+  const simVerified = location.state?.simVerified;
+
+  // 'scan' | 'error-blur' | 'error-type' | 'success'
   const [scanState, setScanState] = useState('scan');
 
   useEffect(() => {
-    // Simulasi alur scanning KTP
-    const timer1 = setTimeout(() => {
-      setScanState('error'); // Munculkan error setelah 2 detik
-    }, 2000);
+    let timers = [];
+    
+    if (docType === 'ktp') {
+      timers.push(setTimeout(() => setScanState('error-blur'), 2000));
+      timers.push(setTimeout(() => setScanState('success'), 4000));
+      timers.push(setTimeout(() => {
+        navigate('/partner-upload', { state: { ktpVerified: true, simVerified, vehicle } });
+      }, 6000));
+    } else if (docType === 'sim') {
+      if (vehicle === 'motor') {
+        // Simulasi mendeteksi SIM A padahal daftar motor
+        timers.push(setTimeout(() => setScanState('error-type'), 2000));
+        // Setelah error, pura-puranya lanjut sukses (untuk demo UI mockup)
+        timers.push(setTimeout(() => setScanState('success'), 5000));
+      } else {
+        timers.push(setTimeout(() => setScanState('success'), 2000));
+      }
+      
+      timers.push(setTimeout(() => {
+        navigate('/partner-upload', { state: { ktpVerified, simVerified: true, vehicle } });
+      }, vehicle === 'motor' ? 7000 : 4000));
+    }
 
-    const timer2 = setTimeout(() => {
-      setScanState('success'); // Munculkan sukses KTP terbaca setelah 4 detik
-    }, 4000);
-
-    const timer3 = setTimeout(() => {
-      // Kembali ke halaman upload setelah sukses loading 2 detik
-      navigate('/partner-upload', { state: { ktpVerified: true } });
-    }, 6000);
-
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
-    };
-  }, [navigate]);
+    return () => timers.forEach(clearTimeout);
+  }, [docType, navigate, vehicle, ktpVerified, simVerified]);
 
   return (
     <div className="partner-camera-container animate-fade-in">
       <div className="pc-overlay">
-        <p className="pc-instruction">Sesuaikan e-KTP di dalam kotak ya!</p>
+        <p className="pc-instruction">
+          {docType === 'ktp' ? 'Sesuaikan e-KTP di dalam kotak ya!' : 'Sesuaikan SIM di dalam kotak ya!'}
+        </p>
+        {docType === 'sim' && (
+          <p className="pc-sub-instruction">
+            Pastikan jenis SIM sesuai dengan kendaraan yang kamu daftarkan sebagai mitra
+          </p>
+        )}
         
         <div className="pc-cutout-container">
-          <div className="pc-cutout-frame">
+          <div className={`pc-cutout-frame ${docType === 'sim' ? 'sim-frame' : ''}`}>
             {/* The 4 corners */}
             <div className="pc-corner top-left"></div>
             <div className="pc-corner top-right"></div>
@@ -49,7 +70,11 @@ export default function PartnerCamera() {
               <div className="pc-face-placeholder"></div>
             ) : (
               <div className="pc-ktp-image-wrapper">
-                <img src={ktpMock} alt="Mock KTP" className="pc-ktp-image" />
+                <img 
+                  src={docType === 'ktp' ? ktpMock : simMock} 
+                  alt={`Mock ${docType.toUpperCase()}`} 
+                  className={`pc-ktp-image ${docType === 'sim' ? 'sim-image-adjusted' : ''}`} 
+                />
               </div>
             )}
           </div>
@@ -64,13 +89,23 @@ export default function PartnerCamera() {
           )}
         </div>
 
-        {/* Error Message Pill */}
-        {scanState === 'error' && (
+        {/* Error Message Pill - Blur */}
+        {scanState === 'error-blur' && (
           <div className="pc-error-pill animate-slide-up">
             <div className="pc-error-icon">
               <Info size={14} color="#ffffff" />
             </div>
             <span>Buram nih, coba pegang HP dengan lebih stabil</span>
+          </div>
+        )}
+
+        {/* Error Message Pill - Type Mismatch */}
+        {scanState === 'error-type' && (
+          <div className="pc-error-pill animate-slide-up">
+            <div className="pc-error-icon">
+              <Info size={14} color="#ffffff" />
+            </div>
+            <span>SIM A terdeteksi. Gunakan SIM C untuk pendaftaran Mitra Motor.</span>
           </div>
         )}
       </div>

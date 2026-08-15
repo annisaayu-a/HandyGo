@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
 import ktpMock from '../../assets/ktp_mock.png';
+import simMock from '../../assets/sim_mock.png';
 import './PartnerUpload.css';
 
 export default function PartnerUpload() {
@@ -10,15 +11,14 @@ export default function PartnerUpload() {
   const [deadlineDate, setDeadlineDate] = useState('');
   
   const ktpVerified = location.state?.ktpVerified || false;
+  const simVerified = location.state?.simVerified || false;
+  // Read vehicle from either state
+  const vehicle = location.state?.vehicle || 'motor';
 
   useEffect(() => {
-    // Ambil tanggal pendaftaran dari simulasi localStorage, atau gunakan hari ini
     const regDateStr = localStorage.getItem('partnerRegistrationDate');
     const baseDate = regDateStr ? new Date(regDateStr) : new Date();
-    
-    // Tambah 3 hari
     baseDate.setDate(baseDate.getDate() + 3);
-    
     const formattedDate = baseDate.toLocaleDateString('id-ID', {
       day: 'numeric',
       month: 'long',
@@ -34,13 +34,18 @@ export default function PartnerUpload() {
       status: ktpVerified ? 'Sudah diunggah' : 'Belum diunggah',
       verified: ktpVerified
     },
-    { id: 'sim', title: 'SIM', status: 'Belum diunggah', verified: false },
+    { 
+      id: 'sim', 
+      title: 'SIM', 
+      status: simVerified ? 'Sudah diunggah' : 'Belum diunggah', 
+      verified: simVerified 
+    },
     { id: 'stnk', title: 'STNK', status: 'Belum diunggah', verified: false }
   ];
 
   const handleDocClick = (id) => {
-    if (id === 'ktp') {
-      navigate('/partner-camera');
+    if (id === 'ktp' || id === 'sim') {
+      navigate('/partner-camera', { state: { docType: id, vehicle, ktpVerified, simVerified } });
     } else {
       alert(`Simulasi: Fitur upload untuk ${id.toUpperCase()} belum tersedia`);
     }
@@ -77,7 +82,11 @@ export default function PartnerUpload() {
             <div key={doc.id} className="pu-doc-item" onClick={() => handleDocClick(doc.id)}>
               <div className={`pu-doc-icon-container ${doc.verified ? 'is-verified' : ''}`}>
                 {doc.verified ? (
-                  <img src={ktpMock} alt={`Thumbnail ${doc.title}`} className="pu-doc-thumbnail" />
+                  <img 
+                    src={doc.id === 'ktp' ? ktpMock : simMock} 
+                    alt={`Thumbnail ${doc.title}`} 
+                    className="pu-doc-thumbnail" 
+                  />
                 ) : (
                   <ImageIcon size={28} color="#94a3b8" />
                 )}
