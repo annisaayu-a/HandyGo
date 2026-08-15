@@ -1,0 +1,160 @@
+.partner-location-container {
+  min-height: 100dvh;
+  width: 100%;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.pl-header {
+  display: flex;
+  align-items: center;
+  padding: 24px 20px 16px;
+}
+
+.pl-back-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  margin-left: -8px;
+  margin-right: 12px;
+}
+
+.pl-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.pl-content {
+  flex: 1;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pl-search-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 0 16px;
+  height: 48px;
+  margin-bottom: 24px;
+  background-color: #ffffff;
+}
+
+.pl-search-icon {
+  margin-right: 12px;
+}
+
+.pl-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.95rem;
+  color: #1e293b;
+}
+
+.pl-search-input::placeholder {
+  color: #94a3b8;
+}
+
+.pl-city-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.pl-city-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+}
+
+.pl-city-item:last-child {
+  border-bottom: none;
+}
+
+.pl-city-name {
+  font-size: 1rem;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.pl-radio {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.pl-radio.selected {
+  border-color: transparent;
+}
+
+.pl-check-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.pl-info-section {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 16px;
+  gap: 8px;
+}
+
+.pl-info-icon {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.pl-info-text {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+.pl-bottom-action {
+  padding: 24px;
+  padding-bottom: 40px;
+}
+
+.pl-submit-btn {
+  width: 100%;
+  padding: 16px;
+  background-color: #034078;
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 8px 16px rgba(3, 64, 120, 0.15);
+}
+
+.pl-submit-btn:active:not(.disabled) {
+  transform: scale(0.98);
+}
+
+.pl-submit-btn.disabled {
+  background-color: #cbd5e1;
+  box-shadow: none;
+  cursor: not-allowed;
+}

@@ -11,6 +11,8 @@ import Login from '../pages/Auth/Login';
 import Register from '../pages/Auth/Register';
 import PartnerWelcome from '../pages/Auth/PartnerWelcome';
 import PartnerRegister from '../pages/Auth/PartnerRegister';
+import PartnerLocation from '../pages/Auth/PartnerLocation';
+import PartnerVehicle from '../pages/Auth/PartnerVehicle';
 import OTPVerification from '../pages/Auth/OTPVerification';
 import VerifyMagicLink from '../pages/Auth/VerifyMagicLink';
 import CustomerHome from '../pages/Customer/Home';
@@ -79,6 +81,14 @@ export const router = createBrowserRouter([
   {
     path: '/partner-register',
     element: <PartnerRegister />,
+  },
+  {
+    path: '/partner-location',
+    element: <PartnerLocation />,
+  },
+  {
+    path: '/partner-vehicle',
+    element: <PartnerVehicle />,
   },
   {
     path: '/otp-verification',
