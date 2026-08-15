@@ -1,0 +1,210 @@
+.partner-data-container {
+  min-height: 100dvh;
+  width: 100%;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.pd-header {
+  display: flex;
+  align-items: center;
+  padding: 24px 20px 16px;
+}
+
+.pd-back-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  margin-left: -8px;
+  margin-right: 12px;
+}
+
+.pd-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.pd-content {
+  flex: 1;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pd-section-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 8px 0 16px 0;
+}
+
+.pd-vehicle-card {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background-color: #ffffff;
+  margin-bottom: 24px;
+}
+
+.pd-vehicle-icon-container {
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pd-vehicle-info {
+  flex: 1;
+}
+
+.pd-vehicle-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #034078;
+  margin: 0 0 4px 0;
+}
+
+.pd-vehicle-desc {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.pd-ganti-btn {
+  background: transparent;
+  border: 1px solid #034078;
+  color: #034078;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-left: 12px;
+  transition: all 0.2s ease;
+}
+
+.pd-ganti-btn:active {
+  background-color: rgba(3, 64, 120, 0.05);
+}
+
+.pd-info-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.pd-info-icon {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.pd-info-text {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.pd-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.pd-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pd-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.pd-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pd-input {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  background-color: #f8fafc;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: #1e293b;
+  outline: none;
+  transition: background-color 0.2s;
+}
+
+.pd-input:focus {
+  background-color: #f1f5f9;
+}
+
+.pd-input::placeholder {
+  color: #94a3b8;
+}
+
+.pd-bank-info {
+  position: absolute;
+  right: 16px;
+  color: #034078;
+  font-size: 0.9rem;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+.pd-helper-text {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.pd-bottom-action {
+  padding: 24px;
+  padding-bottom: 40px;
+}
+
+.pd-submit-btn {
+  width: 100%;
+  padding: 16px;
+  background-color: #034078;
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 8px 16px rgba(3, 64, 120, 0.15);
+}
+
+.pd-submit-btn:active:not(.disabled) {
+  transform: scale(0.98);
+}
+
+.pd-submit-btn.disabled {
+  background-color: #cbd5e1;
+  box-shadow: none;
+  cursor: not-allowed;
+}

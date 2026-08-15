@@ -9,8 +9,7 @@ export default function PartnerVehicle() {
 
   const handleNext = () => {
     if (selectedVehicle) {
-      alert(`Berhasil memilih ${selectedVehicle === 'motor' ? 'Mitra Motor' : 'Mitra Mobil'}!`);
-      // navigate('/partner-dashboard'); // Future implementation
+      navigate('/partner-data', { state: { vehicle: selectedVehicle } });
     }
   };
 
