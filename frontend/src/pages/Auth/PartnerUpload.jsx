@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { ArrowLeft, ChevronRight, Image as ImageIcon, CheckCircle2 } from 'lucide-react';
 import './PartnerUpload.css';
 
 export default function PartnerUpload() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [deadlineDate, setDeadlineDate] = useState('');
+  
+  const ktpVerified = location.state?.ktpVerified || false;
 
   useEffect(() => {
     // Ambil tanggal pendaftaran dari simulasi localStorage, atau gunakan hari ini
@@ -24,10 +27,23 @@ export default function PartnerUpload() {
   }, []);
 
   const documents = [
-    { id: 'ktp', title: 'KTP', status: 'Belum diunggah' },
-    { id: 'sim', title: 'SIM', status: 'Belum diunggah' },
-    { id: 'stnk', title: 'STNK', status: 'Belum diunggah' }
+    { 
+      id: 'ktp', 
+      title: 'KTP', 
+      status: ktpVerified ? 'Sudah diunggah' : 'Belum diunggah',
+      verified: ktpVerified
+    },
+    { id: 'sim', title: 'SIM', status: 'Belum diunggah', verified: false },
+    { id: 'stnk', title: 'STNK', status: 'Belum diunggah', verified: false }
   ];
+
+  const handleDocClick = (id) => {
+    if (id === 'ktp') {
+      navigate('/partner-camera');
+    } else {
+      alert(`Simulasi: Fitur upload untuk ${id.toUpperCase()} belum tersedia`);
+    }
+  };
 
   return (
     <div className="partner-upload-container animate-fade-in">
@@ -57,13 +73,19 @@ export default function PartnerUpload() {
 
         <div className="pu-doc-list">
           {documents.map((doc) => (
-            <div key={doc.id} className="pu-doc-item" onClick={() => alert(`Simulasi: Membuka uploader untuk ${doc.title}`)}>
+            <div key={doc.id} className="pu-doc-item" onClick={() => handleDocClick(doc.id)}>
               <div className="pu-doc-icon-container">
-                <ImageIcon size={28} color="#94a3b8" />
+                {doc.verified ? (
+                  <CheckCircle2 size={28} color="#16a34a" />
+                ) : (
+                  <ImageIcon size={28} color="#94a3b8" />
+                )}
               </div>
               <div className="pu-doc-info">
                 <h3 className="pu-doc-title">{doc.title}</h3>
-                <span className="pu-doc-status">{doc.status}</span>
+                <span className={`pu-doc-status ${doc.verified ? 'verified' : ''}`}>
+                  {doc.status}
+                </span>
               </div>
               <ChevronRight size={20} color="#cbd5e1" />
             </div>

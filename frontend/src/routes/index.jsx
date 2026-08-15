@@ -15,6 +15,7 @@ import PartnerLocation from '../pages/Auth/PartnerLocation';
 import PartnerVehicle from '../pages/Auth/PartnerVehicle';
 import PartnerData from '../pages/Auth/PartnerData';
 import PartnerUpload from '../pages/Auth/PartnerUpload';
+import PartnerCamera from '../pages/Auth/PartnerCamera';
 import OTPVerification from '../pages/Auth/OTPVerification';
 import VerifyMagicLink from '../pages/Auth/VerifyMagicLink';
 import CustomerHome from '../pages/Customer/Home';
@@ -99,6 +100,10 @@ export const router = createBrowserRouter([
   {
     path: '/partner-upload',
     element: <PartnerUpload />,
+  },
+  {
+    path: '/partner-camera',
+    element: <PartnerCamera />,
   },
   {
     path: '/otp-verification',
