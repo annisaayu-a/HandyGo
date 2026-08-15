@@ -27,6 +27,9 @@ export default function PartnerUpload() {
     setDeadlineDate(formattedDate);
   }, []);
 
+  const stnkVerified = location.state?.stnkVerified || false;
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
   const documents = [
     { 
       id: 'ktp', 
@@ -40,17 +43,30 @@ export default function PartnerUpload() {
       status: simVerified ? 'Sudah diunggah' : 'Belum diunggah', 
       verified: simVerified 
     },
-    { id: 'stnk', title: 'STNK', status: 'Belum diunggah', verified: false }
+    { id: 'stnk', title: 'STNK', status: stnkVerified ? 'Sudah diunggah' : 'Belum diunggah', verified: stnkVerified }
   ];
 
   const handleDocClick = (id) => {
     if (id === 'ktp' || id === 'sim') {
-      navigate('/partner-camera', { state: { docType: id, vehicle, ktpVerified, simVerified } });
+      navigate('/partner-camera', { state: { docType: id, vehicle, ktpVerified, simVerified, stnkVerified } });
     } else if (id === 'stnk') {
-      navigate('/partner-stnk', { state: { vehicle, ktpVerified, simVerified } });
+      navigate('/partner-stnk', { state: { vehicle, ktpVerified, simVerified, stnkVerified } });
     } else {
       alert(`Simulasi: Fitur upload untuk ${id.toUpperCase()} belum tersedia`);
     }
+  };
+
+  const handleDaftarClick = () => {
+    setShowConfirmModal(true);
+  };
+
+  const closeConfirmModal = () => {
+    setShowConfirmModal(false);
+  };
+
+  const handleConfirmDaftar = () => {
+    setShowConfirmModal(false);
+    navigate('/partner-success');
   };
 
   return (
@@ -69,10 +85,7 @@ export default function PartnerUpload() {
         
         <div className="pu-warning-box">
           <div className="pu-warning-icon">
-            <svg viewBox="0 0 24 24" fill="#facc15" width="20" height="20">
-              <circle cx="12" cy="12" r="12" fill="#facc15" />
-              <text x="12" y="16" fill="white" fontSize="14" fontWeight="bold" textAnchor="middle">i</text>
-            </svg>
+            <span style={{ color: '#fff', fontSize: '10px', fontWeight: 'bold' }}>i</span>
           </div>
           <p className="pu-warning-text">
             Selesaikan pendaftaran kamu sebelum {deadlineDate} ya! Jika terlewat semua data kamu akan dihapus dari sistem.
@@ -109,10 +122,26 @@ export default function PartnerUpload() {
         <div className="pu-bottom-action animate-fade-in">
           <button 
             className="pu-daftar-btn"
-            onClick={() => alert("Simulasi: Pendaftaran Mitra HandyGo Berhasil!")}
+            onClick={handleDaftarClick}
           >
             Daftar
           </button>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="pu-modal-overlay animate-fade-in">
+          <div className="pu-modal-content animate-slide-up">
+            <h3 className="pu-modal-title">Kamu yakin ingin melanjutkan dengan dokumen ini?</h3>
+            <p className="pu-modal-desc">
+              Cek kembali dokumenmu dan pastikan semuanya benar agar kamu tidak perlu menunggu jika ada kesalahan dalam proses verifikasi.
+            </p>
+            <div className="pu-modal-actions">
+              <button className="pu-modal-btn-outline" onClick={closeConfirmModal}>Kembali</button>
+              <button className="pu-modal-btn-primary" onClick={handleConfirmDaftar}>Ya, yakin</button>
+            </div>
+          </div>
         </div>
       )}
     </div>

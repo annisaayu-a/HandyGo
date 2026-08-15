@@ -17,6 +17,7 @@ import PartnerData from '../pages/Auth/PartnerData';
 import PartnerUpload from '../pages/Auth/PartnerUpload';
 import PartnerCamera from '../pages/Auth/PartnerCamera';
 import PartnerSTNK from '../pages/Auth/PartnerSTNK';
+import PartnerSuccess from '../pages/Auth/PartnerSuccess';
 import OTPVerification from '../pages/Auth/OTPVerification';
 import VerifyMagicLink from '../pages/Auth/VerifyMagicLink';
 import CustomerHome from '../pages/Customer/Home';
@@ -109,6 +110,10 @@ export const router = createBrowserRouter([
   {
     path: '/partner-stnk',
     element: <PartnerSTNK />,
+  },
+  {
+    path: '/partner-success',
+    element: <PartnerSuccess />,
   },
   {
     path: '/otp-verification',
