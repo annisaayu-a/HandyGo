@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import './PartnerRegister.css';
+import './Welcome.css';
 
 export default function PartnerRegister() {
   const navigate = useNavigate();
@@ -40,8 +41,8 @@ export default function PartnerRegister() {
   return (
     <div className="partner-register-container animate-fade-in">
       {/* Wavy Background shape matching the screenshot */}
-      <div className="pr-wave-header">
-        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="pr-wave-svg">
+      <div className="wave-header">
+        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="wave-svg">
           <path fill="#034078" fillOpacity="1" d="M0,96L60,117.3C120,139,240,181,360,181.3C480,181,600,139,720,112C840,85,960,75,1080,85.3C1200,96,1320,128,1380,144L1440,160L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path>
         </svg>
       </div>

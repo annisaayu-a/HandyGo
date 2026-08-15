@@ -7,23 +7,7 @@
   flex-direction: column;
 }
 
-.pr-wave-header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 25vh;
-  background-color: #034078;
-  z-index: 0;
-}
 
-.pr-wave-svg {
-  position: absolute;
-  bottom: -99px;
-  left: 0;
-  width: 100%;
-  height: 100px;
-}
 
 .pr-back-btn {
   position: absolute;
