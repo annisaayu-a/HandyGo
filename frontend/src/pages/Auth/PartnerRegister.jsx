@@ -55,11 +55,11 @@ export default function PartnerRegister() {
           <h2 className="pr-label">Masukkan No. HP</h2>
           <div className="pr-input-group">
             <div className="pr-prefix">
-              <span className="pr-flag">🇮🇩</span> +62
+              <img src="https://flagcdn.com/w20/id.png" alt="ID" style={{ width: '20px', borderRadius: '2px', marginRight: '6px' }} /> +62
             </div>
             <input 
               type="tel" 
-              placeholder="cth: 85912741xxx" 
+              placeholder="8123456789" 
               className="pr-input"
               value={phone}
               onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
@@ -70,7 +70,7 @@ export default function PartnerRegister() {
           <div className="pr-input-group">
             <input 
               type="email" 
-              placeholder="cth: namamu@gmail.com" 
+              placeholder="Masukkan email" 
               className="pr-input pr-input-full"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
