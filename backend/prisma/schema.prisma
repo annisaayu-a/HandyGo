@@ -24,6 +24,20 @@ model User {
   orders          Order[]
 }
 
+model Mitra {
+  id               String   @id @default(uuid())
+  full_name        String
+  phone_number     String?  @unique
+  email            String?  @unique
+  password_hash    String?
+  operational_city String?
+  vehicle_type     String?
+  vehicle_plate    String?
+  profile_picture  String?
+  is_verified      Boolean  @default(false)
+  created_at       DateTime @default(now())
+  orders           Order[]
+}
 model Service {
   id          Int      @id @default(autoincrement())
   name        String   // "Belanja", "Perbaikan", dll
@@ -36,7 +50,8 @@ model Order {
   id                String   @id @default(uuid())
   user_id           String
   user              User     @relation(fields: [user_id], references: [id])
-  mitra_id          String?  // Nullable since Mitra is not yet assigned
+  mitra_id          String?
+  mitra             Mitra?   @relation(fields: [mitra_id], references: [id])
   service_id        Int
   service           Service  @relation(fields: [service_id], references: [id])
   status            String   @default("menunggu") // menunggu, disiapkan, diantar, selesai, batal

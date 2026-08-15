@@ -8,6 +8,9 @@ router.post('/register', authController.register);
 // Send OTP route (Old)
 router.post('/send-otp', authController.sendOtp);
 
+// Mitra Registration
+router.post('/mitra/register', authController.mitraRegister);
+
 // Send Magic Link route
 router.post('/send-magic-link', authController.sendMagicLink);
 

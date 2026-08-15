@@ -73,8 +73,63 @@ exports.register = async (req, res) => {
       }
     });
   } catch (error) {
+  } catch (error) {
     console.error('Register error:', error);
     res.status(500).json({ error: 'Terjadi kesalahan pada server' });
+  }
+};
+
+exports.mitraRegister = async (req, res) => {
+  try {
+    const { full_name, phone_number, email, password } = req.body;
+
+    if (!email && !phone_number) {
+      return res.status(400).json({ error: 'Email atau No. Hp wajib diisi' });
+    }
+
+    // Check if mitra exists
+    const existingMitra = await prisma.mitra.findFirst({
+      where: {
+        OR: [
+          { phone_number: phone_number || undefined },
+          { email: email || undefined }
+        ]
+      }
+    });
+
+    if (existingMitra) {
+      return res.status(400).json({ error: 'Nomor Hp atau Email sudah terdaftar sebagai Mitra' });
+    }
+
+    // Hash password
+    const password_hash = password ? await bcrypt.hash(password, 10) : null;
+
+    // Create mitra
+    const newMitra = await prisma.mitra.create({
+      data: {
+        full_name: full_name || 'Calon Mitra HandyGo',
+        phone_number,
+        email,
+        password_hash
+      }
+    });
+
+    // Generate token
+    const token = jwt.sign({ mitraId: newMitra.id, role: 'mitra' }, JWT_SECRET, { expiresIn: '7d' });
+
+    res.status(201).json({
+      message: 'Registrasi Mitra berhasil',
+      token,
+      mitra: {
+        id: newMitra.id,
+        full_name: newMitra.full_name,
+        phone_number: newMitra.phone_number,
+        email: newMitra.email
+      }
+    });
+  } catch (error) {
+    console.error('Mitra Register error:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan pada server saat pendaftaran mitra' });
   }
 };
 
