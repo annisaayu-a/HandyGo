@@ -91,6 +91,20 @@
   overflow: hidden;
 }
 
+.stnk-ganti-foto-btn {
+  width: 120px;
+  padding: 10px 16px;
+  border: 1px solid #034078;
+  border-radius: 20px;
+  background-color: #ffffff;
+  color: #034078;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 24px;
+}
+
 .stnk-upload-box.uploaded {
   border: 1px solid #cbd5e1;
   background-color: #f1f5f9;
@@ -156,10 +170,19 @@
 
 /* Form Styles */
 .stnk-form {
-  margin-top: 32px;
+  margin-top: 24px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
+}
+
+.stnk-form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.stnk-form-row > div {
+  flex: 1;
 }
 
 .stnk-input-group {
@@ -170,25 +193,20 @@
 
 .stnk-input-group label {
   font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #334155;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .stnk-input-group input {
-  padding: 14px 16px;
-  border: 1px solid #cbd5e1;
+  padding: 12px 16px;
+  border: none;
   border-radius: 12px;
   font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
   color: #1e293b;
-  background-color: #ffffff;
+  background-color: #f8fafc;
   outline: none;
-  transition: border-color 0.2s ease;
-}
-
-.stnk-input-group input:focus {
-  border-color: #3b82f6;
 }
 
 .stnk-save-btn {
@@ -201,9 +219,13 @@
   border-radius: 30px;
   font-family: 'Outfit', sans-serif;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  transition: all 0.2s ease;
+}
+
+.stnk-save-btn.active {
+  background-color: #034078;
 }
 
 .stnk-save-btn:disabled {

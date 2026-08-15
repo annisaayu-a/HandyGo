@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Plus, Image as ImageIcon, Camera, ChevronRight, Info } from 'lucide-react';
-import simMock from '../../assets/sim_mock.png';
 import './PartnerSTNK.css';
 
 export default function PartnerSTNK() {
@@ -15,6 +14,11 @@ export default function PartnerSTNK() {
   const [formData, setFormData] = useState({
     platNomor: '',
     namaPemilik: '',
+    kendaraan: '',
+    tahun: '',
+    warna: '',
+    nomorRangka: '',
+    nomorMesin: '',
     masaBerlaku: ''
   });
 
@@ -29,16 +33,20 @@ export default function PartnerSTNK() {
   const simulateSuccess = () => {
     setIsUploaded(true);
     setFormData({
-      platNomor: 'B 1234 XYZ',
-      namaPemilik: 'Budi Santoso',
-      masaBerlaku: '08/2028'
+      platNomor: 'DD 4827 QZ',
+      namaPemilik: 'Joko Prasetyo',
+      kendaraan: 'Honda Vario 160',
+      tahun: '2023',
+      warna: 'Hitam',
+      nomorRangka: 'MH1KF1123PK482731',
+      nomorMesin: 'KF11E2482731',
+      masaBerlaku: '18 Agustus 2028'
     });
   };
 
   const handleOptionSelect = (type) => {
     closeOptions();
     if (type === 'gallery') {
-      // Simulate silent decline for invalid files, then success
       const isValid = window.confirm("Simulasi: Pilih OK untuk simulasi file valid, Cancel untuk file invalid (otomatis ditolak).");
       if (isValid) {
         setErrorBuram(false);
@@ -89,68 +97,79 @@ export default function PartnerSTNK() {
           </div>
         )}
 
-        <div className={`stnk-upload-box ${isUploaded ? 'uploaded' : ''}`} onClick={handleUploadClick}>
-          {isUploaded ? (
-            <img src={simMock} alt="STNK Mock" className="stnk-preview-img" />
-          ) : (
-            <>
-              <div className="stnk-upload-icon-wrapper">
-                <Plus size={20} color="#ffffff" strokeWidth={3} />
-              </div>
-              <p className="stnk-upload-desc">
-                Ukuran file tidak boleh lebih dari 10MB<br />
-                dengan format .jpg .jpeg .png
-              </p>
-            </>
-          )}
-        </div>
+        {isUploaded ? (
+          <button className="stnk-ganti-foto-btn animate-fade-in" onClick={handleUploadClick}>
+            Ganti Foto
+          </button>
+        ) : (
+          <div className="stnk-upload-box" onClick={handleUploadClick}>
+            <div className="stnk-upload-icon-wrapper">
+              <Plus size={20} color="#ffffff" strokeWidth={3} />
+            </div>
+            <p className="stnk-upload-desc">
+              Ukuran file tidak boleh lebih dari 10MB<br />
+              dengan format .jpg .jpeg .png
+            </p>
+          </div>
+        )}
 
         <div className="stnk-info-box">
           <div className="stnk-info-icon">
             <Info size={16} color="#ffffff" />
           </div>
           <p className="stnk-info-text">
-            Pastikan STNK terlihat jelas dari depan, tidak buram, dan dengan pencahayaan yang cukup.
+            {isUploaded 
+              ? "Pastikan data di bawah ini sudah sesuai dengan STNK yang kamu masukkan" 
+              : "Pastikan STNK terlihat jelas dari depan, tidak buram, dan dengan pencahayaan yang cukup."}
           </p>
         </div>
 
-        {/* Form Fields */}
-        <div className="stnk-form">
-          <div className="stnk-input-group">
-            <label>Nomor Plat Kendaraan</label>
-            <input 
-              type="text" 
-              value={formData.platNomor}
-              onChange={(e) => setFormData({...formData, platNomor: e.target.value})}
-              placeholder="Contoh: B 1234 XYZ"
-            />
+        {/* Form Fields only show when uploaded */}
+        {isUploaded && (
+          <div className="stnk-form animate-fade-in">
+            <div className="stnk-input-group">
+              <label>Nomor Polisi Kendaraan</label>
+              <input type="text" value={formData.platNomor} readOnly />
+            </div>
+            <div className="stnk-input-group">
+              <label>Pemilik</label>
+              <input type="text" value={formData.namaPemilik} readOnly />
+            </div>
+            <div className="stnk-form-row">
+              <div className="stnk-input-group">
+                <label>Kendaraan</label>
+                <input type="text" value={formData.kendaraan} readOnly />
+              </div>
+              <div className="stnk-input-group">
+                <label>Tahun</label>
+                <input type="text" value={formData.tahun} readOnly />
+              </div>
+            </div>
+            <div className="stnk-input-group">
+              <label>Warna</label>
+              <input type="text" value={formData.warna} readOnly />
+            </div>
+            <div className="stnk-input-group">
+              <label>Nomor Rangka</label>
+              <input type="text" value={formData.nomorRangka} readOnly />
+            </div>
+            <div className="stnk-input-group">
+              <label>Nomor Mesin</label>
+              <input type="text" value={formData.nomorMesin} readOnly />
+            </div>
+            <div className="stnk-input-group">
+              <label>Masa Berlaku STNK</label>
+              <input type="text" value={formData.masaBerlaku} readOnly />
+            </div>
           </div>
-          <div className="stnk-input-group">
-            <label>Nama Pemilik (Sesuai STNK)</label>
-            <input 
-              type="text" 
-              value={formData.namaPemilik}
-              onChange={(e) => setFormData({...formData, namaPemilik: e.target.value})}
-              placeholder="Contoh: Budi Santoso"
-            />
-          </div>
-          <div className="stnk-input-group">
-            <label>Masa Berlaku STNK</label>
-            <input 
-              type="text" 
-              value={formData.masaBerlaku}
-              onChange={(e) => setFormData({...formData, masaBerlaku: e.target.value})}
-              placeholder="MM/YYYY"
-            />
-          </div>
-        </div>
+        )}
 
         <button 
-          className="stnk-save-btn" 
+          className={`stnk-save-btn ${isUploaded ? 'active' : ''}`} 
           disabled={!isUploaded}
           onClick={handleSave}
         >
-          Simpan Data
+          {isUploaded ? 'Konfirmasi' : 'Simpan Data'}
         </button>
       </div>
 
