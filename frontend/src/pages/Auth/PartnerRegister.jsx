@@ -9,11 +9,12 @@ export default function PartnerRegister() {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [phoneError, setPhoneError] = useState('');
   const [emailError, setEmailError] = useState('');
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     setPhoneError('');
     setEmailError('');
@@ -42,15 +43,40 @@ export default function PartnerRegister() {
       return;
     }
 
-    // Save registration date to simulate persistent deadline
-    localStorage.setItem('partnerRegistrationDate', new Date().toISOString());
+    setIsSubmitting(true);
+    try {
+      const response = await fetch('https://handygo-api.vercel.app/api/auth/send-magic-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          full_name: 'Calon Mitra HandyGo', 
+          email, 
+          phone_number: phone, 
+          password: 'MitraPassword123' // Dummy password to satisfy backend requirements
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        alert(data.error || 'Gagal mengirim tautan ke email');
+        setIsSubmitting(false);
+        return;
+      }
 
-    // Redirect to magic link verification screen
-    navigate('/otp-verification', { 
-      state: { 
-        userData: { email, phone, role: 'mitra' } 
-      } 
-    });
+      // Save registration date to simulate persistent deadline
+      localStorage.setItem('partnerRegistrationDate', new Date().toISOString());
+
+      // Redirect to magic link verification screen
+      navigate('/otp-verification', { 
+        state: { 
+          userData: { email, phone, role: 'mitra' } 
+        } 
+      });
+    } catch (error) {
+      alert('Terjadi kesalahan jaringan, silakan coba lagi');
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -119,8 +145,9 @@ export default function PartnerRegister() {
         <button 
           className="pr-submit-btn" 
           onClick={handleRegister}
+          disabled={isSubmitting}
         >
-          Daftar
+          {isSubmitting ? 'Mengirim...' : 'Daftar'}
         </button>
       </div>
     </div>
