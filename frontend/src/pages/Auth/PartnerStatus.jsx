@@ -55,7 +55,7 @@ export default function PartnerStatus() {
       <div className="pstat-bottom-action">
         <button 
           className="pstat-kembali-btn"
-          onClick={() => navigate('/partner-register')}
+          onClick={() => navigate('/partner-welcome')}
         >
           Kembali
         </button>
