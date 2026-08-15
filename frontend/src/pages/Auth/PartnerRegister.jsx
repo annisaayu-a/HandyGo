@@ -9,24 +9,33 @@ export default function PartnerRegister() {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
+  
+  const [phoneError, setPhoneError] = useState('');
+  const [emailError, setEmailError] = useState('');
 
   const handleRegister = (e) => {
     e.preventDefault();
+    setPhoneError('');
+    setEmailError('');
+    let hasError = false;
 
     if (!phone) {
-      alert('Masukkan nomor HP Anda');
-      return;
+      setPhoneError('Nomor HP tidak boleh kosong');
+      hasError = true;
+    } else if (!phone.startsWith('8')) {
+      setPhoneError('Nomor HP harus diawali dengan angka 8');
+      hasError = true;
     }
 
     if (!email) {
-      alert('Masukkan Gmail Anda');
-      return;
+      setEmailError('Gmail tidak boleh kosong');
+      hasError = true;
+    } else if (!email.toLowerCase().endsWith('@gmail.com')) {
+      setEmailError('Mohon gunakan alamat email dengan domain @gmail.com');
+      hasError = true;
     }
 
-    if (!email.toLowerCase().endsWith('@gmail.com')) {
-      alert('Mohon gunakan alamat email dengan domain @gmail.com');
-      return;
-    }
+    if (hasError) return;
 
     if (!termsAccepted) {
       alert('Anda harus menyetujui Syarat & Ketentuan serta Kebijakan Privasi HandyGo');
@@ -67,22 +76,30 @@ export default function PartnerRegister() {
             <input 
               type="tel" 
               placeholder="8123456789" 
-              className="pr-input"
+              className={`pr-input ${phoneError ? 'pr-input-error' : ''}`}
               value={phone}
-              onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+              onChange={(e) => {
+                setPhone(e.target.value.replace(/\D/g, ''));
+                setPhoneError('');
+              }}
             />
           </div>
+          {phoneError && <p className="pr-error-text animate-fade-in">{phoneError}</p>}
 
           <h2 className="pr-label">Masukkan Gmail</h2>
           <div className="pr-input-group">
             <input 
               type="email" 
               placeholder="Masukkan email" 
-              className="pr-input pr-input-full"
+              className={`pr-input pr-input-full ${emailError ? 'pr-input-error' : ''}`}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setEmailError('');
+              }}
             />
           </div>
+          {emailError && <p className="pr-error-text animate-fade-in">{emailError}</p>}
 
           <label className="pr-checkbox-container">
             <input 
