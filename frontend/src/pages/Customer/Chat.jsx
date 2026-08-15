@@ -15,20 +15,7 @@ export default function Chat() {
   const [activeCallTime, setActiveCallTime] = useState(initialCallTime);
   const messagesEndRef = useRef(null);
 
-  const [chatHistory, setChatHistory] = useState([
-    {
-      id: 1,
-      sender: 'mitra',
-      text: 'Pesanan berhasil diterima.\n\nHalo, Saya sudah menerima pesanan Anda dan sedang menuju lokasi. Jika ada patokan lokasi atau informasi tambahan, silahkan sampaikan melalui chat ini ya.\n\nIni adalah pesan otomatis.',
-      time: '12.00'
-    },
-    {
-      id: 2,
-      sender: 'customer',
-      text: 'Hati hati pak',
-      time: '12.00'
-    }
-  ]);
+  const [chatHistory, setChatHistory] = useState([]);
 
   const quickReplies = ['Lokasi sudah sesuai titik ya', 'Baik saya tunggu'];
 
@@ -39,6 +26,28 @@ export default function Chat() {
   useEffect(() => {
     scrollToBottom();
   }, [chatHistory]);
+
+  // Simulate automated message 5 seconds after getting a partner (opening chat)
+  useEffect(() => {
+    if (isFinished) return; // Don't send if order is already finished
+    
+    const timer = setTimeout(() => {
+      setChatHistory(prev => {
+        // Only add if it's not already there (prevent double add on strict mode)
+        if (prev.length === 0) {
+          return [{
+            id: Date.now(),
+            sender: 'mitra',
+            text: 'Pesanan berhasil diterima.\n\nHalo, Saya sudah menerima pesanan Anda dan sedang menuju lokasi. Jika ada patokan lokasi atau informasi tambahan, silahkan sampaikan melalui chat ini ya.\n\nIni adalah pesan otomatis.',
+            time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(':', '.')
+          }];
+        }
+        return prev;
+      });
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [isFinished]);
 
   useEffect(() => {
     let interval;
