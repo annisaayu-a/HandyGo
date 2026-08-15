@@ -235,32 +235,9 @@ exports.uploadProfilePicture = async (req, res) => {
       return res.status(400).json({ error: 'User ID dan gambar wajib diisi' });
     }
 
-    // Extract base64 data (remove data:image/png;base64, prefix)
-    const matches = imageBase64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-    if (!matches || matches.length !== 3) {
-      return res.status(400).json({ error: 'Format gambar tidak valid' });
-    }
-
-    const buffer = Buffer.from(matches[2], 'base64');
-    const fileName = `profile_${userId}_${Date.now()}.png`;
-    const filePath = path.join(__dirname, '../../public/uploads', fileName);
-
-    fs.writeFileSync(filePath, buffer);
-
-    const imageUrl = `/uploads/${fileName}`;
-
-    // Get old user data to delete old image
-    const oldUser = await prisma.user.findUnique({ where: { id: userId } });
-    if (oldUser && oldUser.profile_picture) {
-      const oldFilePath = path.join(__dirname, '../../public', oldUser.profile_picture);
-      if (fs.existsSync(oldFilePath)) {
-        fs.unlinkSync(oldFilePath);
-      }
-    }
-
     const updatedUser = await prisma.user.update({
       where: { id: userId },
-      data: { profile_picture: imageUrl }
+      data: { profile_picture: imageBase64 }
     });
 
     res.json({
@@ -286,27 +263,12 @@ exports.deleteProfilePicture = async (req, res) => {
       return res.status(400).json({ error: 'User ID wajib diisi' });
     }
 
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (user && user.profile_picture) {
-      const oldFilePath = path.join(__dirname, '../../public', user.profile_picture);
-      if (fs.existsSync(oldFilePath)) {
-        fs.unlinkSync(oldFilePath);
-      }
-    }
-
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: { profile_picture: null }
     });
 
-    res.json({
-      message: 'Foto profil berhasil dihapus',
-      user: {
-        id: updatedUser.id,
-        profile_picture: null
-      }
-    });
-
+    res.json({ message: 'Foto profil berhasil dihapus' });
   } catch (error) {
     console.error('Delete profile picture error:', error);
     res.status(500).json({ error: 'Gagal menghapus foto profil' });
