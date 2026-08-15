@@ -293,11 +293,11 @@ export default function RepairStatus() {
                 </div>
               </div>
               <div className="courier-actions">
-                <button className="courier-action-btn disabled">
-                  <Phone size={18} color="#94a3b8" />
+                <button className="courier-action-btn" onClick={() => window.location.href = 'tel:+6281234567890'} style={{ cursor: 'pointer' }}>
+                  <Phone size={18} color="#034078" />
                 </button>
-                <button className="courier-action-btn disabled">
-                  <MessageSquare size={18} color="#94a3b8" />
+                <button className="courier-action-btn" onClick={() => window.open('https://wa.me/6281234567890', '_blank')} style={{ cursor: 'pointer' }}>
+                  <MessageSquare size={18} color="#034078" />
                 </button>
               </div>
             </div>
@@ -356,10 +356,10 @@ export default function RepairStatus() {
             </div>
           </div>
           <div style={{ display: 'flex', gap: '12px' }}>
-            <button style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            <button onClick={() => window.location.href = 'tel:+6281234567890'} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
               <Phone size={20} color="#034078" />
             </button>
-            <button style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            <button onClick={() => window.open('https://wa.me/6281234567890', '_blank')} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
               <MessageSquare size={20} color="#034078" />
             </button>
           </div>
