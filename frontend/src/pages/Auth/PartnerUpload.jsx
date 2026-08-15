@@ -87,7 +87,7 @@ export default function PartnerUpload() {
                   <img 
                     src={doc.id === 'ktp' ? ktpMock : simMock} 
                     alt={`Thumbnail ${doc.title}`} 
-                    className="pu-doc-thumbnail" 
+                    className={`pu-doc-thumbnail ${doc.id === 'stnk' ? 'stnk-thumb-filter' : ''}`} 
                   />
                 ) : (
                   <ImageIcon size={28} color="#94a3b8" />
@@ -104,6 +104,17 @@ export default function PartnerUpload() {
           ))}
         </div>
       </div>
+
+      {(ktpVerified && simVerified && stnkVerified) && (
+        <div className="pu-bottom-action animate-fade-in">
+          <button 
+            className="pu-daftar-btn"
+            onClick={() => alert("Simulasi: Pendaftaran Mitra HandyGo Berhasil!")}
+          >
+            Daftar
+          </button>
+        </div>
+      )}
     </div>
   );
 }

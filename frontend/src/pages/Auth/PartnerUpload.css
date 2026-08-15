@@ -4,6 +4,8 @@
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
+  position: relative;
+  padding-bottom: 100px;
 }
 
 .pu-header {
@@ -129,6 +131,10 @@
   display: block;
 }
 
+.pu-doc-thumbnail.stnk-thumb-filter {
+  filter: sepia(0.8) hue-rotate(5deg) saturate(3) brightness(1.1); /* Make it look yellow like STNK */
+}
+
 .pu-doc-info {
   flex: 1;
   display: flex;
@@ -137,15 +143,49 @@
 }
 
 .pu-doc-title {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #1e293b;
-  margin: 0 0 4px 0;
+  margin-bottom: 4px;
 }
 
 .pu-doc-status {
-  font-size: 0.85rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
   color: #94a3b8;
-  margin: 0;
+}
+
+.pu-doc-status.verified {
+  color: #16a34a;
+  font-weight: 500;
+}
+
+/* Bottom Action Button */
+.pu-bottom-action {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 24px;
+  background-color: transparent;
+}
+
+.pu-daftar-btn {
+  width: 100%;
+  padding: 16px;
+  background-color: #034078;
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(3, 64, 120, 0.2);
+}
+
+.pu-daftar-btn:active {
+  transform: scale(0.98);
 }
