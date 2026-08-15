@@ -33,6 +33,9 @@ export default function PartnerRegister() {
       return;
     }
 
+    // Save registration date to simulate persistent deadline
+    localStorage.setItem('partnerRegistrationDate', new Date().toISOString());
+
     // Redirect to magic link verification screen
     navigate('/otp-verification', { 
       state: { 

@@ -8,9 +8,14 @@ export default function PartnerUpload() {
   const [deadlineDate, setDeadlineDate] = useState('');
 
   useEffect(() => {
-    const targetDate = new Date();
-    targetDate.setDate(targetDate.getDate() + 3);
-    const formattedDate = targetDate.toLocaleDateString('id-ID', {
+    // Ambil tanggal pendaftaran dari simulasi localStorage, atau gunakan hari ini
+    const regDateStr = localStorage.getItem('partnerRegistrationDate');
+    const baseDate = regDateStr ? new Date(regDateStr) : new Date();
+    
+    // Tambah 3 hari
+    baseDate.setDate(baseDate.getDate() + 3);
+    
+    const formattedDate = baseDate.toLocaleDateString('id-ID', {
       day: 'numeric',
       month: 'long',
       year: 'numeric'
