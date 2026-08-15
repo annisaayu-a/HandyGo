@@ -39,12 +39,20 @@ export default function RepairDetails() {
     }
   }, [location.state]);
 
-  const categories = [
+  const isKelistrikan = repairTypeTitle.toLowerCase().includes('listrik') || repairTypeTitle.toLowerCase() === 'kelistrikan';
+  
+  const categories = isKelistrikan ? [
     { id: 'lampu', title: 'Lampu Mati', icon: '💡' },
     { id: 'saklar', title: 'Saklar Rusak' },
     { id: 'stopkontak', title: 'Stop Kontak Biasa' },
     { id: 'mcb', title: 'MCB Turun' },
     { id: 'instalasi', title: 'Instalasi Listrik' }
+  ] : [
+    { id: 'tv', title: 'TV' },
+    { id: 'mesin_cuci', title: 'Mesin Cuci' },
+    { id: 'kulkas', title: 'Kulkas' },
+    { id: 'dispenser', title: 'Dispenser' },
+    { id: 'kipas', title: 'Kipas' }
   ];
 
   const handleMockUpload = () => {
@@ -186,7 +194,7 @@ export default function RepairDetails() {
                   <span className="rd-dropdown-text">{selectedKategori}</span>
                 </div>
               ) : (
-                <span className="rd-dropdown-text placeholder">Pilih kategori</span>
+                <span className="rd-dropdown-text placeholder">{isKelistrikan ? "Pilih jenis listrik" : "Pilih jenis elektronik"}</span>
               )}
               {isDropdownOpen ? <ChevronDown size={20} color="#94a3b8" /> : <ChevronRight size={20} color="#94a3b8" />}
             </div>
