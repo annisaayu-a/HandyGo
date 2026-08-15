@@ -17,7 +17,7 @@ export default function PartnerWelcome() {
         </svg>
       </div>
 
-      <button className="pw-back-btn" onClick={() => navigate(-1)}>
+      <button className="pw-back-btn" onClick={() => navigate('/')}>
         <ArrowLeft size={24} color="#1e293b" />
       </button>
 
