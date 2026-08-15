@@ -32,7 +32,7 @@ export default function PartnerWelcome() {
       <div className="pw-bottom-action">
         <button 
           className="pw-start-btn" 
-          onClick={() => alert('Lanjut ke pendaftaran mitra!')}
+          onClick={() => navigate('/partner-register')}
         >
           Yuk Mulai!
         </button>
