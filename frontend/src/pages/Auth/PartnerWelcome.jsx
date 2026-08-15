@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import './PartnerWelcome.css';
-import heroIcon from '../../assets/hero.png'; // Use hero as placeholder for illustration
+import partnerIcon from '../../assets/partner_illustration.png';
 
 export default function PartnerWelcome() {
   const navigate = useNavigate();
@@ -22,8 +22,7 @@ export default function PartnerWelcome() {
 
       <div className="pw-content">
         <div className="pw-illustration-wrapper">
-          {/* We use hero.png as a placeholder for the generated vector illustration */}
-          <img src={heroIcon} alt="Mitra Illustration" className="pw-illustration" />
+          <img src={partnerIcon} alt="Mitra Illustration" className="pw-illustration" />
         </div>
 
         <h2 className="pw-greeting">Halo mitra!</h2>
