@@ -6,7 +6,7 @@ import './PartnerLocation.css';
 export default function PartnerLocation() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
-  const [selectedCity, setSelectedCity] = useState('Makassar'); // Default checked in screenshot
+  const [selectedCity, setSelectedCity] = useState('');
 
   const cities = [
     'Jabodetabek',
