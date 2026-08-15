@@ -208,45 +208,7 @@ export default function RepairMap() {
           onMoveStart={handleMoveStart}
           onMoveEnd={handleMoveEnd}
         />
-        
-        
-        {/* GPS Fetch Location Button */}
-        <button
-          onClick={handleFetchLocation}
-          disabled={isFetchingLocation}
-          style={{
-            position: 'absolute',
-            right: '16px',
-            bottom: 'calc(50% + 80px)',
-            zIndex: 500,
-            width: '44px',
-            height: '44px',
-            borderRadius: '50%',
-            backgroundColor: '#ffffff',
-            border: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-            cursor: isFetchingLocation ? 'not-allowed' : 'pointer',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-          }}
-          title="Gunakan lokasi saya"
-        >
-          {isFetchingLocation ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#034078" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
-              <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-            </svg>
-          ) : (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#034078" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="3"/>
-              <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
-              <circle cx="12" cy="12" r="8" opacity="0.2" fill="#034078"/>
-            </svg>
-          )}
-        </button>
-
-        {/* Custom Map Pin (Static in Center) */}
+{/* Custom Map Pin (Static in Center) */}
         <div className="map-pin-center" style={{ pointerEvents: 'none', zIndex: 400, position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -100%)' }}>
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" 
                style={{ 
@@ -292,7 +254,46 @@ export default function RepairMap() {
 
       {/* Bottom Sheet */}
       <div className="bottom-sheet" style={{ zIndex: 1000 }}>
-        {/* Floating Back Button */}
+        
+        
+        
+        {/* GPS Fetch Location Button */}
+        <button
+          onClick={handleFetchLocation}
+          disabled={isFetchingLocation}
+          style={{
+            position: 'absolute',
+            right: '16px',
+            bottom: 'calc(100% + 16px)',
+            zIndex: 500,
+            width: '44px',
+            height: '44px',
+            borderRadius: '50%',
+            backgroundColor: '#ffffff',
+            border: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            cursor: isFetchingLocation ? 'not-allowed' : 'pointer',
+            transition: 'transform 0.2s, box-shadow 0.2s',
+          }}
+          title="Gunakan lokasi saya"
+        >
+          {isFetchingLocation ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#034078" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
+              <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+            </svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#034078" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+              <circle cx="12" cy="12" r="8" opacity="0.2" fill="#034078"/>
+            </svg>
+          )}
+        </button>
+
+                {/* Floating Back Button */}
         <button 
           className="map-back-btn floating-back-btn" 
           onClick={() => navigate(-1)}
