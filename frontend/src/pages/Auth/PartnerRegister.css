@@ -44,7 +44,7 @@
   flex-direction: column;
   z-index: 1;
   padding: 0 24px;
-  margin-top: 180px; /* Offset to place content below wave */
+  margin-top: 120px; /* Offset to place content below wave */
 }
 
 .pr-form {
