@@ -1,0 +1,113 @@
+.partner-welcome-container {
+  min-height: 100dvh;
+  width: 100%;
+  background-color: #f8fafc;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.partner-wave-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 0;
+}
+
+.partner-wave-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.pw-back-btn {
+  position: absolute;
+  top: 40px;
+  left: 20px;
+  width: 44px;
+  height: 44px;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.pw-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  padding: 0 20px;
+  margin-top: 60px; /* Offset for the header */
+}
+
+.pw-illustration-wrapper {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 1.5;
+  background-color: #e2e8f0;
+  border-radius: 24px;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(3, 64, 120, 0.1);
+}
+
+.pw-illustration {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pw-greeting {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #034078;
+  margin: 0 0 8px 0;
+  text-align: center;
+}
+
+.pw-sub-greeting {
+  font-size: 1rem;
+  color: #034078;
+  margin: 0;
+  text-align: center;
+  font-weight: 500;
+}
+
+.pw-bottom-action {
+  padding: 20px;
+  padding-bottom: 40px;
+  z-index: 1;
+}
+
+.pw-start-btn {
+  width: 100%;
+  padding: 16px;
+  background-color: #034078;
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 8px 16px rgba(3, 64, 120, 0.15);
+}
+
+.pw-start-btn:active {
+  transform: scale(0.98);
+}

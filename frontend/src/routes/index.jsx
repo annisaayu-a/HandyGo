@@ -9,6 +9,7 @@ import AdminLayout from '../layouts/AdminLayout';
 import Welcome from '../pages/Auth/Welcome';
 import Login from '../pages/Auth/Login';
 import Register from '../pages/Auth/Register';
+import PartnerWelcome from '../pages/Auth/PartnerWelcome';
 import OTPVerification from '../pages/Auth/OTPVerification';
 import VerifyMagicLink from '../pages/Auth/VerifyMagicLink';
 import CustomerHome from '../pages/Customer/Home';
@@ -69,6 +70,10 @@ export const router = createBrowserRouter([
   {
     path: '/register',
     element: <Register />,
+  },
+  {
+    path: '/partner-welcome',
+    element: <PartnerWelcome />,
   },
   {
     path: '/otp-verification',

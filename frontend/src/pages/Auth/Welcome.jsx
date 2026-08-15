@@ -140,10 +140,7 @@ export default function Welcome() {
           </>
         ) : (
           <div className="role-cards-container animate-fade-in">
-            <div className="role-card" onClick={() => {
-              // Not implemented yet, maybe just alert for now or do nothing
-              alert('Pendaftaran Mitra belum tersedia');
-            }}>
+            <div className="role-card" onClick={() => navigate('/partner-welcome')}>
               <h3 className="role-title">Mitra</h3>
               <div className="role-icon-wrapper">
                 <span className="role-emoji">🤝</span>
