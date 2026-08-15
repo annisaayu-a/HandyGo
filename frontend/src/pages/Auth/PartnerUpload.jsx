@@ -46,6 +46,8 @@ export default function PartnerUpload() {
   const handleDocClick = (id) => {
     if (id === 'ktp' || id === 'sim') {
       navigate('/partner-camera', { state: { docType: id, vehicle, ktpVerified, simVerified } });
+    } else if (id === 'stnk') {
+      navigate('/partner-stnk', { state: { vehicle, ktpVerified, simVerified } });
     } else {
       alert(`Simulasi: Fitur upload untuk ${id.toUpperCase()} belum tersedia`);
     }
