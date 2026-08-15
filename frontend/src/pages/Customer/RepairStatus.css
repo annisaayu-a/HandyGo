@@ -153,7 +153,7 @@
   width: 100vw;
   margin-left: -24px;
   height: 8px;
-  background-color: #f8fafc;
+  background-color: #ffffff;
   margin-bottom: 24px;
 }
 
@@ -256,7 +256,7 @@
 
 /* Info Box */
 .rs-info-box {
-  background-color: #f8fafc;
+  background-color: #ffffff;
   border-radius: 8px;
   padding: 12px;
   display: flex;
@@ -341,7 +341,7 @@
 
 .rs-payment-option.selected {
   border-color: #034078;
-  background-color: #f8fafc;
+  background-color: #ffffff;
 }
 
 .rs-payment-icon {
@@ -488,7 +488,7 @@
 }
 
 .rs-action-btn:hover {
-  background-color: #f8fafc;
+  background-color: #ffffff;
 }
 
 /* Deskripsi Card */

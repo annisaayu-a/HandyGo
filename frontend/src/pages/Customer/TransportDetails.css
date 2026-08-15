@@ -4,7 +4,7 @@
   height: 100vh;
   position: relative;
   overflow: hidden;
-  background-color: #f8fafc;
+  background-color: #ffffff;
   margin: -24px -20px -24px -20px;
 }
 
@@ -148,7 +148,7 @@
 
 .vehicle-card.active {
   border-color: #034078;
-  background-color: #f8fafc;
+  background-color: #ffffff;
 }
 
 .vehicle-card.border-none {

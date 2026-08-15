@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #f8fafc;
+  background-color: #ffffff;
   position: relative;
 }
 
@@ -173,7 +173,7 @@
 }
 
 .chat-help-btn:hover {
-  background-color: #f8fafc;
+  background-color: #ffffff;
 }
 
 /* Active Call Banner */
@@ -222,7 +222,7 @@
 }
 
 .chat-history-call-content {
-  background-color: #f8fafc;
+  background-color: #ffffff;
   border-radius: 20px;
   padding: 8px 16px;
   display: flex;
@@ -249,7 +249,7 @@
 
 /* Input Area */
 .chat-input-container {
-  background-color: #f8fafc;
+  background-color: #ffffff;
   padding: 12px 20px 20px 20px;
 }
 
