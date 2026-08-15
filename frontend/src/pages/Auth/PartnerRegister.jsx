@@ -76,7 +76,7 @@ export default function PartnerRegister() {
             <input 
               type="tel" 
               placeholder="8123456789" 
-              className={`pr-input ${phoneError ? 'pr-input-error' : ''}`}
+              className="pr-input"
               value={phone}
               onChange={(e) => {
                 setPhone(e.target.value.replace(/\D/g, ''));
@@ -91,7 +91,7 @@ export default function PartnerRegister() {
             <input 
               type="email" 
               placeholder="Masukkan email" 
-              className={`pr-input pr-input-full ${emailError ? 'pr-input-error' : ''}`}
+              className="pr-input pr-input-full"
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
