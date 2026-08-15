@@ -1,11 +1,22 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Plus, Image as ImageIcon, Camera, ChevronRight, Info } from 'lucide-react';
+import simMock from '../../assets/sim_mock.png';
 import './PartnerSTNK.css';
 
 export default function PartnerSTNK() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showOptions, setShowOptions] = useState(false);
+  const [errorBuram, setErrorBuram] = useState(false);
+  const [isUploaded, setIsUploaded] = useState(false);
+  const [cameraAttempts, setCameraAttempts] = useState(0);
+
+  const [formData, setFormData] = useState({
+    platNomor: '',
+    namaPemilik: '',
+    masaBerlaku: ''
+  });
 
   const handleUploadClick = () => {
     setShowOptions(true);
@@ -15,12 +26,44 @@ export default function PartnerSTNK() {
     setShowOptions(false);
   };
 
+  const simulateSuccess = () => {
+    setIsUploaded(true);
+    setFormData({
+      platNomor: 'B 1234 XYZ',
+      namaPemilik: 'Budi Santoso',
+      masaBerlaku: '08/2028'
+    });
+  };
+
   const handleOptionSelect = (type) => {
-    // Simulasi aksi pilih dari galeri atau kamera
-    alert(`Simulasi: Membuka ${type === 'gallery' ? 'Galeri' : 'Kamera'}...`);
     closeOptions();
-    // Setelah simulasi berhasil (misalnya setelah milih file), bisa langsung redirect
-    // navigate('/partner-upload', { state: { stnkVerified: true } });
+    if (type === 'gallery') {
+      // Simulate silent decline for invalid files, then success
+      const isValid = window.confirm("Simulasi: Pilih OK untuk simulasi file valid, Cancel untuk file invalid (otomatis ditolak).");
+      if (isValid) {
+        setErrorBuram(false);
+        simulateSuccess();
+      } else {
+        alert("File ditolak: Ukuran melebihi 10MB atau format tidak sesuai.");
+      }
+    } else if (type === 'camera') {
+      if (cameraAttempts === 0) {
+        setErrorBuram(true);
+        setCameraAttempts(1);
+      } else {
+        setErrorBuram(false);
+        simulateSuccess();
+      }
+    }
+  };
+
+  const handleSave = () => {
+    navigate('/partner-upload', { 
+      state: { 
+        ...location.state,
+        stnkVerified: true 
+      } 
+    });
   };
 
   return (
@@ -35,14 +78,31 @@ export default function PartnerSTNK() {
       <div className="stnk-content">
         <h2 className="stnk-section-title">Unggah Foto STNK dan Isi Formulir</h2>
         
-        <div className="stnk-upload-box" onClick={handleUploadClick}>
-          <div className="stnk-upload-icon-wrapper">
-            <Plus size={20} color="#ffffff" strokeWidth={3} />
+        {errorBuram && (
+          <div className="stnk-warning-box animate-fade-in">
+            <div className="stnk-warning-icon">
+              <span style={{ color: '#fff', fontSize: '12px', fontWeight: 'bold' }}>i</span>
+            </div>
+            <p className="stnk-warning-text">
+              Gambar yang kamu ambil masih buram nih, coba lagi yuk
+            </p>
           </div>
-          <p className="stnk-upload-desc">
-            Ukuran file tidak boleh lebih dari 10MB<br />
-            dengan format .jpg .jpeg .png
-          </p>
+        )}
+
+        <div className={`stnk-upload-box ${isUploaded ? 'uploaded' : ''}`} onClick={handleUploadClick}>
+          {isUploaded ? (
+            <img src={simMock} alt="STNK Mock" className="stnk-preview-img" />
+          ) : (
+            <>
+              <div className="stnk-upload-icon-wrapper">
+                <Plus size={20} color="#ffffff" strokeWidth={3} />
+              </div>
+              <p className="stnk-upload-desc">
+                Ukuran file tidak boleh lebih dari 10MB<br />
+                dengan format .jpg .jpeg .png
+              </p>
+            </>
+          )}
         </div>
 
         <div className="stnk-info-box">
@@ -53,6 +113,45 @@ export default function PartnerSTNK() {
             Pastikan STNK terlihat jelas dari depan, tidak buram, dan dengan pencahayaan yang cukup.
           </p>
         </div>
+
+        {/* Form Fields */}
+        <div className="stnk-form">
+          <div className="stnk-input-group">
+            <label>Nomor Plat Kendaraan</label>
+            <input 
+              type="text" 
+              value={formData.platNomor}
+              onChange={(e) => setFormData({...formData, platNomor: e.target.value})}
+              placeholder="Contoh: B 1234 XYZ"
+            />
+          </div>
+          <div className="stnk-input-group">
+            <label>Nama Pemilik (Sesuai STNK)</label>
+            <input 
+              type="text" 
+              value={formData.namaPemilik}
+              onChange={(e) => setFormData({...formData, namaPemilik: e.target.value})}
+              placeholder="Contoh: Budi Santoso"
+            />
+          </div>
+          <div className="stnk-input-group">
+            <label>Masa Berlaku STNK</label>
+            <input 
+              type="text" 
+              value={formData.masaBerlaku}
+              onChange={(e) => setFormData({...formData, masaBerlaku: e.target.value})}
+              placeholder="MM/YYYY"
+            />
+          </div>
+        </div>
+
+        <button 
+          className="stnk-save-btn" 
+          disabled={!isUploaded}
+          onClick={handleSave}
+        >
+          Simpan Data
+        </button>
       </div>
 
       {/* Bottom Sheet Overlay */}
