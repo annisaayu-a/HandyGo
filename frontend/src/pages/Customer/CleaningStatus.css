@@ -475,18 +475,21 @@
 }
 
 .cs-action-btn {
-  width: 40px;
-  height: 40px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  border: 1px solid #e2e8f0;
+  border: 2px solid #d1d5db;
   background-color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .cs-action-btn:hover {
-  background-color: #ffffff;
+  background-color: #f0f5ff;
+  border-color: #034078;
+  transform: scale(1.05);
 }

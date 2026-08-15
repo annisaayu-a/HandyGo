@@ -206,10 +206,10 @@ export default function DeliveryStatus() {
               </div>
               <div className="courier-actions">
                 <button className="courier-action-btn" onClick={() => navigate('/customer/call')}>
-                  <Phone size={18} color="#034078" />
+                  <Phone size={24} color="#034078" fill="#034078" />
                 </button>
                 <button className="courier-action-btn" onClick={() => navigate('/customer/chat')}>
-                  <MessageCircle size={18} color="#034078" />
+                  <MessageCircle size={24} color="#034078" fill="#034078" />
                 </button>
               </div>
             </div>
@@ -266,9 +266,9 @@ export default function DeliveryStatus() {
               </div>
             </div>
             <div className="courier-actions">
-              <button className="icon-btn-round" onClick={() => navigate('/customer/call')}><Phone size={18} color="#034078" /></button>
+              <button className="icon-btn-round" onClick={() => navigate('/customer/call')}><Phone size={24} color="#034078" fill="#034078" /></button>
               <button className="icon-btn-round" onClick={() => navigate('/customer/chat')}>
-                <MessageCircle size={18} color="#034078" />
+                <MessageCircle size={24} color="#034078" fill="#034078" />
               </button>
             </div>
           </div>

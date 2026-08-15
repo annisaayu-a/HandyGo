@@ -190,10 +190,10 @@ export default function ShoppingStatus() {
               </div>
               <div className="courier-actions">
                 <button className="courier-action-btn disabled">
-                  <Phone size={18} color="#94a3b8" fill="currentColor" />
+                  <Phone size={24} color="#94a3b8" fill="currentColor" />
                 </button>
                 <button className="courier-action-btn disabled">
-                  <MessageCircle size={18} color="#94a3b8" fill="currentColor" />
+                  <MessageCircle size={24} color="#94a3b8" fill="currentColor" />
                 </button>
               </div>
             </div>
@@ -269,10 +269,10 @@ export default function ShoppingStatus() {
               </div>
               <div className="courier-actions">
                 <button className="courier-action-btn" onClick={() => navigate('/customer/call')}>
-                  <Phone size={18} color="#034078" fill="currentColor" />
+                  <Phone size={24} color="#034078" fill="currentColor" />
                 </button>
                 <button className="courier-action-btn" onClick={() => navigate('/customer/chat')}>
-                  <MessageCircle size={18} color="#034078" fill="currentColor" />
+                  <MessageCircle size={24} color="#034078" fill="currentColor" />
                 </button>
               </div>
             </div>

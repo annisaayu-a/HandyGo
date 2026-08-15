@@ -502,15 +502,23 @@
 }
 
 .driver-actions .icon-btn {
-  width: 36px;
-  height: 36px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  border: 1px solid #e2e8f0;
+  border: 2px solid #d1d5db;
   display: flex;
   align-items: center;
   justify-content: center;
   background: white;
   cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.driver-actions .icon-btn:hover {
+  background-color: #f0f5ff;
+  border-color: #034078;
+  transform: scale(1.05);
 }
 
 .driver-vehicle-plate {

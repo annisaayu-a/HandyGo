@@ -310,11 +310,11 @@ export default function RepairStatus() {
                 </div>
               </div>
               <div className="courier-actions">
-                <button className="courier-action-btn" onClick={() => navigate('/customer/call')} style={{ cursor: 'pointer' }}>
-                  <Phone size={18} color="#034078" />
+                <button className="courier-action-btn" onClick={() => navigate('/customer/call')}>
+                  <Phone size={24} color="#034078" fill="#034078" />
                 </button>
-                <button className="courier-action-btn" onClick={() => navigate('/customer/chat')} style={{ cursor: 'pointer' }}>
-                  <MessageSquare size={18} color="#034078" />
+                <button className="courier-action-btn" onClick={() => navigate('/customer/chat')}>
+                  <MessageSquare size={24} color="#034078" fill="#034078" />
                 </button>
               </div>
             </div>
@@ -372,12 +372,12 @@ export default function RepairStatus() {
               <span>(59 ulasan)</span>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <button onClick={() => navigate('/customer/call')} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-              <Phone size={20} color="#034078" />
+          <div style={{ display: 'flex', gap: '16px' }}>
+            <button onClick={() => navigate('/customer/call')} className="courier-action-btn">
+              <Phone size={24} color="#034078" fill="#034078" />
             </button>
-            <button onClick={() => navigate('/customer/chat')} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-              <MessageSquare size={20} color="#034078" />
+            <button onClick={() => navigate('/customer/chat')} className="courier-action-btn">
+              <MessageSquare size={24} color="#034078" fill="#034078" />
             </button>
           </div>
         </div>

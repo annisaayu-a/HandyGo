@@ -214,8 +214,8 @@ export default function TransportDetails() {
                 <div className="driver-rating"><Star size={14} color="#eab308" fill="#eab308" /> 4.9 <span className="reviews">(59 ulasan)</span></div>
               </div>
               <div className="driver-actions">
-                <button className="icon-btn phone-btn" onClick={() => navigate('/customer/call')}><Phone size={18} color="#034078" /></button>
-                <button className="icon-btn chat-btn" onClick={() => navigate('/customer/chat')}><MessageSquare size={18} color="#034078" /></button>
+                <button className="icon-btn phone-btn" onClick={() => navigate('/customer/call')}><Phone size={24} color="#034078" fill="#034078" /></button>
+                <button className="icon-btn chat-btn" onClick={() => navigate('/customer/chat')}><MessageSquare size={24} color="#034078" fill="#034078" /></button>
               </div>
             </div>
           </div>
@@ -419,8 +419,8 @@ export default function TransportDetails() {
                     <div className="driver-rating"><Star size={14} color="#eab308" fill="#eab308" /> 4.9 <span className="reviews">(59 ulasan)</span></div>
                   </div>
                   <div className="driver-actions">
-                    <button className="icon-btn phone-btn" onClick={() => navigate('/customer/call')}><Phone size={18} color="#034078" /></button>
-                    <button className="icon-btn chat-btn" onClick={() => navigate('/customer/chat')}><MessageSquare size={18} color="#034078" /></button>
+                    <button className="icon-btn phone-btn" onClick={() => navigate('/customer/call')}><Phone size={24} color="#034078" fill="#034078" /></button>
+                    <button className="icon-btn chat-btn" onClick={() => navigate('/customer/chat')}><MessageSquare size={24} color="#034078" fill="#034078" /></button>
                   </div>
                 </div>
                 

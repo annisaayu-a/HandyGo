@@ -265,25 +265,28 @@
 
 .courier-actions {
   display: flex;
-  gap: 12px;
+  gap: 16px;
 }
 
 .courier-action-btn {
-  width: 36px;
-  height: 36px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background-color: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: 2px solid #d1d5db;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: none;
+  flex-shrink: 0;
 }
 
 .courier-action-btn:hover {
-  background-color: #ffffff;
-  border-color: #cbd5e1;
+  background-color: #f0f5ff;
+  border-color: #034078;
+  transform: scale(1.05);
 }
 
 /* Order Details / Rating */

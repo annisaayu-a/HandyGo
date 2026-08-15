@@ -320,10 +320,10 @@ export default function CleaningStatus() {
                   </div>
                     <div className="courier-actions">
                       <button className="courier-action-btn" onClick={() => navigate('/customer/call')}>
-                        <Phone size={18} color="#034078" />
+                        <Phone size={24} color="#034078" fill="#034078" />
                       </button>
                       <button className="courier-action-btn" onClick={() => navigate('/customer/chat')}>
-                        <MessageCircle size={18} color="#034078" />
+                        <MessageCircle size={24} color="#034078" fill="#034078" />
                       </button>
                     </div>
                 </div>
@@ -481,10 +481,10 @@ export default function CleaningStatus() {
               </div>
               <div className="cs-mitra-actions">
                 <button className="cs-action-btn" onClick={() => navigate('/customer/call')}>
-                  <Phone size={18} color="#034078" fill="currentColor" />
+                  <Phone size={24} color="#034078" fill="#034078" />
                 </button>
                 <button className="cs-action-btn" onClick={() => navigate('/customer/chat')}>
-                  <MessageCircle size={18} color="#034078" fill="currentColor" />
+                  <MessageCircle size={24} color="#034078" fill="#034078" />
                 </button>
               </div>
             </div>
