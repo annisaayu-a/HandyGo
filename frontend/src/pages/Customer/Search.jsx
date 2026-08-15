@@ -60,7 +60,7 @@ export default function Search() {
       subtitle: 'Elektronik - Garansi',
       price: '42.000',
       numericPrice: 42000,
-      image: '/repair_1.png',
+      image: '/repair_2.png',
       rating: 4
     },
     {
@@ -69,7 +69,7 @@ export default function Search() {
       subtitle: 'Semua tipe - Garansi',
       price: '50.000',
       numericPrice: 50000,
-      image: '/repair_1.png',
+      image: '/repair_3.png',
       rating: 4
     },
     {
@@ -78,7 +78,7 @@ export default function Search() {
       subtitle: 'Hp - Laptop - TV - Part Ori',
       price: '55.000',
       numericPrice: 55000,
-      image: '/repair_2.png',
+      image: '/repair_4.png',
       rating: 3
     }
   ];
