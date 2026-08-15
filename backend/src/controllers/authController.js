@@ -503,8 +503,8 @@ exports.sendMagicLink = async (req, res) => {
       }
     });
 
-    const origin = req.headers.origin || (req.headers.referer ? new URL(req.headers.referer).origin : null);
-    const frontendUrl = process.env.FRONTEND_URL || origin || 'http://localhost:5173';
+    // Selalu arahkan tautan ke live app (Vercel) agar bisa dibuka dari HP
+    const frontendUrl = process.env.FRONTEND_URL || 'https://handygo.vercel.app';
     const magicLinkUrl = `${frontendUrl}/verify-magic-link?token=${magicToken}`;
 
     const mailOptions = {
