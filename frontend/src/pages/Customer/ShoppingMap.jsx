@@ -5,17 +5,19 @@ import Map from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './ShoppingMap.css';
 
+// Default coordinate — defined OUTSIDE component to prevent re-creation every render
+// which causes [defaultPosition] useEffect to fire on every render
+const DEFAULT_POSITION = [-5.185, 119.452];
+
 export default function ShoppingMap() {
   const navigate = useNavigate();
 
-  // Default coordinate (Makassar/Gowa border)
-  const defaultPosition = [-5.185, 119.452]; 
 
   const [currentAddress, setCurrentAddress] = useState({
     name: 'Kabupaten Gowa',
     address: 'Sulawesi Selatan, Indonesia',
-    lat: defaultPosition[0],
-    lng: defaultPosition[1]
+    lat: DEFAULT_POSITION[0],
+    lng: DEFAULT_POSITION[1]
   });
 
   const [isMapDragging, setIsMapDragging] = useState(false);
@@ -29,9 +31,10 @@ export default function ShoppingMap() {
   const reverseGeocodeTimeoutRef = useRef(null);
   const mapRef = useRef(null);
 
+  // Run ONLY on mount — empty deps [] prevents re-running on every render
   useEffect(() => {
     const token = import.meta.env.VITE_MAPBOX_TOKEN;
-    fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${defaultPosition[1]},${defaultPosition[0]}.json?access_token=${token}&language=id`)
+    fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${DEFAULT_POSITION[1]},${DEFAULT_POSITION[0]}.json?access_token=${token}&language=id`)
       .then(res => res.json())
       .then(data => {
         if(data && data.features && data.features.length > 0) {
@@ -39,7 +42,7 @@ export default function ShoppingMap() {
           setCurrentAddress(prev => ({ ...prev, name: result.text, address: result.place_name }));
         }
       }).catch(console.error);
-  }, [defaultPosition]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Fungsi Pencarian (Autocomplete)
   const handleSearch = (e) => {
@@ -148,8 +151,8 @@ export default function ShoppingMap() {
           mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
           maxBounds={[[119.30, -5.30], [119.55, -5.00]]}
           initialViewState={{
-            longitude: defaultPosition[1],
-            latitude: defaultPosition[0],
+            longitude: DEFAULT_POSITION[1],
+            latitude: DEFAULT_POSITION[0],
             zoom: 16
           }}
           style={{ width: '100%', height: '100%' }}
