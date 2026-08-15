@@ -110,25 +110,6 @@ export default function OTPVerification() {
           *Cek folder Spam jika email tidak masuk dalam 1 menit.
         </p>
 
-        {userData?.role === 'mitra' && (
-          <button 
-            onClick={() => navigate('/partner-location')}
-            style={{ 
-              marginTop: '32px', 
-              padding: '12px 24px', 
-              backgroundColor: '#16a34a', 
-              color: 'white', 
-              border: 'none',
-              borderRadius: '20px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              width: '100%',
-              boxShadow: '0 4px 12px rgba(22, 163, 74, 0.2)'
-            }}
-          >
-            [Simulasi] Lanjut ke Lokasi (Verifikasi Berhasil)
-          </button>
-        )}
       </div>
     </div>
   );

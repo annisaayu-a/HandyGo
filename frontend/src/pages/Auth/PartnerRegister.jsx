@@ -45,36 +45,35 @@ export default function PartnerRegister() {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch('https://handygo-api.vercel.app/api/auth/mitra/register', {
+      const response = await fetch('https://handygo-api.vercel.app/api/auth/send-magic-link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           full_name: 'Calon Mitra HandyGo', 
           email, 
           phone_number: phone, 
-          password: 'MitraPassword123' // Dummy password to satisfy backend requirements
+          password: 'MitraPassword123', // Dummy password to satisfy backend requirements
+          role: 'mitra'
         })
       });
       
       const data = await response.json();
       
-      if (response.ok) {
-        // Store mitra token if needed
-        if (data.token) {
-          localStorage.setItem('handyGoMitraToken', data.token);
-        }
-        
-        navigate('/partner-verification', { 
-          state: { 
-            email, 
-            phone,
-            isNewPartner: true
-          } 
-        });
-      } else {
-        alert(data.error || 'Gagal melakukan registrasi');
+      if (!response.ok) {
+        alert(data.error || 'Gagal mengirim tautan ke email');
         setIsSubmitting(false);
+        return;
       }
+
+      // Save registration date to simulate persistent deadline
+      localStorage.setItem('partnerRegistrationDate', new Date().toISOString());
+
+      // Redirect to magic link verification screen
+      navigate('/otp-verification', { 
+        state: { 
+          userData: { email, phone, role: 'mitra' } 
+        } 
+      });
     } catch (error) {
       alert('Terjadi kesalahan jaringan, silakan coba lagi');
       setIsSubmitting(false);

@@ -462,16 +462,16 @@ exports.sendOtp = async (req, res) => {
 
 exports.sendMagicLink = async (req, res) => {
   try {
-    const { full_name, email, phone_number, password } = req.body;
+    const { full_name, email, phone_number, password, role } = req.body;
     if (!full_name || (!phone_number && !email) || !password) {
       return res.status(400).json({ error: 'Data registrasi tidak lengkap' });
     }
     
     // Check if phone number exists
     if (phone_number) {
-      const existingPhone = await prisma.user.findFirst({
-        where: { phone_number: phone_number }
-      });
+      const existingPhone = role === 'mitra' 
+        ? await prisma.mitra.findFirst({ where: { phone_number: phone_number } })
+        : await prisma.user.findFirst({ where: { phone_number: phone_number } });
       if (existingPhone) {
         return res.status(400).json({ error: 'Nomor HP ini sudah digunakan oleh akun lain' });
       }
@@ -479,9 +479,9 @@ exports.sendMagicLink = async (req, res) => {
     
     // Check if email exists
     if (email) {
-      const existingEmail = await prisma.user.findFirst({
-        where: { email: email }
-      });
+      const existingEmail = role === 'mitra'
+        ? await prisma.mitra.findFirst({ where: { email: email } })
+        : await prisma.user.findFirst({ where: { email: email } });
       if (existingEmail) {
         return res.status(400).json({ error: 'Email ini sudah terdaftar' });
       }
@@ -489,7 +489,7 @@ exports.sendMagicLink = async (req, res) => {
 
     // Sign registration data into a JWT token (expires in 15 minutes)
     const magicToken = jwt.sign(
-      { full_name, email, phone_number, password }, 
+      { full_name, email, phone_number, password, role }, 
       JWT_SECRET, 
       { expiresIn: '15m' }
     );
@@ -547,52 +547,39 @@ exports.verifyMagicLink = async (req, res) => {
       return res.status(400).json({ error: 'Tautan sudah kedaluwarsa atau tidak valid' });
     }
 
-    const { full_name, email, phone_number, password } = decoded;
+    const { full_name, email, phone_number, password, role } = decoded;
+
+    const isMitra = role === 'mitra';
+    const Model = isMitra ? prisma.mitra : prisma.user;
 
     // Check if phone number exists
     if (phone_number) {
-      const existingPhone = await prisma.user.findFirst({
+      const existingPhone = await Model.findFirst({
         where: { phone_number: phone_number }
       });
       if (existingPhone) {
         // If user already exists (maybe they clicked the link twice), just log them in
-        const jwtToken = jwt.sign({ userId: existingPhone.id }, JWT_SECRET, { expiresIn: '7d' });
+        const jwtToken = jwt.sign(isMitra ? { mitraId: existingPhone.id, role: 'mitra' } : { userId: existingPhone.id }, JWT_SECRET, { expiresIn: '7d' });
         return res.status(200).json({
           message: 'Akun sudah terverifikasi',
           token: jwtToken,
-          user: {
-            id: existingPhone.id,
-            full_name: existingPhone.full_name,
-            phone_number: existingPhone.phone_number,
-            email: existingPhone.email,
-            default_location: existingPhone.default_location,
-            profile_picture: existingPhone.profile_picture,
-        role: existingPhone.role
-          }
+          user: existingPhone
         });
       }
     }
     
     // Check if email exists
     if (email) {
-      const existingEmail = await prisma.user.findFirst({
+      const existingEmail = await Model.findFirst({
         where: { email: email }
       });
       if (existingEmail) {
         // If user already exists (maybe they clicked the link twice), just log them in
-        const jwtToken = jwt.sign({ userId: existingEmail.id }, JWT_SECRET, { expiresIn: '7d' });
+        const jwtToken = jwt.sign(isMitra ? { mitraId: existingEmail.id, role: 'mitra' } : { userId: existingEmail.id }, JWT_SECRET, { expiresIn: '7d' });
         return res.status(200).json({
           message: 'Akun sudah terverifikasi',
           token: jwtToken,
-          user: {
-            id: existingEmail.id,
-            full_name: existingEmail.full_name,
-            phone_number: existingEmail.phone_number,
-            email: existingEmail.email,
-            default_location: existingEmail.default_location,
-            profile_picture: existingEmail.profile_picture,
-        role: existingEmail.role
-          }
+          user: existingEmail
         });
       }
     }
@@ -600,8 +587,8 @@ exports.verifyMagicLink = async (req, res) => {
     // Hash password
     const password_hash = await bcrypt.hash(password, 10);
 
-    // Create user
-    const newUser = await prisma.user.create({
+    // Create user or mitra
+    const newRecord = await Model.create({
       data: {
         full_name,
         phone_number,
@@ -611,18 +598,12 @@ exports.verifyMagicLink = async (req, res) => {
     });
 
     // Generate login token
-    const jwtToken = jwt.sign({ userId: newUser.id }, JWT_SECRET, { expiresIn: '7d' });
+    const jwtToken = jwt.sign(isMitra ? { mitraId: newRecord.id, role: 'mitra' } : { userId: newRecord.id }, JWT_SECRET, { expiresIn: '7d' });
 
     res.status(201).json({
       message: 'Pendaftaran berhasil melalui Magic Link',
       token: jwtToken,
-      user: {
-        id: newUser.id,
-        full_name: newUser.full_name,
-        phone_number: newUser.phone_number,
-        email: newUser.email,
-        default_location: newUser.default_location
-      }
+      user: newRecord
     });
   } catch (error) {
     console.error('Verify Magic Link error:', error);
