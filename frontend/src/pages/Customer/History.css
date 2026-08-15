@@ -275,7 +275,7 @@
 
 .history-card {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   padding: 16px;
   margin-bottom: 12px;
   border-radius: 20px;
