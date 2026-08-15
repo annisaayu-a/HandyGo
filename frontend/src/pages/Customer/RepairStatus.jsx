@@ -293,10 +293,10 @@ export default function RepairStatus() {
                 </div>
               </div>
               <div className="courier-actions">
-                <button className="courier-action-btn" onClick={() => window.location.href = 'tel:+6281234567890'} style={{ cursor: 'pointer' }}>
+                <button className="courier-action-btn" onClick={() => navigate('/customer/call')} style={{ cursor: 'pointer' }}>
                   <Phone size={18} color="#034078" />
                 </button>
-                <button className="courier-action-btn" onClick={() => window.open('https://wa.me/6281234567890', '_blank')} style={{ cursor: 'pointer' }}>
+                <button className="courier-action-btn" onClick={() => navigate('/customer/chat')} style={{ cursor: 'pointer' }}>
                   <MessageSquare size={18} color="#034078" />
                 </button>
               </div>
@@ -356,10 +356,10 @@ export default function RepairStatus() {
             </div>
           </div>
           <div style={{ display: 'flex', gap: '12px' }}>
-            <button onClick={() => window.location.href = 'tel:+6281234567890'} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            <button onClick={() => navigate('/customer/call')} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
               <Phone size={20} color="#034078" />
             </button>
-            <button onClick={() => window.open('https://wa.me/6281234567890', '_blank')} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            <button onClick={() => navigate('/customer/chat')} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
               <MessageSquare size={20} color="#034078" />
             </button>
           </div>
