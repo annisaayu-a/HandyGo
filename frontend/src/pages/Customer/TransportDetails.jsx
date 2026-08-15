@@ -4,6 +4,7 @@ import Map, { Marker, Source, Layer } from 'react-map-gl/mapbox';
 import { ArrowLeft, ArrowUp, Target, ChevronRight, Check, Phone, MessageSquare, Share2, Star, Copy, LogOut } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './TransportDetails.css';
+import './CompletedStatus.css';
 
 export default function TransportDetails() {
   const navigate = useNavigate();
@@ -218,6 +219,16 @@ export default function TransportDetails() {
                 onChange={(e) => setReviewText(e.target.value)}
               ></textarea>
             </div>
+            
+            {rating > 0 && (
+              <button 
+                className="submit-rating-btn"
+                onClick={() => navigate('/customer')}
+                style={{ marginTop: '16px' }}
+              >
+                Kirim Rating
+              </button>
+            )}
           </div>
         </div>
       </div>
