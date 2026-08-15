@@ -116,7 +116,7 @@ export default function ProfileDetail() {
       if (!userStr) return;
       const user = JSON.parse(userStr);
 
-      const response = await fetch('/api/auth/profile/picture', {
+      const response = await fetch(`${API_URL}/api/auth/profile/picture`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -161,7 +161,7 @@ export default function ProfileDetail() {
     const user = JSON.parse(userStr);
 
     try {
-      const response = await fetch('/api/auth/profile/picture', {
+      const response = await fetch(`${API_URL}/api/auth/profile/picture`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
