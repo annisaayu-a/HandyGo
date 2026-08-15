@@ -47,7 +47,7 @@ const VerifyMagicLink = () => {
           setStatus('Verifikasi berhasil!');
           
           setTimeout(() => {
-            navigate('/partner-welcome');
+            navigate('/partner-location');
           }, 2000);
         } else {
           // Save customer user data and token
