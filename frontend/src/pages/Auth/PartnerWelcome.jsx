@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import './PartnerWelcome.css';
 import './Welcome.css';
-import partnerIcon from '../../assets/partner_illustration.png';
+import partnerIcon from '../../assets/mitra.png';
 
 export default function PartnerWelcome() {
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import successIllus from '../../assets/partner_success.png';
+import successIllus from '../../assets/mitra.png';
 import './PartnerSuccess.css';
 
 export default function PartnerSuccess() {
