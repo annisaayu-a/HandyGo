@@ -33,9 +33,12 @@ export default function PartnerRegister() {
       return;
     }
 
-    // Success simulation
-    alert('Pendaftaran Mitra Berhasil (Simulasi)!');
-    // navigate('/partner-dashboard') // Future routing
+    // Redirect to magic link verification screen
+    navigate('/otp-verification', { 
+      state: { 
+        userData: { email, phone, role: 'mitra' } 
+      } 
+    });
   };
 
   return (
