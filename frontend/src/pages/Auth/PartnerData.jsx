@@ -24,8 +24,7 @@ export default function PartnerData() {
 
   const handleNext = () => {
     if (fullName && accountNumber) {
-      alert('Simulasi: Berhasil menyimpan data diri dan rekening!');
-      // navigate('/partner-dashboard'); // Future implementation
+      navigate('/partner-upload');
     }
   };
 
