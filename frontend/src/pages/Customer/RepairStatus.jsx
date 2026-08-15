@@ -122,7 +122,7 @@ export default function RepairStatus() {
   };
 
   return (
-    <div className="rs-status-page animate-fade-in" style={{ backgroundColor: '#f8fafc', minHeight: '100vh', paddingBottom: '100px' }}>
+    <div className="rs-status-page animate-fade-in" style={{ backgroundColor: '#ffffff', minHeight: '100vh', paddingBottom: '100px' }}>
       {/* Header */}
       <header className="rs-header">
         <button className="rs-back-btn" onClick={() => statusPhase === 'finished' ? navigate('/customer') : navigate(-1)}>
