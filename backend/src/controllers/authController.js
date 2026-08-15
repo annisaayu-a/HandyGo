@@ -73,7 +73,6 @@ exports.register = async (req, res) => {
       }
     });
   } catch (error) {
-  } catch (error) {
     console.error('Register error:', error);
     res.status(500).json({ error: 'Terjadi kesalahan pada server' });
   }
