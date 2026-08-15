@@ -24,7 +24,7 @@ export default function PartnerSuccess() {
       <div className="ps-bottom-action">
         <button 
           className="ps-status-btn"
-          onClick={() => navigate('/customer-home')}
+          onClick={() => navigate('/partner-status')}
         >
           Lihat Status Pendaftaran
         </button>
