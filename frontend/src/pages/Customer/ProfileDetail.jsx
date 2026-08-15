@@ -291,7 +291,7 @@ export default function ProfileDetail() {
         <div className="profile-pic-section">
           {profilePic ? (
             <img 
-              src={`${API_URL}${profilePic}`}
+              src={profilePic.startsWith('data:image') ? profilePic : `${API_URL}${profilePic}`}
               alt="Profile" 
               className="profile-pic-large"
             />

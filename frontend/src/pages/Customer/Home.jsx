@@ -30,7 +30,7 @@ export default function CustomerHome() {
         <div className="profile-section">
           {profilePic ? (
             <img 
-              src={`https://handygo-api.vercel.app${profilePic}`}
+              src={profilePic.startsWith('data:image') ? profilePic : `https://handygo-api.vercel.app${profilePic}`}
               alt="Profile" 
               className="profile-img"
             />
