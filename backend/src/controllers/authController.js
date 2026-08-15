@@ -449,7 +449,8 @@ exports.sendMagicLink = async (req, res) => {
       }
     });
 
-    const magicLinkUrl = `https://handygo.id/verify-magic-link?token=${magicToken}`;
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const magicLinkUrl = `${frontendUrl}/verify-magic-link?token=${magicToken}`;
 
     const mailOptions = {
       from: `"HandyGo Security" <${process.env.EMAIL_USER}>`,
