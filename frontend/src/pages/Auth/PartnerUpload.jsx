@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, ChevronRight, Image as ImageIcon, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
+import ktpMock from '../../assets/ktp_mock.png';
 import './PartnerUpload.css';
 
 export default function PartnerUpload() {
@@ -74,9 +75,9 @@ export default function PartnerUpload() {
         <div className="pu-doc-list">
           {documents.map((doc) => (
             <div key={doc.id} className="pu-doc-item" onClick={() => handleDocClick(doc.id)}>
-              <div className="pu-doc-icon-container">
+              <div className={`pu-doc-icon-container ${doc.verified ? 'is-verified' : ''}`}>
                 {doc.verified ? (
-                  <CheckCircle2 size={28} color="#16a34a" />
+                  <img src={ktpMock} alt={`Thumbnail ${doc.title}`} className="pu-doc-thumbnail" />
                 ) : (
                   <ImageIcon size={28} color="#94a3b8" />
                 )}
