@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Phone, MessageSquare, Handshake, ChevronRight, ChevronUp, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Phone, MessageCircle, Handshake, ChevronRight, ChevronUp, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './RepairStatus.css';
 import './CompletedStatus.css';
@@ -314,7 +314,7 @@ export default function RepairStatus() {
                   <Phone size={24} color="#034078" fill="#034078" />
                 </button>
                 <button className="courier-action-btn" onClick={() => navigate('/customer/chat')}>
-                  <MessageSquare size={24} color="#034078" fill="#034078" />
+                  <MessageCircle size={24} color="#034078" fill="#034078" />
                 </button>
               </div>
             </div>
@@ -377,7 +377,7 @@ export default function RepairStatus() {
               <Phone size={24} color="#034078" fill="#034078" />
             </button>
             <button onClick={() => navigate('/customer/chat')} className="courier-action-btn">
-              <MessageSquare size={24} color="#034078" fill="#034078" />
+              <MessageCircle size={24} color="#034078" fill="#034078" />
             </button>
           </div>
         </div>

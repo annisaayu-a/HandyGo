@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Map, { Marker, Source, Layer } from 'react-map-gl/mapbox';
-import { ArrowLeft, ArrowUp, Target, ChevronRight, Check, Phone, MessageSquare, Share2, Star, Copy, LogOut } from 'lucide-react';
+import { ArrowLeft, ArrowUp, Target, ChevronRight, Check, Phone, MessageCircle, Share2, Star, Copy, LogOut } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './TransportDetails.css';
 import './CompletedStatus.css';
@@ -215,7 +215,7 @@ export default function TransportDetails() {
               </div>
               <div className="driver-actions">
                 <button className="icon-btn phone-btn" onClick={() => navigate('/customer/call')}><Phone size={24} color="#034078" fill="#034078" /></button>
-                <button className="icon-btn chat-btn" onClick={() => navigate('/customer/chat')}><MessageSquare size={24} color="#034078" fill="#034078" /></button>
+                <button className="icon-btn chat-btn" onClick={() => navigate('/customer/chat')}><MessageCircle size={24} color="#034078" fill="#034078" /></button>
               </div>
             </div>
           </div>
@@ -420,7 +420,7 @@ export default function TransportDetails() {
                   </div>
                   <div className="driver-actions">
                     <button className="icon-btn phone-btn" onClick={() => navigate('/customer/call')}><Phone size={24} color="#034078" fill="#034078" /></button>
-                    <button className="icon-btn chat-btn" onClick={() => navigate('/customer/chat')}><MessageSquare size={24} color="#034078" fill="#034078" /></button>
+                    <button className="icon-btn chat-btn" onClick={() => navigate('/customer/chat')}><MessageCircle size={24} color="#034078" fill="#034078" /></button>
                   </div>
                 </div>
                 
