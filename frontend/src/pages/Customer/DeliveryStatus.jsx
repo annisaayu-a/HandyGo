@@ -203,11 +203,11 @@ export default function DeliveryStatus() {
                 </div>
               </div>
               <div className="courier-actions">
-                <button className="courier-action-btn disabled">
-                  <Phone size={18} color="#94a3b8" />
+                <button className="courier-action-btn" onClick={() => navigate('/customer/call')}>
+                  <Phone size={18} color="#034078" />
                 </button>
-                <button className="courier-action-btn disabled">
-                  <MessageCircle size={18} color="#94a3b8" />
+                <button className="courier-action-btn" onClick={() => navigate('/customer/chat')}>
+                  <MessageCircle size={18} color="#034078" />
                 </button>
               </div>
             </div>
