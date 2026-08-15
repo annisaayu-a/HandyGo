@@ -112,14 +112,19 @@
 
 .pu-doc-icon-container.is-verified {
   background-color: transparent;
-  width: 64px; /* Make it slightly wider to match real KTP aspect ratio better */
+  width: 64px;
   height: 44px;
+  min-height: 44px;
+  max-height: 44px;
+  padding: 0;
+  border-radius: 6px; /* slightly smaller border radius for the rectangular card */
 }
 
 .pu-doc-thumbnail {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .pu-doc-info {
