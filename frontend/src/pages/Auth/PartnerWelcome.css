@@ -1,7 +1,7 @@
 .partner-welcome-container {
   min-height: 100dvh;
   width: 100%;
-  background-color: #f8fafc;
+  background-color: #ffffff;
   position: relative;
   overflow: hidden;
   display: flex;
@@ -51,8 +51,6 @@
   width: 100%;
   height: auto;
   object-fit: contain;
-  mix-blend-mode: darken;
-  border-radius: 40px;
 }
 
 .pw-greeting {
