@@ -36,6 +36,7 @@ export default function PartnerWelcome() {
           onClick={() => {
             const isRegistered = localStorage.getItem('partnerRegistrationComplete') === 'true';
             if (isRegistered) {
+              localStorage.setItem('hasReturnedToWelcome', 'true');
               navigate('/partner-status');
             } else {
               navigate('/partner-register');

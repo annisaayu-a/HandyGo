@@ -5,6 +5,8 @@ import './PartnerStatus.css';
 export default function PartnerStatus() {
   const navigate = useNavigate();
 
+  const isReturned = localStorage.getItem('hasReturnedToWelcome') === 'true';
+
   return (
     <div className="partner-status-container animate-fade-in">
       {/* Decorative Background Elements */}
@@ -33,19 +35,25 @@ export default function PartnerStatus() {
               <div className="pstat-icon-wrapper" style={{ position: 'relative' }}>
                 <FileText size={20} color="#ffffff" />
                 {/* Checkmark indicator for verified */}
-                <div style={{
-                  position: 'absolute', top: -4, right: -4, 
-                  background: '#22c55e', borderRadius: '50%', 
-                  width: 14, height: 14, display: 'flex', 
-                  alignItems: 'center', justifyContent: 'center',
-                  border: '2px solid #ffffff'
-                }}>
-                  <span style={{ color: '#fff', fontSize: '9px', fontWeight: 'bold' }}>✓</span>
-                </div>
+                {isReturned && (
+                  <div style={{
+                    position: 'absolute', top: -4, right: -4, 
+                    background: '#22c55e', borderRadius: '50%', 
+                    width: 14, height: 14, display: 'flex', 
+                    alignItems: 'center', justifyContent: 'center',
+                    border: '2px solid #ffffff'
+                  }}>
+                    <span style={{ color: '#fff', fontSize: '9px', fontWeight: 'bold' }}>✓</span>
+                  </div>
+                )}
               </div>
               <span className="pstat-item-label">Data Diri</span>
             </div>
-            <div className="pstat-badge success">Terverifikasi</div>
+            {isReturned ? (
+              <div className="pstat-badge success">Terverifikasi</div>
+            ) : (
+              <div className="pstat-badge">Sedang diproses</div>
+            )}
           </div>
 
           <div className="pstat-divider"></div>
