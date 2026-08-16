@@ -1,7 +1,7 @@
 .partner-stnk-container {
   min-height: 100dvh;
   width: 100%;
-  background-color: #f8fafc; /* slightly grey background based on the image */
+  background-color: #ffffff; /* White background */
   display: flex;
   flex-direction: column;
   position: relative;
@@ -12,7 +12,7 @@
   display: flex;
   align-items: center;
   padding: 24px 20px 16px;
-  background-color: #f8fafc;
+  background-color: #ffffff;
 }
 
 .stnk-back-btn {
@@ -199,13 +199,13 @@
 }
 
 .stnk-input-group input {
-  padding: 12px 16px;
+  padding: 14px 16px;
   border: none;
   border-radius: 12px;
   font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
   color: #1e293b;
-  background-color: #f8fafc;
+  background-color: #f1f5f9; /* Changed to darker gray for visibility */
   outline: none;
 }
 
