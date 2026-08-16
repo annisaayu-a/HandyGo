@@ -5,20 +5,21 @@ import './MitraLayout.css'; // We'll share some CSS or define our own for Mitra
 export default function MitraLayout() {
   const location = useLocation();
   
-  // Paths where bottom nav should be hidden if needed
-  const hideBottomNavPaths = [
-    // Add paths here if needed later (e.g. /mitra/chat, etc.)
+  // Paths where bottom nav should be shown (whitelist)
+  const showBottomNavPaths = [
+    '/mitra',
+    '/mitra/',
   ];
   
-  const shouldHideBottomNav = hideBottomNavPaths.includes(location.pathname);
-  const isDashboard = location.pathname === '/mitra' || location.pathname === '/mitra/';
+  const shouldHideBottomNav = !showBottomNavPaths.includes(location.pathname);
+  const isFullscreen = location.pathname === '/mitra' || location.pathname === '/mitra/';
 
   return (
     <div className="mobile-app-container">
       <main 
         className="mobile-page-content animate-fade-in"
         style={{ 
-          padding: isDashboard ? '0' : '24px 20px',
+          padding: isFullscreen ? '0' : '0',
           paddingBottom: shouldHideBottomNav ? '0' : '80px' 
         }}
       >

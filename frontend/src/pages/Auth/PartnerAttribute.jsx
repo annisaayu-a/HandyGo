@@ -37,6 +37,14 @@ export default function PartnerAttribute() {
       alert('Mohon isi semua data yang diwajibkan');
       return;
     }
+    // Save name from this step too
+    const existing = JSON.parse(localStorage.getItem('mitra_profile_data') || '{}');
+    if (formData.nama) {
+      localStorage.setItem('mitra_profile_data', JSON.stringify({
+        ...existing,
+        name: existing.name || formData.nama,
+      }));
+    }
     navigate('/mitra');
   };
 

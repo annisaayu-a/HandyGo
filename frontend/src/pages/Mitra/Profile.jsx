@@ -16,7 +16,14 @@ export default function MitraProfile() {
     if (savedData) {
       try {
         const parsed = JSON.parse(savedData);
-        setProfileData(prev => ({ ...prev, ...parsed }));
+        setProfileData(prev => ({
+          ...prev,
+          name: parsed.name || prev.name,
+          phone: parsed.phone || prev.phone,
+          email: parsed.email || prev.email,
+          jenisMitra: parsed.jenisMitra || prev.jenisMitra,
+          avatar: parsed.avatar || null,
+        }));
       } catch (e) {
         console.error('Error parsing profile data', e);
       }

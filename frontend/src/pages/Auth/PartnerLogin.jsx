@@ -46,6 +46,15 @@ export default function PartnerLogin() {
     // Langsung redirect ke status pendaftaran dengan flag terverifikasi
     setIsSubmitting(true);
     localStorage.setItem('hasReturnedToWelcome', 'true');
+
+    // Save phone and email to mitra_profile_data for profile page use
+    const existing = JSON.parse(localStorage.getItem('mitra_profile_data') || '{}');
+    localStorage.setItem('mitra_profile_data', JSON.stringify({
+      ...existing,
+      phone: '+62' + phone,
+      email: email,
+    }));
+
     navigate('/partner-status');
   };
 
