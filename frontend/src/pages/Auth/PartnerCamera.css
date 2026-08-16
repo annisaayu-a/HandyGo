@@ -72,7 +72,7 @@
    But the design shows it as white. I will make the background white for the mockup to match image 1, unless scanState === success where the KTP image takes over. 
 */
 .pc-cutout-frame {
-  background-color: #ffffff;
+  background-color: transparent;
 }
 
 /* Four blue corners */
