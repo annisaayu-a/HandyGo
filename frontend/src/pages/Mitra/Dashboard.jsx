@@ -97,24 +97,18 @@ export default function MitraDashboard() {
   const acceptOrder = () => {
     setIsOrderAccepted(true);
     if (incomingOrder) {
-      if (incomingOrder.service === 'Antar Barang' || incomingOrder.service === 'Antar Jemput' || incomingOrder.service === 'Bersih-Bersih' || ['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service)) {
-        const updated = { ...incomingOrder, accepted: true, driverPhase: 'accepted' };
-        localStorage.setItem('simulated_incoming_order', JSON.stringify(updated));
-        setIncomingOrder(updated);
-        
-        setShowAcceptPill(true);
-        setTimeout(() => {
-          setShowAcceptPill(false);
-          const nextPhase = ['Bersih-Bersih', 'Perbaikan Kelistrikan', 'Perbaikan Elektronik', 'Antar Jemput'].includes(incomingOrder.service) ? 'heading_to_customer' : 'heading_to_store';
-          const nextUpdate = { ...updated, driverPhase: nextPhase };
-          localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
-          setIncomingOrder(nextUpdate);
-        }, 2000);
-      } else {
-        const updated = { ...incomingOrder, accepted: true, driverPhase: 'heading_to_store' };
-        localStorage.setItem('simulated_incoming_order', JSON.stringify(updated));
-        setIncomingOrder(updated);
-      }
+      const updated = { ...incomingOrder, accepted: true, driverPhase: 'accepted' };
+      localStorage.setItem('simulated_incoming_order', JSON.stringify(updated));
+      setIncomingOrder(updated);
+      
+      setShowAcceptPill(true);
+      setTimeout(() => {
+        setShowAcceptPill(false);
+        const nextPhase = ['Antar Barang', 'Belanja'].includes(incomingOrder.service) ? 'heading_to_store' : 'heading_to_customer';
+        const nextUpdate = { ...updated, driverPhase: nextPhase };
+        localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
+        setIncomingOrder(nextUpdate);
+      }, 2000);
     }
   };
 
