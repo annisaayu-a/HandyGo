@@ -6,16 +6,7 @@ import './ChatList.css';
 export default function ChatList() {
   const navigate = useNavigate();
 
-  // Using mock data for demonstration
-  const [activeChats, setActiveChats] = useState([
-    {
-      id: 1,
-      name: 'Rafael Gemam',
-      lastMessage: 'Sy Mnuju ke lokasi sekarang kk',
-      avatar: 'https://i.pravatar.cc/150?img=11',
-      unread: 1,
-    }
-  ]);
+  const [activeChats, setActiveChats] = useState([]);
 
   const [historyChats, setHistoryChats] = useState([
     {
@@ -41,6 +32,49 @@ export default function ChatList() {
   const handleOpenChat = (isFinished) => {
     navigate('/customer/chat', { state: { isFinished } });
   };
+
+  useEffect(() => {
+    const checkOrderState = () => {
+      const orderStr = localStorage.getItem('simulated_incoming_order');
+      const chatStr = localStorage.getItem('handygo_active_chat_messages');
+      let lastMsg = 'Sy Mnuju ke lokasi sekarang kk';
+      
+      if (chatStr) {
+        try {
+          const msgs = JSON.parse(chatStr);
+          if (msgs.length > 0) {
+            lastMsg = msgs[msgs.length - 1].text;
+          }
+        } catch(e) {}
+      }
+
+      let isOrderActive = false;
+      if (orderStr) {
+        try {
+          const order = JSON.parse(orderStr);
+          if (order.accepted && !['completed', 'completed_qris_success'].includes(order.driverPhase)) {
+            isOrderActive = true;
+          }
+        } catch (e) {}
+      }
+
+      if (isOrderActive) {
+        setActiveChats([{
+          id: 1,
+          name: 'Rafael Gemam',
+          lastMessage: lastMsg,
+          avatar: 'https://i.pravatar.cc/150?img=11',
+          unread: 1,
+        }]);
+      } else {
+        setActiveChats([]);
+      }
+    };
+
+    checkOrderState();
+    const interval = setInterval(checkOrderState, 1500);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="chatlist-page animate-fade-in">

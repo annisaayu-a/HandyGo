@@ -21,16 +21,7 @@ export default function MitraChatList() {
     }
   }, []);
 
-  // Using mock data for demonstration
-  const [activeChats, setActiveChats] = useState([
-    {
-      id: 1,
-      name: 'Hana',
-      lastMessage: 'Oke, tunggu ya',
-      avatar: 'https://ui-avatars.com/api/?name=Hana&background=cbd5e1&color=64748b',
-      unread: 0,
-    }
-  ]);
+  const [activeChats, setActiveChats] = useState([]);
 
   const [historyChats, setHistoryChats] = useState([
     {
@@ -56,6 +47,51 @@ export default function MitraChatList() {
   const handleOpenChat = (isFinished) => {
     navigate('/mitra/chat', { state: { isFinished } });
   };
+
+  useEffect(() => {
+    const checkOrderState = () => {
+      const orderStr = localStorage.getItem('simulated_incoming_order');
+      const chatStr = localStorage.getItem('handygo_active_chat_messages');
+      let lastMsg = 'Hati hati kak'; // Default as in image
+      
+      if (chatStr) {
+        try {
+          const msgs = JSON.parse(chatStr);
+          if (msgs.length > 0) {
+            lastMsg = msgs[msgs.length - 1].text;
+          }
+        } catch(e) {}
+      }
+
+      let isOrderActive = false;
+      if (orderStr) {
+        try {
+          const order = JSON.parse(orderStr);
+          if (order.accepted && !['completed', 'completed_qris_success'].includes(order.driverPhase)) {
+            isOrderActive = true;
+          }
+        } catch (e) {}
+      }
+
+      if (isOrderActive) {
+        setActiveChats([{
+          id: 1,
+          name: 'Hana',
+          lastMessage: lastMsg,
+          avatar: 'https://ui-avatars.com/api/?name=Hana&background=cbd5e1&color=64748b',
+          unread: 2,
+        }]);
+      } else {
+        setActiveChats([]);
+        // If order finished and we had a chat, we could add it to history here
+        // For simplicity, we just leave it in the hardcoded history below
+      }
+    };
+
+    checkOrderState();
+    const interval = setInterval(checkOrderState, 1500);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="chatlist-page animate-fade-in" style={{ paddingBottom: '80px' }}>
@@ -112,7 +148,7 @@ export default function MitraChatList() {
         <section className="chatlist-section">
           <h2 className="chatlist-section-title">Riwayat Chat</h2>
           <p className="chatlist-history-desc">
-            Riwayat chatmu akan hilang setiap 30 hari. Segera laporkan jika ada kendala
+            Riwayat chatmu akan hilang setiap 30 hari. Segera laporkan jika pelanggan setia kami mengganggu kenyamananmu
           </p>
           
           <div className="chatlist-items">
