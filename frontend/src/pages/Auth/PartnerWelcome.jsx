@@ -36,8 +36,8 @@ export default function PartnerWelcome() {
           onClick={() => {
             const isRegistered = localStorage.getItem('partnerRegistrationComplete') === 'true';
             if (isRegistered) {
-              localStorage.setItem('hasReturnedToWelcome', 'true');
-              navigate('/partner-status');
+              // Go to auth option (Daftar/Masuk) - verification shown only after Masuk
+              navigate('/partner-auth-option');
             } else {
               navigate('/partner-auth-option');
             }

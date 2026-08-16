@@ -65,6 +65,9 @@ export default function PartnerLogin() {
         return;
       }
 
+      // Mark this as a login (not new registration) so VerifyMagicLink redirects correctly
+      localStorage.setItem('partnerIsLogin', 'true');
+
       navigate('/otp-verification', { 
         state: { 
           userData: { email, phone, role: 'mitra', isLogin: true } 

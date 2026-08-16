@@ -47,7 +47,16 @@ const VerifyMagicLink = () => {
           setStatus('Verifikasi berhasil!');
           
           setTimeout(() => {
-            navigate('/partner-location');
+            const isLogin = localStorage.getItem('partnerIsLogin') === 'true';
+            if (isLogin) {
+              // Login flow: show verified status
+              localStorage.setItem('hasReturnedToWelcome', 'true');
+              localStorage.removeItem('partnerIsLogin');
+              navigate('/partner-status');
+            } else {
+              // New registration flow: continue to partner location
+              navigate('/partner-location');
+            }
           }, 2000);
         } else {
           // Save customer user data and token
