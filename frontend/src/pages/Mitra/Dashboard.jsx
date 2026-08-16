@@ -168,6 +168,13 @@ export default function MitraDashboard() {
                const nextUpdate = { ...currentOrder, driverPhase: 'payment_confirmed_qris' };
                localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
                setIncomingOrder(nextUpdate);
+               
+               if (currentOrder.service === 'Perbaikan Kelistrikan') {
+                 setShowQrisSuccessPill(true);
+                 setTimeout(() => {
+                   setShowQrisSuccessPill(false);
+                 }, 3000);
+               }
              }
           }
         }, 2000);
@@ -375,6 +382,14 @@ export default function MitraDashboard() {
                  <Info size={14} color="#ffffff" />
               </div>
               <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.85rem', color: '#334155', lineHeight: '1.4', fontWeight: '500' }}>Dibayarkan dengan metode Tunai.<br/>Hanya konfirmasi jika pembayaran<br/>sudah kamu terima</span>
+            </div>
+          )}
+          {incomingOrder.driverPhase === 'payment_confirmation_qris' && (
+            <div className="mdash-cleaning-info-pill" style={{ display: 'flex', gap: '10px', backgroundColor: '#ffffff', padding: '12px 20px', borderRadius: '20px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', marginBottom: '15px', alignItems: 'flex-start', maxWidth: '320px' }}>
+              <div style={{ backgroundColor: '#eab308', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                 <Info size={14} color="#ffffff" />
+              </div>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.85rem', color: '#334155', lineHeight: '1.4', fontWeight: '500' }}>Dibayarkan dengan metode QRIS.<br/>Tunggu sebentar sampai kami<br/>mengonfirmasi pembayarannya</span>
             </div>
           )}
           {incomingOrder.service === 'Perbaikan Kelistrikan' && incomingOrder.driverPhase === 'arrived_at_customer' && (
@@ -660,7 +675,7 @@ export default function MitraDashboard() {
             <div style={{ backgroundColor: '#22c55e', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <CheckCircle2 size={14} color="#ffffff" />
             </div>
-            <span>Pembayaran berhasil</span>
+            <span>{incomingOrder?.service === 'Perbaikan Kelistrikan' ? 'Pembayaran terkonfirmasi' : 'Pembayaran berhasil'}</span>
           </div>
         </div>
       )}
