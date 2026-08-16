@@ -63,16 +63,8 @@
   background-color: transparent;
   position: relative;
   /* Simulate the cutout effect with box-shadow overlay */
-  box-shadow: 0 0 0 9999px rgba(150, 150, 150, 0.6);
-  border-radius: 4px;
-}
-
-/* The frame is clear, so we just use box shadow to create overlay. Wait, we want the center to be white like in image 1? 
-   Ah, image 1 has a white background inside the box? No, image 1 is a cutout. The white might just be a piece of paper in the camera. 
-   But the design shows it as white. I will make the background white for the mockup to match image 1, unless scanState === success where the KTP image takes over. 
-*/
-.pc-cutout-frame {
-  background-color: transparent;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.65);
+  border-radius: 8px;
 }
 
 /* Four blue corners */

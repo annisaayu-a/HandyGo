@@ -21,6 +21,7 @@ export default function PartnerCamera() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
+  const cutoutRef = useRef(null);
 
   const [screenState, setScreenState] = useState(STATE_ASK);
   const [capturedImage, setCapturedImage] = useState(null);
@@ -60,13 +61,44 @@ export default function PartnerCamera() {
   }, []);
 
   const handleCapture = () => {
-    if (!videoRef.current || !canvasRef.current) return;
+    if (!videoRef.current || !canvasRef.current || !cutoutRef.current) return;
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext('2d').drawImage(video, 0, 0);
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    const cutout = cutoutRef.current.getBoundingClientRect();
+    const videoRect = video.getBoundingClientRect();
+
+    // Calculate scaling for object-fit: cover
+    const scale = Math.max(videoRect.width / video.videoWidth, videoRect.height / video.videoHeight);
+    
+    const displayedWidth = video.videoWidth * scale;
+    const displayedHeight = video.videoHeight * scale;
+    
+    // Calculate how much is cropped off the edges due to object-fit cover
+    const offsetX = (displayedWidth - videoRect.width) / 2;
+    const offsetY = (displayedHeight - videoRect.height) / 2;
+
+    // Map cutout bounding box to the intrinsic video coordinates
+    const cutoutX_in_displayed = (cutout.left - videoRect.left) + offsetX;
+    const cutoutY_in_displayed = (cutout.top - videoRect.top) + offsetY;
+
+    const sx = cutoutX_in_displayed / scale;
+    const sy = cutoutY_in_displayed / scale;
+    const sWidth = cutout.width / scale;
+    const sHeight = cutout.height / scale;
+
+    // Create a high-res canvas representing only the cutout area
+    canvas.width = sWidth;
+    canvas.height = sHeight;
+    const ctx = canvas.getContext('2d');
+    
+    // Optional: Fill with white first in case of transparency
+    ctx.fillStyle = "#FFF";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw the cropped portion
+    ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, sWidth, sHeight);
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
     stopCamera();
     setCapturedImage(dataUrl);
     setScreenState(STATE_PREVIEW);
@@ -208,8 +240,7 @@ export default function PartnerCamera() {
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
         />
 
-        {/* Dark overlay with cutout */}
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 1 }} />
+        {/* Dark overlay was here, removed because pc-cutout-frame now uses a huge box-shadow */}
 
         {/* Back button */}
         <button className="pc-back-btn" style={{ zIndex: 10 }} onClick={() => { stopCamera(); navigate(-1); }}>
@@ -226,9 +257,9 @@ export default function PartnerCamera() {
           </p>
         )}
 
-        {/* Document frame */}
+        {/* Document frame with massive box-shadow for dark overlay */}
         <div className="pc-cutout-container" style={{ zIndex: 5 }}>
-          <div className={`pc-cutout-frame ${docType === 'sim' ? 'sim-frame' : ''}`}>
+          <div ref={cutoutRef} className={`pc-cutout-frame ${docType === 'sim' ? 'sim-frame' : ''}`}>
             <div className="pc-corner top-left"></div>
             <div className="pc-corner top-right"></div>
             <div className="pc-corner bottom-left"></div>
