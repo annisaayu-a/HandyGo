@@ -21,7 +21,7 @@ export default function MitraLayout() {
       <main 
         className="mobile-page-content animate-fade-in"
         style={{ 
-          padding: isFullscreen ? '0' : '0',
+          padding: isFullscreen ? '0' : '24px 20px',
           paddingBottom: shouldHideBottomNav ? '0' : '80px' 
         }}
       >
@@ -40,9 +40,9 @@ export default function MitraLayout() {
             <Link to="/mitra/messages" className={`nav-item ${location.pathname.includes('/messages') ? 'active' : ''}`}>
               <MessageCircle size={22} />
             </Link>
-            <Link to="/mitra/profile" className={`nav-item ${location.pathname.includes('/profile') ? 'active' : ''}`}>
+            <div className={`nav-item ${location.pathname.includes('/profile') ? 'active' : ''}`} style={{ opacity: 0.5, cursor: 'not-allowed' }}>
               <Inbox size={22} />
-            </Link>
+            </div>
           </nav>
         </div>
       )}
