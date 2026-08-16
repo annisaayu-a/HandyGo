@@ -152,7 +152,7 @@ export default function PartnerAttribute() {
           onClick={handleSubmit}
           disabled={!isFormValid()}
         >
-          Lanjutkan
+          Simpan & Aktifkan akun
         </button>
       </div>
     </div>
