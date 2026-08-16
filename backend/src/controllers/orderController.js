@@ -87,3 +87,77 @@ exports.updateOrderStatus = async (req, res) => {
     res.status(500).json({ error: 'Terjadi kesalahan pada server saat memperbarui pesanan' });
   }
 };
+
+exports.getPendingOrders = async (req, res) => {
+  try {
+    // Only return recent pending orders to prevent showing stale data (e.g. within last 1 hour)
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    
+    const orders = await prisma.order.findMany({
+      where: { 
+        status: 'menunggu',
+        created_at: { gte: oneHourAgo }
+      },
+      orderBy: { created_at: 'desc' },
+      include: { service: true }
+    });
+
+    res.status(200).json({ orders });
+  } catch (error) {
+    console.error('Error fetching pending orders:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan pada server saat mengambil pesanan' });
+  }
+};
+
+exports.getOrderById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const order = await prisma.order.findUnique({
+      where: { id },
+      include: { service: true }
+    });
+
+    if (!order) {
+      return res.status(404).json({ error: 'Pesanan tidak ditemukan' });
+    }
+
+    res.status(200).json({ order });
+  } catch (error) {
+    console.error('Error fetching order by ID:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan pada server saat mengambil pesanan' });
+  }
+};
+
+exports.acceptOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { mitra_id } = req.body;
+
+    if (!mitra_id) {
+      return res.status(400).json({ error: 'ID Mitra diperlukan' });
+    }
+
+    // Ensure order is still pending
+    const existingOrder = await prisma.order.findUnique({ where: { id } });
+    if (!existingOrder) {
+      return res.status(404).json({ error: 'Pesanan tidak ditemukan' });
+    }
+    if (existingOrder.status !== 'menunggu') {
+      return res.status(400).json({ error: 'Pesanan sudah diambil atau tidak valid' });
+    }
+
+    const order = await prisma.order.update({
+      where: { id },
+      data: { 
+        status: 'accepted',
+        mitra_id 
+      }
+    });
+
+    res.status(200).json({ message: 'Pesanan berhasil diambil', order });
+  } catch (error) {
+    console.error('Error accepting order:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan pada server saat mengambil pesanan' });
+  }
+};
