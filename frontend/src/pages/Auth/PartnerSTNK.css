@@ -238,7 +238,7 @@
 
 /* Bottom Sheet */
 .stnk-overlay {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -248,7 +248,7 @@
 }
 
 .stnk-bottom-sheet {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
