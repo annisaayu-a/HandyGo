@@ -13,6 +13,7 @@ import PartnerAuthOption from '../pages/Auth/PartnerAuthOption';
 import PartnerLogin from '../pages/Auth/PartnerLogin';
 import PartnerWelcome from '../pages/Auth/PartnerWelcome';
 import PartnerRegister from '../pages/Auth/PartnerRegister';
+import PartnerAttribute from '../pages/Auth/PartnerAttribute';
 import PartnerLocation from '../pages/Auth/PartnerLocation';
 import PartnerVehicle from '../pages/Auth/PartnerVehicle';
 import PartnerData from '../pages/Auth/PartnerData';

@@ -131,6 +131,15 @@
   margin: 16px 0;
 }
 
+.pstat-final-step-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: #475569;
+  text-align: center;
+  margin-top: 24px;
+  line-height: 1.5;
+}
+
 .pstat-bottom-action {
   position: absolute;
   bottom: 0;
