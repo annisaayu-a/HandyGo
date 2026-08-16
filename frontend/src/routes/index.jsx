@@ -69,6 +69,7 @@ import ChatList from '../pages/Customer/ChatList';
 import Call from '../pages/Customer/Call';
 import FindingDriver from '../pages/Customer/FindingDriver';
 import MitraDashboard from '../pages/Mitra/Dashboard';
+import MitraJobs from '../pages/Mitra/Jobs';
 import MitraProfile from '../pages/Mitra/Profile';
 import MitraProfileDetail from '../pages/Mitra/ProfileDetail';
 import MitraChat from '../pages/Mitra/Chat';
@@ -357,7 +358,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'jobs',
-        element: <div>Halaman Pekerjaan Tersedia (Placeholder)</div>,
+        element: <MitraJobs />,
       },
       {
         path: 'profile',
