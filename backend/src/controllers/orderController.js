@@ -32,7 +32,7 @@ exports.createOrder = async (req, res) => {
         service_id: service.id,
         pickup_location,
         dropoff_location,
-        order_details,
+        order_details: typeof order_details === 'string' ? order_details : JSON.stringify(order_details),
         estimated_price: parseFloat(estimated_price),
         payment_method,
         status: 'menunggu'
