@@ -54,7 +54,7 @@
 /* Top Bar */
 .mdash-topbar {
   position: absolute;
-  top: 24px;
+  top: max(40px, env(safe-area-inset-top) + 16px);
   left: 20px;
   right: 20px;
   display: flex;
