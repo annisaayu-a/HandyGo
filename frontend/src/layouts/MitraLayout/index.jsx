@@ -11,12 +11,16 @@ export default function MitraLayout() {
   ];
   
   const shouldHideBottomNav = hideBottomNavPaths.includes(location.pathname);
+  const isDashboard = location.pathname === '/mitra' || location.pathname === '/mitra/';
 
   return (
     <div className="mobile-app-container">
       <main 
         className="mobile-page-content animate-fade-in"
-        style={{ paddingBottom: shouldHideBottomNav ? '0' : '80px' }}
+        style={{ 
+          padding: isDashboard ? '0' : '24px 20px',
+          paddingBottom: shouldHideBottomNav ? '0' : '80px' 
+        }}
       >
         <Outlet />
       </main>

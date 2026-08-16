@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Map from 'react-map-gl/mapbox';
+import Map, { Marker } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { User, Power, ChevronRight, AlertCircle, CheckCircle2 } from 'lucide-react';
 import './Dashboard.css';
@@ -8,12 +8,12 @@ const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
 export default function MitraDashboard() {
   const [viewState, setViewState] = useState({
-    longitude: 119.4920, // Makassar approximately
+    longitude: 119.4920,
     latitude: -5.1325,
     zoom: 14.5
   });
   
-  // 'pending', 'active', 'hidden'
+  const [userLocation, setUserLocation] = useState(null);
   const [status, setStatus] = useState('pending');
 
   const handleAlertClick = () => {
@@ -21,6 +21,27 @@ export default function MitraDashboard() {
       setStatus('active');
     }
   };
+
+  useEffect(() => {
+    // Get real user location
+    if (navigator.geolocation) {
+      const watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          const { longitude, latitude } = position.coords;
+          setUserLocation({ longitude, latitude });
+          // Optionally center map on first load
+          setViewState(prev => ({
+            ...prev,
+            longitude,
+            latitude
+          }));
+        },
+        (error) => console.error("Error getting location:", error),
+        { enableHighAccuracy: true, maximumAge: 10000 }
+      );
+      return () => navigator.geolocation.clearWatch(watchId);
+    }
+  }, []);
 
   useEffect(() => {
     if (status === 'active') {
@@ -42,11 +63,14 @@ export default function MitraDashboard() {
           mapboxAccessToken={MAPBOX_TOKEN}
           attributionControl={false}
         >
-          {/* Custom marker or current location indicator could go here */}
-          <div className="mdash-center-marker">
-            <div className="mdash-marker-dot"></div>
-            <div className="mdash-marker-pulse"></div>
-          </div>
+          {userLocation && (
+            <Marker longitude={userLocation.longitude} latitude={userLocation.latitude} anchor="center">
+              <div className="mdash-center-marker">
+                <div className="mdash-marker-dot"></div>
+                <div className="mdash-marker-pulse"></div>
+              </div>
+            </Marker>
+          )}
         </Map>
       </div>
 
