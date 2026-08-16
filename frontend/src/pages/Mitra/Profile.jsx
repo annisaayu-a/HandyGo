@@ -33,7 +33,7 @@ export default function MitraProfile() {
   return (
     <div className="mprofile-container animate-fade-in">
       <div className="mprofile-header">
-        <button className="mprofile-back-btn" onClick={() => navigate(-1)}>
+        <button className="mprofile-back-btn" onClick={() => navigate('/mitra')}>
           <ArrowLeft size={24} color="#0f172a" />
         </button>
         <h1 className="mprofile-title">Profil</h1>
