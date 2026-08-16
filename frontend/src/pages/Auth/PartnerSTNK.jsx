@@ -111,6 +111,8 @@ export default function PartnerSTNK() {
     });
   };
 
+  const isFormValid = isUploaded && Object.values(formData).every(val => val.trim() !== '');
+
   return (
     <div className="partner-stnk-container animate-fade-in">
       {/* Hidden real file inputs */}
@@ -264,8 +266,8 @@ export default function PartnerSTNK() {
         )}
 
         <button
-          className={`stnk-save-btn ${isUploaded ? 'active' : ''}`}
-          disabled={!isUploaded}
+          className={`stnk-save-btn ${isFormValid ? 'active' : ''}`}
+          disabled={!isFormValid}
           onClick={handleSave}
         >
           {isUploaded ? 'Konfirmasi' : 'Simpan Data'}
