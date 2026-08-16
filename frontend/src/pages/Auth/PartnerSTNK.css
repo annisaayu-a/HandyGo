@@ -183,7 +183,11 @@
   gap: 16px;
 }
 
-.stnk-form-row > div {
+.stnk-form-row > div:first-child {
+  flex: 2.5;
+}
+
+.stnk-form-row > div:last-child {
   flex: 1;
 }
 
