@@ -5,49 +5,18 @@ import './CustomerLayout.css';
 export default function CustomerLayout() {
   const location = useLocation();
   
-  // Paths where the bottom navigation should be hidden
-  const hideBottomNavPaths = [
-    '/customer/finding',
-    '/customer/shopping', 
-    '/customer/shopping/map', 
-    '/customer/shopping/details', 
-    '/customer/shopping/checkout',
-    '/customer/shopping/status',
-    '/customer/shopping/payment',
-    '/customer/shopping/location',
-    '/customer/cleaning',
-    '/customer/cleaning/map',
-    '/customer/cleaning/checkout',
-    '/customer/cleaning/status',
-    '/customer/cleaning/payment',
-    '/customer/chat',
-    '/customer/call',
-    '/customer/location',
-    '/customer/search-location',
-    '/customer/profile',
-    '/customer/search',
-    '/customer/delivery',
-    '/customer/delivery/location',
-    '/customer/delivery/details',
-    '/customer/delivery/receiver',
-    '/customer/delivery/sender',
-    '/customer/delivery/checkout',
-    '/customer/delivery/status',
-    '/customer/delivery/map',
-    '/customer/repair',
-    '/customer/repair/map',
-    '/customer/repair/checkout',
-    '/customer/repair/details',
-    '/customer/repair/status',
-    '/customer/repair/payment',
-    '/customer/transport',
-    '/customer/transport/location',
-    '/customer/transport/map',
-    '/customer/transport/details',
-    '/customer/transport/payment',
-    '/customer/transport/qris'
+  // Paths where the bottom navigation SHOULD be visible
+  const showBottomNavPaths = [
+    '/customer',
+    '/customer/',
+    '/customer/history',
+    '/customer/history/',
+    '/customer/messages',
+    '/customer/messages/',
+    '/customer/settings',
+    '/customer/settings/'
   ];
-  const shouldHideBottomNav = hideBottomNavPaths.includes(location.pathname);
+  const shouldHideBottomNav = !showBottomNavPaths.includes(location.pathname);
 
   return (
     <div className="mobile-app-container">
