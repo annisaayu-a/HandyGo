@@ -75,6 +75,7 @@ export default function PartnerUpload() {
   };
 
   const handleConfirmDaftar = () => {
+    localStorage.setItem('partnerRegistrationComplete', 'true');
     setShowConfirmModal(false);
     navigate('/partner-success');
   };

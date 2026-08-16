@@ -30,12 +30,22 @@ export default function PartnerStatus() {
           
           <div className="pstat-item">
             <div className="pstat-item-left">
-              <div className="pstat-icon-wrapper">
+              <div className="pstat-icon-wrapper" style={{ position: 'relative' }}>
                 <FileText size={20} color="#ffffff" />
+                {/* Checkmark indicator for verified */}
+                <div style={{
+                  position: 'absolute', top: -4, right: -4, 
+                  background: '#22c55e', borderRadius: '50%', 
+                  width: 14, height: 14, display: 'flex', 
+                  alignItems: 'center', justifyContent: 'center',
+                  border: '2px solid #ffffff'
+                }}>
+                  <span style={{ color: '#fff', fontSize: '9px', fontWeight: 'bold' }}>✓</span>
+                </div>
               </div>
               <span className="pstat-item-label">Data Diri</span>
             </div>
-            <div className="pstat-badge">Sedang diproses</div>
+            <div className="pstat-badge success">Terverifikasi</div>
           </div>
 
           <div className="pstat-divider"></div>

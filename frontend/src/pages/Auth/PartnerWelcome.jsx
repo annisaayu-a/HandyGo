@@ -33,7 +33,14 @@ export default function PartnerWelcome() {
       <div className="pw-bottom-action">
         <button 
           className="pw-start-btn" 
-          onClick={() => navigate('/partner-register')}
+          onClick={() => {
+            const isRegistered = localStorage.getItem('partnerRegistrationComplete') === 'true';
+            if (isRegistered) {
+              navigate('/partner-status');
+            } else {
+              navigate('/partner-register');
+            }
+          }}
         >
           Yuk Mulai!
         </button>

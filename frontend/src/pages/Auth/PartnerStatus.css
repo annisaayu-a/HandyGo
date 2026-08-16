@@ -120,6 +120,11 @@
   font-weight: 600;
 }
 
+.pstat-badge.success {
+  background-color: #dcfce7; /* Light green bg */
+  color: #16a34a; /* Green text */
+}
+
 .pstat-divider {
   height: 1px;
   background-color: #f1f5f9;
