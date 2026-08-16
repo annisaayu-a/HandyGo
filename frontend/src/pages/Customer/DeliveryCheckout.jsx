@@ -75,9 +75,24 @@ export default function DeliveryCheckout() {
     
     setShowSuccessPopup(true);
     
+    // Simulate sending order to Mitra via localStorage
+    localStorage.setItem('simulated_incoming_order', JSON.stringify({
+      id: createdOrderId || Date.now(),
+      service: 'Antar Barang',
+      destination: dropoff.name,
+      paymentMethod: paymentMethod,
+      total: 30000,
+      timestamp: Date.now()
+    }));
+
     // Auto redirect to status page after 2 seconds
     setTimeout(() => {
-      navigate('/customer/delivery/status', { state: { ...location.state, orderId: createdOrderId } });
+      navigate('/customer/finding-driver', { 
+        state: { 
+          nextRoute: '/customer/delivery/status', 
+          nextState: { ...location.state, orderId: createdOrderId } 
+        } 
+      });
     }, 2000);
   };
 

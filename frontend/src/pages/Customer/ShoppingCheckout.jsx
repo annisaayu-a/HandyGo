@@ -89,7 +89,12 @@ export default function ShoppingCheckout() {
       setShowModal(true);
       // Auto redirect back to status page after 3 seconds
       setTimeout(() => {
-        navigate('/customer/shopping/status', { state: { pesanan, total, paymentMethod, orderId: createdOrderId } });
+        navigate('/customer/finding-driver', { 
+          state: { 
+            nextRoute: '/customer/shopping/status', 
+            nextState: { pesanan, total, paymentMethod, orderId: createdOrderId } 
+          } 
+        });
       }, 3000);
     } catch (error) {
       alert("Terjadi kesalahan saat memproses pesanan. Pastikan server berjalan.");

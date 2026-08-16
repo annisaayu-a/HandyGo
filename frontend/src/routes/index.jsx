@@ -67,6 +67,7 @@ import TransportQris from '../pages/Customer/TransportQris';
 import Chat from '../pages/Customer/Chat';
 import ChatList from '../pages/Customer/ChatList';
 import Call from '../pages/Customer/Call';
+import FindingDriver from '../pages/Customer/FindingDriver';
 import MitraDashboard from '../pages/Mitra/Dashboard';
 import AdminDashboard from '../pages/Admin/Dashboard';
 
@@ -319,6 +320,10 @@ export const router = createBrowserRouter([
       {
         path: 'call',
         element: <Call />,
+      },
+      {
+        path: 'finding-driver',
+        element: <FindingDriver />,
       },
     ],
   },

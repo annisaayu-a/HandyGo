@@ -94,20 +94,33 @@ export default function CleaningCheckout() {
         createdOrderId = data.order?.id;
       }
 
+      // Simulate sending order to Mitra via localStorage
+      localStorage.setItem('simulated_incoming_order', JSON.stringify({
+        id: createdOrderId || Date.now(),
+        service: 'Bersih-bersih',
+        destination: detailLokasi ? `${address} - ${detailLokasi}` : address,
+        paymentMethod: 'Bayar di Tempat',
+        total: totalHarga,
+        timestamp: Date.now()
+      }));
+
       setShowModal(true);
       setTimeout(() => {
         setShowModal(false);
-        navigate('/customer/cleaning/status', {
+        navigate('/customer/finding-driver', {
           state: {
-            orderData: {
-              address: detailLokasi ? `${address} - ${detailLokasi}` : address,
-              luasArea,
-              tingkatKekotoran,
-              durasi,
-              catatan
-            },
-            totalPrice: totalHarga,
-            orderId: createdOrderId
+            nextRoute: '/customer/cleaning/status',
+            nextState: {
+              orderData: {
+                address: detailLokasi ? `${address} - ${detailLokasi}` : address,
+                luasArea,
+                tingkatKekotoran,
+                durasi,
+                catatan
+              },
+              totalPrice: totalHarga,
+              orderId: createdOrderId
+            }
           }
         });
       }, 2000);

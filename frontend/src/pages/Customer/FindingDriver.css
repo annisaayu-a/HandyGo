@@ -1,0 +1,98 @@
+.finding-driver-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f1f5f9;
+}
+
+.fd-map-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.fd-center-marker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.fd-marker-dot {
+  width: 16px;
+  height: 16px;
+  background-color: #034078;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  z-index: 3;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.fd-marker-pulse {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background-color: rgba(3, 64, 120, 0.2);
+  border-radius: 50%;
+  animation: fd-pulse-ring 2s infinite ease-out;
+  z-index: 2;
+}
+
+@keyframes fd-pulse-ring {
+  0% { transform: scale(0.5); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.fd-bottom-sheet {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #ffffff;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 24px 20px;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: slideUp 0.4s ease-out;
+}
+
+.fd-status-text {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  color: #94a3b8;
+  margin-bottom: 24px;
+}
+
+.fd-cancel-btn {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #1e3a8a;
+  background-color: #ffffff;
+  color: #1e3a8a;
+  border-radius: 30px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.fd-cancel-btn:active {
+  background-color: #f1f5f9;
+}
+
+@keyframes slideUp {
+  0% { transform: translateY(100%); }
+  100% { transform: translateY(0); }
+}

@@ -165,7 +165,30 @@ export default function TransportDetails() {
       }
     }
 
-    setIsSearchingDriver(true);
+    // Simulate sending order to Mitra via localStorage
+    const priceNum = activeVehicle.priceValue || parseInt(activeVehicle.price.replace(/[^0-9]/g, ''), 10) || 18000;
+    localStorage.setItem('simulated_incoming_order', JSON.stringify({
+      id: newOrderId || Date.now(),
+      service: 'Antar Jemput',
+      destination: dropoff.name,
+      paymentMethod: paymentMethod,
+      total: priceNum,
+      timestamp: Date.now()
+    }));
+
+    navigate('/customer/finding-driver', {
+      state: {
+        nextRoute: '/customer/transport/details',
+        nextState: {
+          ...location.state,
+          pickupLocation: pickup,
+          dropoffLocation: dropoff,
+          selectedVehicle: activeVehicle,
+          paymentMethod,
+          driverPhase: 'heading' // Start tracking immediately when returned
+        }
+      }
+    });
   };
 
   const cancelSearch = () => {
