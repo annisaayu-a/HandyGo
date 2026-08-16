@@ -1,0 +1,125 @@
+.mprofile-container {
+  min-height: 100dvh;
+  width: 100%;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.mprofile-header {
+  display: flex;
+  align-items: center;
+  padding: 20px 20px;
+  background-color: #ffffff;
+}
+
+.mprofile-back-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  margin-right: 12px;
+}
+
+.mprofile-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+.mprofile-content {
+  flex: 1;
+  padding: 24px 20px;
+}
+
+.mprofile-user-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 36px;
+}
+
+.mprofile-avatar {
+  width: 72px;
+  height: 72px;
+  background-color: #cbd5e1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.mprofile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mprofile-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.mprofile-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+}
+
+.mprofile-phone {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.mprofile-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mprofile-menu-item {
+  display: flex;
+  align-items: center;
+  padding: 16px 18px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.mprofile-menu-item:active {
+  transform: scale(0.98);
+  background-color: #f8fafc;
+}
+
+.mprofile-menu-icon {
+  width: 30px;
+  height: 30px;
+  background-color: #f1f5f9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 14px;
+  flex-shrink: 0;
+}
+
+.mprofile-menu-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #334155;
+}

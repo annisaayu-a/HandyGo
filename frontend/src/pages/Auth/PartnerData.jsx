@@ -24,6 +24,14 @@ export default function PartnerData() {
 
   const handleNext = () => {
     if (fullName && accountNumber) {
+      // Save mitra profile data to localStorage for use in profile pages
+      const existing = JSON.parse(localStorage.getItem('mitra_profile_data') || '{}');
+      localStorage.setItem('mitra_profile_data', JSON.stringify({
+        ...existing,
+        name: fullName,
+        vehicle: vehicle,
+        jenisMitra: vehicle === 'motor' ? 'Mitra Motor' : 'Mitra Mobil',
+      }));
       navigate('/partner-upload', { state: { vehicle } });
     }
   };

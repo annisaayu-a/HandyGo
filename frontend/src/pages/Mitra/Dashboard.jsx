@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Map, { Marker, Source, Layer } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { User, Power, ChevronRight, AlertCircle, CheckCircle2, Phone, MessageCircle, Clock, Info } from 'lucide-react';
@@ -7,6 +8,7 @@ import './Dashboard.css';
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
 export default function MitraDashboard() {
+  const navigate = useNavigate();
   const [viewState, setViewState] = useState({
     longitude: 119.4920,
     latitude: -5.1325,
@@ -326,8 +328,17 @@ export default function MitraDashboard() {
 
       {/* Floating Top Bar */}
       <div className="mdash-topbar">
-        <div className="mdash-profile-icon">
-          <User size={28} color="#94a3b8" />
+        <div className="mdash-profile-icon" onClick={() => navigate('/mitra/profile')} style={{ cursor: 'pointer', overflow: 'hidden' }}>
+          {(() => {
+            try {
+              const saved = localStorage.getItem('mitra_profile_data');
+              const parsed = saved ? JSON.parse(saved) : {};
+              if (parsed.avatar) {
+                return <img src={parsed.avatar} alt="profile" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />;
+              }
+            } catch (e) {}
+            return <User size={28} color="#94a3b8" />;
+          })()}
         </div>
         
         <div className="mdash-status-pill">

@@ -68,6 +68,14 @@ export default function PartnerRegister() {
       // Save registration date to simulate persistent deadline
       localStorage.setItem('partnerRegistrationDate', new Date().toISOString());
 
+      // Save phone and email to mitra_profile_data for profile page use
+      const existing = JSON.parse(localStorage.getItem('mitra_profile_data') || '{}');
+      localStorage.setItem('mitra_profile_data', JSON.stringify({
+        ...existing,
+        phone: '+62' + phone,
+        email: email,
+      }));
+
       // Redirect to magic link verification screen
       navigate('/otp-verification', { 
         state: { 

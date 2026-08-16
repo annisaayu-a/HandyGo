@@ -69,6 +69,8 @@ import ChatList from '../pages/Customer/ChatList';
 import Call from '../pages/Customer/Call';
 import FindingDriver from '../pages/Customer/FindingDriver';
 import MitraDashboard from '../pages/Mitra/Dashboard';
+import MitraProfile from '../pages/Mitra/Profile';
+import MitraProfileDetail from '../pages/Mitra/ProfileDetail';
 import AdminDashboard from '../pages/Admin/Dashboard';
 
 export const router = createBrowserRouter([
@@ -342,7 +344,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'profile',
-        element: <div>Halaman Profil Mitra (Placeholder)</div>,
+        element: <MitraProfile />,
+      },
+      {
+        path: 'profile/detail',
+        element: <MitraProfileDetail />,
       },
     ],
   },
