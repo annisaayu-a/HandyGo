@@ -55,7 +55,12 @@ export default function PartnerLogin() {
       email: email,
     }));
 
-    navigate('/partner-status');
+    const isOnboarded = localStorage.getItem('mitra_is_onboarded') === 'true';
+    if (isOnboarded) {
+      navigate('/mitra');
+    } else {
+      navigate('/partner-status');
+    }
   };
 
   return (

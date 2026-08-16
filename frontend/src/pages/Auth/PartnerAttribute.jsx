@@ -45,6 +45,10 @@ export default function PartnerAttribute() {
         name: existing.name || formData.nama,
       }));
     }
+    
+    // Set flag that mitra has completed registration and attribute address form
+    localStorage.setItem('mitra_is_onboarded', 'true');
+    
     navigate('/mitra');
   };
 
