@@ -39,7 +39,7 @@ export default function PartnerWelcome() {
               localStorage.setItem('hasReturnedToWelcome', 'true');
               navigate('/partner-status');
             } else {
-              navigate('/partner-register');
+              navigate('/partner-auth-option');
             }
           }}
         >

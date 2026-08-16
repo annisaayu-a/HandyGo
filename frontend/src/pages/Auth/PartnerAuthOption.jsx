@@ -13,7 +13,7 @@ export default function PartnerAuthOption() {
         </svg>
       </div>
 
-      <button className="pauth-back-btn" onClick={() => navigate('/')}>
+      <button className="pauth-back-btn" onClick={() => navigate('/partner-welcome')}>
         <ArrowLeft size={24} color="#1e293b" />
       </button>
 
@@ -21,7 +21,7 @@ export default function PartnerAuthOption() {
         <div className="pauth-buttons">
           <button 
             className="pauth-daftar-btn" 
-            onClick={() => navigate('/partner-welcome')}
+            onClick={() => navigate('/partner-register')}
           >
             Daftar
           </button>
