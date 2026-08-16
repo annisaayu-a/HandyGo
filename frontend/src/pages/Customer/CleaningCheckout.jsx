@@ -19,6 +19,7 @@ export default function CleaningCheckout() {
   const [luasArea, setLuasArea] = useState(''); 
   const [tingkatKekotoran, setTingkatKekotoran] = useState(''); 
   const [catatan, setCatatan] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('Bayar di Tempat');
   
   const [showModal, setShowModal] = useState(false);
 
@@ -103,7 +104,7 @@ export default function CleaningCheckout() {
         tingkatKekotoran: tingkatKekotoran,
         durasi: durasi,
         jumlahPetugas: 1, // Defaulting to 1 as per design
-        paymentMethod: 'Bayar di Tempat',
+        paymentMethod: paymentMethod,
         total: totalHarga,
         timestamp: Date.now()
       }));
@@ -255,6 +256,18 @@ export default function CleaningCheckout() {
         <p className="cc-disclaimer">
           Total harga bersifat estimasi dan dapat berubah sesuai durasi serta kondisi pekerjaan. Tim kami akan mengonfirmasi biaya terlebih dahulu sebelum layanan dimulai.
         </p>
+
+        <div className="cc-section" style={{ marginTop: '16px' }}>
+          <h2 className="cc-section-title" style={{ fontSize: '0.95rem' }}>Metode Pembayaran</h2>
+          <select 
+            value={paymentMethod}
+            onChange={(e) => setPaymentMethod(e.target.value)}
+            style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0', fontFamily: "'Inter', sans-serif", fontSize: '0.9rem', outline: 'none' }}
+          >
+            <option value="Bayar di Tempat">Tunai / Bayar di Tempat</option>
+            <option value="QRIS">QRIS</option>
+          </select>
+        </div>
         
         <button 
           className="cc-submit-btn" 

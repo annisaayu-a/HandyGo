@@ -115,6 +115,7 @@ export default function MitraDashboard() {
   };
 
   const [showCompletionPill, setShowCompletionPill] = useState(false);
+  const [showQrisSuccessPill, setShowQrisSuccessPill] = useState(false);
 
   const handlePhaseChange = (newPhase) => {
     if (incomingOrder) {
@@ -147,12 +148,47 @@ export default function MitraDashboard() {
           if (currentOrderStr) {
              const currentOrder = JSON.parse(currentOrderStr);
              if (currentOrder.driverPhase === 'finished_working_wait') {
-               const nextUpdate = { ...currentOrder, driverPhase: 'payment_confirmation' };
+               const isQris = currentOrder.paymentMethod === 'QRIS';
+               const nextUpdate = { ...currentOrder, driverPhase: isQris ? 'payment_confirmation_qris' : 'payment_confirmation' };
                localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
                setIncomingOrder(nextUpdate);
              }
           }
         }, 2000);
+      } else if (newPhase === 'payment_confirmation_qris') {
+        setTimeout(() => {
+          const currentOrderStr = localStorage.getItem('simulated_incoming_order');
+          if (currentOrderStr) {
+             const currentOrder = JSON.parse(currentOrderStr);
+             if (currentOrder.driverPhase === 'payment_confirmation_qris') {
+               const nextUpdate = { ...currentOrder, driverPhase: 'payment_confirmed_qris' };
+               localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
+               setIncomingOrder(nextUpdate);
+             }
+          }
+        }, 2000);
+      } else if (newPhase === 'completed_qris_success') {
+        setShowQrisSuccessPill(true);
+        setTimeout(() => {
+          const currentOrderStr = localStorage.getItem('simulated_incoming_order');
+          if (currentOrderStr) {
+             const currentOrder = JSON.parse(currentOrderStr);
+             if (currentOrder.driverPhase === 'completed_qris_success') {
+               setShowQrisSuccessPill(false);
+               const nextUpdate = { ...currentOrder, driverPhase: 'completed' };
+               localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
+               setIncomingOrder(nextUpdate);
+               
+               setShowCompletionPill(true);
+               setTimeout(() => {
+                 setShowCompletionPill(false);
+                 setIncomingOrder(null);
+                 setIsOrderAccepted(false);
+                 localStorage.removeItem('simulated_incoming_order');
+               }, 2000);
+             }
+          }
+        }, 3000);
       } else if (newPhase === 'completed') {
         setShowCompletionPill(true);
         setTimeout(() => {
@@ -360,7 +396,7 @@ export default function MitraDashboard() {
 
           {/* Accepted State */}
           {/* Accepted State */}
-          {isOrderAccepted && incomingOrder.driverPhase !== 'completed' && incomingOrder.driverPhase !== 'traveling_to_customer' && (
+          {isOrderAccepted && incomingOrder.driverPhase !== 'completed' && incomingOrder.driverPhase !== 'completed_qris_success' && incomingOrder.driverPhase !== 'traveling_to_customer' && (
             <div className="mdash-order-sheet accepted">
               <h3 className="mdash-order-title">Layanan {incomingOrder.service}</h3>
               <div className="mdash-order-content no-margin-bottom">
@@ -452,7 +488,7 @@ export default function MitraDashboard() {
                   </button>
                 )
               )}
-              {incomingOrder.driverPhase === 'finished_working_wait' && (
+              {incomingOrder.service === 'Bersih-Bersih' && ['finished_working_wait', 'payment_confirmation_qris'].includes(incomingOrder.driverPhase) && (
                 <button className="mdash-at-store-btn" style={{ backgroundColor: '#7895b2', cursor: 'default' }}>
                   {formatWorkingTime(incomingOrder.totalWorkingSeconds || workingSeconds)}
                 </button>
@@ -467,12 +503,12 @@ export default function MitraDashboard() {
                   </button>
                 </div>
               )}
-              {incomingOrder.driverPhase === 'payment_confirmed' && (
+              {['payment_confirmed', 'payment_confirmed_qris'].includes(incomingOrder.driverPhase) && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   <button className="mdash-at-store-btn" style={{ backgroundColor: '#7895b2', cursor: 'default' }}>
                     {formatWorkingTime(incomingOrder.totalWorkingSeconds || workingSeconds)}
                   </button>
-                  <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('completed')}>
+                  <button className="mdash-at-store-btn" onClick={() => handlePhaseChange(incomingOrder.driverPhase === 'payment_confirmed_qris' ? 'completed_qris_success' : 'completed')}>
                     Pesanan Selesai
                   </button>
                 </div>
@@ -490,6 +526,18 @@ export default function MitraDashboard() {
               <CheckCircle2 size={14} color="#ffffff" />
             </div>
             <span>Pesanan diterima</span>
+          </div>
+        </div>
+      )}
+
+      {/* QRIS Success Pill */}
+      {showQrisSuccessPill && (
+        <div className="mdash-order-wrapper fade-blur-out" style={{ bottom: '260px' }}>
+          <div className="mdash-accepted-pill" style={{ backgroundColor: '#ffffff', color: '#334155', fontWeight: '500', display: 'flex', gap: '8px', alignItems: 'center', margin: '0 auto', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', padding: '12px 24px', borderRadius: '30px' }}>
+            <div style={{ backgroundColor: '#22c55e', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <CheckCircle2 size={14} color="#ffffff" />
+            </div>
+            <span>Pembayaran berhasil</span>
           </div>
         </div>
       )}
