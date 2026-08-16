@@ -26,7 +26,7 @@ export default function DeliveryStatus() {
           const order = JSON.parse(saved);
           if (order.driverPhase) {
             setDriverPhase(order.driverPhase);
-            if (order.driverPhase === 'heading_to_customer' || order.driverPhase === 'arrived_at_customer') {
+            if (['heading_to_customer', 'traveling_to_customer', 'arrived_near_customer', 'arrived_at_customer'].includes(order.driverPhase)) {
               setOrderStatus((prev) => prev !== 'mengantar' ? 'mengantar' : prev);
             } else if (order.driverPhase === 'completed') {
               setOrderStatus((prev) => prev !== 'selesai' ? 'selesai' : prev);
@@ -176,7 +176,7 @@ export default function DeliveryStatus() {
                   ? (location.state?.dropoffLocation ? { lat: location.state.dropoffLocation.lat, lng: location.state.dropoffLocation.lng } : { lat: -5.1382, lng: 119.5015 })
                   : { lat: -5.1290, lng: 119.4950 } // Sender coords
               }
-              isActive={driverPhase !== 'arrived_at_customer' && driverPhase !== 'at_store'}
+              isActive={!['arrived_at_customer', 'arrived_near_customer', 'at_store'].includes(driverPhase)}
               height="240px"
             />
           </div>

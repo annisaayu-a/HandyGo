@@ -102,7 +102,20 @@ export default function MitraDashboard() {
       localStorage.setItem('simulated_incoming_order', JSON.stringify(updated));
       setIncomingOrder(updated);
       
-      if (newPhase === 'completed') {
+      if (newPhase === 'traveling_to_customer') {
+        setTimeout(() => {
+          // Check if order still exists and we are still in traveling_to_customer
+          const currentOrderStr = localStorage.getItem('simulated_incoming_order');
+          if (currentOrderStr) {
+             const currentOrder = JSON.parse(currentOrderStr);
+             if (currentOrder.driverPhase === 'traveling_to_customer') {
+               const nextUpdate = { ...currentOrder, driverPhase: 'arrived_near_customer' };
+               localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
+               setIncomingOrder(nextUpdate);
+             }
+          }
+        }, 5000);
+      } else if (newPhase === 'completed') {
         setShowCompletionPill(true);
         setTimeout(() => {
           setShowCompletionPill(false);
@@ -180,7 +193,7 @@ export default function MitraDashboard() {
               let targetCoords = null;
               if (incomingOrder.driverPhase === 'heading_to_store') {
                 targetCoords = { lng: 119.4950, lat: -5.1290 }; // Store
-              } else if (incomingOrder.driverPhase === 'heading_to_customer') {
+              } else if (incomingOrder.driverPhase === 'heading_to_customer' || incomingOrder.driverPhase === 'traveling_to_customer') {
                 targetCoords = { lng: 119.5015, lat: -5.1382 }; // Customer
               }
 
@@ -261,7 +274,7 @@ export default function MitraDashboard() {
           )}
 
           {/* Accepted State */}
-          {isOrderAccepted && incomingOrder.driverPhase !== 'completed' && (
+          {isOrderAccepted && incomingOrder.driverPhase !== 'completed' && incomingOrder.driverPhase !== 'traveling_to_customer' && (
             <div className="mdash-order-sheet accepted">
               <h3 className="mdash-order-title">Layanan {incomingOrder.service}</h3>
               <div className="mdash-order-content no-margin-bottom">
@@ -295,7 +308,7 @@ export default function MitraDashboard() {
 
               {/* Conditional Buttons based on Phase and Service */}
               {incomingOrder.driverPhase === 'heading_to_store' && (
-                <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('at_store')}>
+                <button className="mdash-at-store-btn" onClick={() => handlePhaseChange(incomingOrder.service === 'Antar Barang' ? 'traveling_to_customer' : 'at_store')}>
                   {incomingOrder.service === 'Antar Barang' ? 'Barang diserahkan' : 'Sudah di toko'}
                 </button>
               )}
@@ -304,7 +317,7 @@ export default function MitraDashboard() {
                   Menuju Lokasi
                 </button>
               )}
-              {incomingOrder.driverPhase === 'heading_to_customer' && (
+              {(incomingOrder.driverPhase === 'heading_to_customer' || incomingOrder.driverPhase === 'arrived_near_customer') && (
                 <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('arrived_at_customer')}>
                   Sudah di lokasi tujuan
                 </button>
