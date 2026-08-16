@@ -140,7 +140,11 @@ export default function Welcome() {
           </>
         ) : (
           <div className="role-cards-container animate-fade-in">
-            <div className="role-card" onClick={() => navigate('/partner-welcome')}>
+            <div className="role-card" onClick={() => {
+              localStorage.removeItem('partnerRegistrationComplete');
+              localStorage.removeItem('hasReturnedToWelcome');
+              navigate('/partner-welcome');
+            }}>
               <h3 className="role-title">Mitra</h3>
               <div className="role-icon-wrapper">
                 <span className="role-emoji">🤝</span>
