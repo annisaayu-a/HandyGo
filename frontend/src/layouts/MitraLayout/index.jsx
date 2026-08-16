@@ -1,42 +1,44 @@
-import { Outlet, Link } from 'react-router-dom';
-import { Briefcase, List, UserCheck, LogOut } from 'lucide-react';
-import logo from '../../assets/logo.png';
+import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Home, Clock, MessageCircle, Inbox } from 'lucide-react';
+import './MitraLayout.css'; // We'll share some CSS or define our own for Mitra
 
 export default function MitraLayout() {
+  const location = useLocation();
+  
+  // Paths where bottom nav should be hidden if needed
+  const hideBottomNavPaths = [
+    // Add paths here if needed later (e.g. /mitra/chat, etc.)
+  ];
+  
+  const shouldHideBottomNav = hideBottomNavPaths.includes(location.pathname);
+
   return (
-    <div className="app-container">
-      <aside className="sidebar">
-        <div style={{ marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <img src={logo} alt="HandyGo Logo" style={{ height: '36px', objectFit: 'contain' }} />
-          <span style={{ fontSize: '0.9rem', color: 'var(--secondary)', fontWeight: '600' }}>Mitra</span>
-        </div>
-        
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1 }}>
-          <Link to="/mitra" style={{ display: 'flex', alignItems: 'center', gap: '12px', fontWeight: '500', color: 'var(--text-main)' }}>
-            <Briefcase size={20} /> Dashboard
-          </Link>
-          <Link to="/mitra/jobs" style={{ display: 'flex', alignItems: 'center', gap: '12px', fontWeight: '500', color: 'var(--text-main)' }}>
-            <List size={20} /> Pekerjaan Tersedia
-          </Link>
-          <Link to="/mitra/profile" style={{ display: 'flex', alignItems: 'center', gap: '12px', fontWeight: '500', color: 'var(--text-main)' }}>
-            <UserCheck size={20} /> Profil Saya
-          </Link>
-        </nav>
-        
-        <div style={{ marginTop: 'auto', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
-          <Link to="/login" style={{ display: 'flex', alignItems: 'center', gap: '12px', fontWeight: '500', color: 'var(--danger)' }}>
-            <LogOut size={20} /> Keluar
-          </Link>
-        </div>
-      </aside>
-      <main className="main-content">
-        <header className="topbar" style={{ justifyContent: 'flex-end' }}>
-          <div style={{ fontWeight: '500' }}>Halo, Mitra Budi</div>
-        </header>
-        <div className="page-content animate-fade-in">
-          <Outlet />
-        </div>
+    <div className="mobile-app-container">
+      <main 
+        className="mobile-page-content animate-fade-in"
+        style={{ paddingBottom: shouldHideBottomNav ? '0' : '80px' }}
+      >
+        <Outlet />
       </main>
+
+      {!shouldHideBottomNav && (
+        <div className="bottom-nav-container">
+          <nav className="bottom-nav">
+            <Link to="/mitra" className={`nav-item ${location.pathname === '/mitra' ? 'active' : ''}`}>
+              <Home size={22} />
+            </Link>
+            <Link to="/mitra/jobs" className={`nav-item ${location.pathname.includes('/jobs') ? 'active' : ''}`}>
+              <Clock size={22} />
+            </Link>
+            <Link to="/mitra/messages" className={`nav-item ${location.pathname.includes('/messages') ? 'active' : ''}`}>
+              <MessageCircle size={22} />
+            </Link>
+            <Link to="/mitra/profile" className={`nav-item ${location.pathname.includes('/profile') ? 'active' : ''}`}>
+              <Inbox size={22} />
+            </Link>
+          </nav>
+        </div>
+      )}
     </div>
   );
 }

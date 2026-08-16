@@ -37,10 +37,7 @@ export default function PartnerAttribute() {
       alert('Mohon isi semua data yang diwajibkan');
       return;
     }
-    // Set status or proceed to next screen, maybe PartnerSuccess or similar?
-    // Let's assume there's a final success page or just redirect to /customer as active
-    alert('Pendaftaran Berhasil! Atribut akan segera dikirimkan.');
-    navigate('/customer'); // Or wherever appropriate
+    navigate('/mitra');
   };
 
   return (
