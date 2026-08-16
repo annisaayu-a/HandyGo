@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
-import ktpMock from '../../assets/ktp_mock.png';
-import simMock from '../../assets/sim_mock.png';
 import './PartnerUpload.css';
 
 export default function PartnerUpload() {
@@ -12,8 +10,12 @@ export default function PartnerUpload() {
   
   const ktpVerified = location.state?.ktpVerified || false;
   const simVerified = location.state?.simVerified || false;
-  // Read vehicle from either state
   const vehicle = location.state?.vehicle || 'motor';
+
+  // Get actual captured photos from localStorage
+  const ktpPhoto = localStorage.getItem('handyGoKtpPhoto');
+  const simPhoto = localStorage.getItem('handyGoSimPhoto');
+  const stnkPhoto = localStorage.getItem('handyGoStnkPhoto');
 
   useEffect(() => {
     const regDateStr = localStorage.getItem('partnerRegistrationDate');
@@ -35,15 +37,23 @@ export default function PartnerUpload() {
       id: 'ktp', 
       title: 'KTP', 
       status: ktpVerified ? 'Sudah diunggah' : 'Belum diunggah',
-      verified: ktpVerified
+      verified: ktpVerified,
+      photo: ktpPhoto
     },
     { 
       id: 'sim', 
       title: 'SIM', 
       status: simVerified ? 'Sudah diunggah' : 'Belum diunggah', 
-      verified: simVerified 
+      verified: simVerified,
+      photo: simPhoto
     },
-    { id: 'stnk', title: 'STNK', status: stnkVerified ? 'Sudah diunggah' : 'Belum diunggah', verified: stnkVerified }
+    { 
+      id: 'stnk', 
+      title: 'STNK', 
+      status: stnkVerified ? 'Sudah diunggah' : 'Belum diunggah', 
+      verified: stnkVerified,
+      photo: stnkPhoto
+    }
   ];
 
   const handleDocClick = (id) => {
@@ -96,11 +106,12 @@ export default function PartnerUpload() {
           {documents.map((doc) => (
             <div key={doc.id} className="pu-doc-item" onClick={() => handleDocClick(doc.id)}>
               <div className={`pu-doc-icon-container ${doc.verified ? 'is-verified' : ''}`}>
-                {doc.verified ? (
+                {doc.verified && doc.photo ? (
                   <img 
-                    src={doc.id === 'ktp' ? ktpMock : simMock} 
-                    alt={`Thumbnail ${doc.title}`} 
-                    className={`pu-doc-thumbnail ${doc.id === 'stnk' ? 'stnk-thumb-filter' : ''}`} 
+                    src={doc.photo} 
+                    alt={`Foto ${doc.title}`} 
+                    className="pu-doc-thumbnail" 
+                    style={{ objectFit: 'cover', borderRadius: '8px' }}
                   />
                 ) : (
                   <ImageIcon size={28} color="#94a3b8" />
