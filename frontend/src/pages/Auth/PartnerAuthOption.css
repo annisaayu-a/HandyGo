@@ -1,0 +1,75 @@
+.pauth-container {
+  min-height: 100dvh;
+  width: 100%;
+  background-color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.pauth-back-btn {
+  position: absolute;
+  top: 24px;
+  left: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  z-index: 10;
+}
+
+.pauth-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 1;
+}
+
+.pauth-buttons {
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pauth-daftar-btn {
+  width: 100%;
+  padding: 16px;
+  background-color: #034078;
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(3, 64, 120, 0.2);
+  transition: all 0.2s ease;
+}
+
+.pauth-masuk-btn {
+  width: 100%;
+  padding: 16px;
+  background-color: transparent;
+  color: #034078;
+  border: 1px solid #034078;
+  border-radius: 30px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pauth-daftar-btn:active,
+.pauth-masuk-btn:active {
+  transform: scale(0.98);
+}
