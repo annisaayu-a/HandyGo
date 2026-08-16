@@ -522,13 +522,13 @@ export default function MitraDashboard() {
                     <div style={{ marginTop: '16px' }}>
                       <p className="mdash-order-label">Detail perbaikan</p>
                       <h4 className="mdash-order-value text-medium">
-                        {repairSparepart || (incomingOrder.service === 'Perbaikan Elektronik' ? 'Motor penggerak' : 'Saklar seri, Sekrup, dan Bracket')}<br/>
-                        Waktu mengerjakan {repairEstimatedTime || '< 30 menit'}
+                        {repairSparepart || (incomingOrder.service === 'Perbaikan Elektronik' ? 'Sabuk Penggerak' : 'Saklar seri, Sekrup, dan Bracket')}<br/>
+                        Waktu mengerjakan {repairEstimatedTime || (incomingOrder.service === 'Perbaikan Elektronik' ? '< 1 jam' : '< 30 menit')}
                       </h4>
                       <div style={{ marginTop: '16px' }}>
                         <p className="mdash-order-label">Total</p>
                         <h4 className="mdash-order-value" style={{ color: '#034078', fontWeight: '700' }}>
-                          {incomingOrder.service === 'Perbaikan Elektronik' ? 'Rp 300.000' : 'Rp 125.000'}
+                          {incomingOrder.service === 'Perbaikan Elektronik' ? 'Rp 400.000' : 'Rp 125.000'}
                         </h4>
                       </div>
                     </div>
