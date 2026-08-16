@@ -43,40 +43,10 @@ export default function PartnerLogin() {
       return;
     }
 
+    // Langsung redirect ke status pendaftaran dengan flag terverifikasi
     setIsSubmitting(true);
-    try {
-      const response = await fetch('https://handygo-api.vercel.app/api/auth/send-magic-link', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          full_name: 'Calon Mitra HandyGo', 
-          email, 
-          phone_number: phone, 
-          password: 'MitraPassword123',
-          role: 'mitra'
-        })
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        alert(data.error || 'Gagal mengirim tautan ke email');
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Mark this as a login (not new registration) so VerifyMagicLink redirects correctly
-      localStorage.setItem('partnerIsLogin', 'true');
-
-      navigate('/otp-verification', { 
-        state: { 
-          userData: { email, phone, role: 'mitra', isLogin: true } 
-        } 
-      });
-    } catch (error) {
-      alert('Terjadi kesalahan jaringan, silakan coba lagi');
-      setIsSubmitting(false);
-    }
+    localStorage.setItem('hasReturnedToWelcome', 'true');
+    navigate('/partner-status');
   };
 
   return (
