@@ -132,6 +132,10 @@ export const router = createBrowserRouter([
     element: <PartnerStatus />,
   },
   {
+    path: '/partner-attribute',
+    element: <PartnerAttribute />,
+  },
+  {
     path: '/otp-verification',
     element: <OTPVerification />,
   },
