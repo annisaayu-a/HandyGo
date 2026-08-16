@@ -88,7 +88,7 @@ export default function CleaningStatus() {
           const order = JSON.parse(saved);
           if (order.driverPhase) {
             setDriverPhase(order.driverPhase);
-            if (order.driverPhase === 'working') {
+            if (['working', 'finished_working_wait', 'payment_confirmation', 'payment_confirmed'].includes(order.driverPhase)) {
               setActiveStep(2);
             } else if (order.driverPhase === 'completed') {
               setActiveStep(3);

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Map, { Marker, Source, Layer } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { User, Power, ChevronRight, AlertCircle, CheckCircle2, Phone, MessageCircle } from 'lucide-react';
+import { User, Power, ChevronRight, AlertCircle, CheckCircle2, Phone, MessageCircle, Clock, Info } from 'lucide-react';
 import './Dashboard.css';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
@@ -69,6 +69,26 @@ export default function MitraDashboard() {
   }, [isOnline]);
 
   const [showAcceptPill, setShowAcceptPill] = useState(false);
+  const [workingSeconds, setWorkingSeconds] = useState(0);
+
+  useEffect(() => {
+    let interval = null;
+    if (incomingOrder?.driverPhase === 'working' && incomingOrder?.workingStartTime) {
+      interval = setInterval(() => {
+        setWorkingSeconds(Math.floor((Date.now() - incomingOrder.workingStartTime) / 1000));
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [incomingOrder?.driverPhase, incomingOrder?.workingStartTime]);
+
+  const formatWorkingTime = (totalSeconds) => {
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+    return `${h.toString().padStart(2, '0')} : ${m.toString().padStart(2, '0')} : ${s.toString().padStart(2, '0')}`;
+  };
 
   const acceptOrder = () => {
     setIsOrderAccepted(true);
@@ -99,6 +119,12 @@ export default function MitraDashboard() {
   const handlePhaseChange = (newPhase) => {
     if (incomingOrder) {
       const updated = { ...incomingOrder, driverPhase: newPhase };
+      if (newPhase === 'working') {
+        updated.workingStartTime = Date.now();
+      } else if (newPhase === 'finished_working_wait') {
+        updated.totalWorkingSeconds = Math.floor((Date.now() - (incomingOrder.workingStartTime || Date.now())) / 1000);
+      }
+
       localStorage.setItem('simulated_incoming_order', JSON.stringify(updated));
       setIncomingOrder(updated);
       
@@ -115,6 +141,18 @@ export default function MitraDashboard() {
              }
           }
         }, 5000);
+      } else if (newPhase === 'finished_working_wait') {
+        setTimeout(() => {
+          const currentOrderStr = localStorage.getItem('simulated_incoming_order');
+          if (currentOrderStr) {
+             const currentOrder = JSON.parse(currentOrderStr);
+             if (currentOrder.driverPhase === 'finished_working_wait') {
+               const nextUpdate = { ...currentOrder, driverPhase: 'payment_confirmation' };
+               localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
+               setIncomingOrder(nextUpdate);
+             }
+          }
+        }, 2000);
       } else if (newPhase === 'completed') {
         setShowCompletionPill(true);
         setTimeout(() => {
@@ -283,6 +321,22 @@ export default function MitraDashboard() {
       {/* Incoming / Accepted Order Sheet */}
       {incomingOrder && (
         <div className="mdash-order-wrapper fade-up-in">
+          {incomingOrder.driverPhase === 'finished_working_wait' && (
+            <div className="mdash-cleaning-info-pill" style={{ display: 'flex', gap: '10px', backgroundColor: '#ffffff', padding: '12px 20px', borderRadius: '30px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', marginBottom: '15px', alignItems: 'center' }}>
+              <div style={{ backgroundColor: '#eab308', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                 <Clock size={14} color="#ffffff" />
+              </div>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9rem', color: '#334155', fontWeight: '500' }}>Menunggu konfirmasi pelanggan</span>
+            </div>
+          )}
+          {incomingOrder.driverPhase === 'payment_confirmation' && (
+            <div className="mdash-cleaning-info-pill" style={{ display: 'flex', gap: '10px', backgroundColor: '#ffffff', padding: '12px 20px', borderRadius: '20px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', marginBottom: '15px', alignItems: 'flex-start', maxWidth: '320px' }}>
+              <div style={{ backgroundColor: '#eab308', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                 <Info size={14} color="#ffffff" />
+              </div>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.85rem', color: '#334155', lineHeight: '1.4', fontWeight: '500' }}>Dibayarkan dengan metode Tunai.<br/>Hanya konfirmasi jika pembayaran<br/>sudah kamu terima</span>
+            </div>
+          )}
           {/* Incoming State */}
           {!isOrderAccepted && (
             <div className="mdash-order-sheet">
@@ -332,12 +386,22 @@ export default function MitraDashboard() {
                   <h4 className="mdash-order-value text-medium">{incomingOrder.category || 'Pakaian'}, {incomingOrder.size || 'Kecil'} ({incomingOrder.weight || '4'}kg)</h4>
                 </div>
               ) : incomingOrder.service === 'Bersih-Bersih' ? (
-                <div className="mdash-order-details-section">
-                  <p className="mdash-order-label">Detail pekerjaan</p>
-                  <h4 className="mdash-order-value text-medium">
-                    Luas area {incomingOrder.luasArea}<br/>
-                    Tingkat kekotoran {incomingOrder.tingkatKekotoran?.toLowerCase()}
-                  </h4>
+                <div className="mdash-order-details-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div>
+                    <p className="mdash-order-label">Detail pekerjaan</p>
+                    <h4 className="mdash-order-value text-medium">
+                      Luas area {incomingOrder.luasArea}<br/>
+                      Tingkat kekotoran {incomingOrder.tingkatKekotoran?.toLowerCase()}
+                    </h4>
+                  </div>
+                  {['finished_working_wait', 'payment_confirmation', 'payment_confirmed'].includes(incomingOrder.driverPhase) && (
+                    <div style={{ textAlign: 'right' }}>
+                      <p className="mdash-order-label">Total</p>
+                      <h4 className="mdash-order-value" style={{ color: '#034078', fontWeight: '700' }}>
+                        Rp {formatRupiah(incomingOrder.total)}
+                      </h4>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="mdash-order-details-section">
@@ -373,9 +437,45 @@ export default function MitraDashboard() {
                 </button>
               )}
               {incomingOrder.driverPhase === 'working' && (
-                <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('completed')}>
-                  Pesanan Selesai
+                incomingOrder.service === 'Bersih-Bersih' ? (
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button className="mdash-at-store-btn" style={{ flex: 1, backgroundColor: '#7895b2', cursor: 'default' }}>
+                      {formatWorkingTime(workingSeconds)}
+                    </button>
+                    <button className="mdash-at-store-btn" style={{ flex: 1 }} onClick={() => handlePhaseChange('finished_working_wait')}>
+                      Selesai
+                    </button>
+                  </div>
+                ) : (
+                  <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('completed')}>
+                    Pesanan Selesai
+                  </button>
+                )
+              )}
+              {incomingOrder.driverPhase === 'finished_working_wait' && (
+                <button className="mdash-at-store-btn" style={{ backgroundColor: '#7895b2', cursor: 'default' }}>
+                  {formatWorkingTime(incomingOrder.totalWorkingSeconds || workingSeconds)}
                 </button>
+              )}
+              {incomingOrder.driverPhase === 'payment_confirmation' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <button className="mdash-at-store-btn" style={{ backgroundColor: '#7895b2', cursor: 'default' }}>
+                    {formatWorkingTime(incomingOrder.totalWorkingSeconds || workingSeconds)}
+                  </button>
+                  <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('payment_confirmed')}>
+                    Pembayaran Terkonfirmasi
+                  </button>
+                </div>
+              )}
+              {incomingOrder.driverPhase === 'payment_confirmed' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <button className="mdash-at-store-btn" style={{ backgroundColor: '#7895b2', cursor: 'default' }}>
+                    {formatWorkingTime(incomingOrder.totalWorkingSeconds || workingSeconds)}
+                  </button>
+                  <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('completed')}>
+                    Pesanan Selesai
+                  </button>
+                </div>
               )}
             </div>
           )}
