@@ -10,6 +10,7 @@ import Welcome from '../pages/Auth/Welcome';
 import Login from '../pages/Auth/Login';
 import Register from '../pages/Auth/Register';
 import PartnerAuthOption from '../pages/Auth/PartnerAuthOption';
+import PartnerLogin from '../pages/Auth/PartnerLogin';
 import PartnerWelcome from '../pages/Auth/PartnerWelcome';
 import PartnerRegister from '../pages/Auth/PartnerRegister';
 import PartnerLocation from '../pages/Auth/PartnerLocation';
@@ -84,6 +85,10 @@ export const router = createBrowserRouter([
   {
     path: '/partner-auth-option',
     element: <PartnerAuthOption />,
+  },
+  {
+    path: '/partner-login',
+    element: <PartnerLogin />,
   },
   {
     path: '/partner-welcome',

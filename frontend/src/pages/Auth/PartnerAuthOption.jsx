@@ -27,7 +27,7 @@ export default function PartnerAuthOption() {
           </button>
           <button 
             className="pauth-masuk-btn" 
-            onClick={() => navigate('/login')}
+            onClick={() => navigate('/partner-login')}
           >
             Masuk
           </button>
