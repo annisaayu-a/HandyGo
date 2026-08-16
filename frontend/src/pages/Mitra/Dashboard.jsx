@@ -77,6 +77,26 @@ export default function MitraDashboard() {
     }
   };
 
+  const [showCompletionPill, setShowCompletionPill] = useState(false);
+
+  const handlePhaseChange = (newPhase) => {
+    if (incomingOrder) {
+      const updated = { ...incomingOrder, driverPhase: newPhase };
+      localStorage.setItem('simulated_incoming_order', JSON.stringify(updated));
+      setIncomingOrder(updated);
+      
+      if (newPhase === 'completed') {
+        setShowCompletionPill(true);
+        setTimeout(() => {
+          setShowCompletionPill(false);
+          setIncomingOrder(null);
+          setIsOrderAccepted(false);
+          localStorage.removeItem('simulated_incoming_order');
+        }, 2000);
+      }
+    }
+  };
+
   const formatRupiah = (number) => {
     return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(number);
   };
@@ -122,7 +142,7 @@ export default function MitraDashboard() {
         >
           {userLocation && (
             <Marker longitude={userLocation.longitude} latitude={userLocation.latitude} anchor="center">
-              {isOrderAccepted && incomingOrder?.driverPhase !== 'at_store' ? (
+              {isOrderAccepted && incomingOrder?.driverPhase !== 'completed' ? (
                 <div className="mdash-scooter-marker">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="12" cy="12" r="12" fill="#034078"/>
@@ -138,38 +158,47 @@ export default function MitraDashboard() {
             </Marker>
           )}
 
-          {isOrderAccepted && incomingOrder?.driverPhase !== 'at_store' && userLocation && (
-            <>
-              {/* Dummy Store Location */}
-              <Marker longitude={119.4950} latitude={-5.1290} anchor="bottom">
-                <div className="mdash-store-pin">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="#034078">
-                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                  </svg>
-                </div>
-              </Marker>
-              
-              {/* Route Line */}
-              <Source id="route" type="geojson" data={{
-                type: 'Feature',
-                geometry: {
-                  type: 'LineString',
-                  coordinates: [
-                    [userLocation.longitude, userLocation.latitude],
-                    [119.4950, -5.1290]
-                  ]
-                }
-              }}>
-                <Layer
-                  id="route-layer"
-                  type="line"
-                  paint={{
-                    'line-color': '#034078',
-                    'line-width': 4
-                  }}
-                />
-              </Source>
-            </>
+          {isOrderAccepted && incomingOrder?.driverPhase !== 'completed' && userLocation && (
+            (() => {
+              let targetCoords = null;
+              if (incomingOrder.driverPhase === 'heading_to_store') {
+                targetCoords = { lng: 119.4950, lat: -5.1290 }; // Store
+              } else if (incomingOrder.driverPhase === 'heading_to_customer') {
+                targetCoords = { lng: 119.5015, lat: -5.1382 }; // Customer
+              }
+
+              return targetCoords ? (
+                <>
+                  <Marker longitude={targetCoords.lng} latitude={targetCoords.lat} anchor="bottom">
+                    <div className="mdash-store-pin">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="#034078">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                      </svg>
+                    </div>
+                  </Marker>
+                  
+                  <Source id="route" type="geojson" data={{
+                    type: 'Feature',
+                    geometry: {
+                      type: 'LineString',
+                      coordinates: [
+                        [userLocation.longitude, userLocation.latitude],
+                        [targetCoords.lng, targetCoords.lat]
+                      ]
+                    }
+                  }}>
+                    <Layer
+                      id="route-layer"
+                      type="line"
+                      paint={{
+                        'line-color': '#034078',
+                        'line-width': 4
+                      }}
+                    />
+                  </Source>
+                </>
+              ) : null;
+            })()
           )}
         </Map>
       </div>
@@ -215,7 +244,7 @@ export default function MitraDashboard() {
           )}
 
           {/* Accepted State */}
-          {isOrderAccepted && incomingOrder.driverPhase !== 'at_store' && (
+          {isOrderAccepted && incomingOrder.driverPhase !== 'completed' && (
             <div className="mdash-order-sheet accepted">
               <h3 className="mdash-order-title">Layanan {incomingOrder.service}</h3>
               <div className="mdash-order-content no-margin-bottom">
@@ -234,15 +263,40 @@ export default function MitraDashboard() {
                 <h4 className="mdash-order-value text-medium">Ayam Bakar Paha Atas (2), Ayam Bakar Dada (4)</h4>
               </div>
 
-              <button className="mdash-at-store-btn" onClick={() => {
-                const updated = { ...incomingOrder, driverPhase: 'at_store' };
-                localStorage.setItem('simulated_incoming_order', JSON.stringify(updated));
-                setIncomingOrder(updated);
-              }}>
-                Sudah di toko
-              </button>
+              {incomingOrder.driverPhase === 'heading_to_store' && (
+                <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('at_store')}>
+                  Sudah di toko
+                </button>
+              )}
+              {incomingOrder.driverPhase === 'at_store' && (
+                <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('heading_to_customer')}>
+                  Menuju Lokasi
+                </button>
+              )}
+              {incomingOrder.driverPhase === 'heading_to_customer' && (
+                <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('arrived_at_customer')}>
+                  Sudah di lokasi tujuan
+                </button>
+              )}
+              {incomingOrder.driverPhase === 'arrived_at_customer' && (
+                <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('completed')}>
+                  Pesanan Selesai
+                </button>
+              )}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Completion Pill */}
+      {showCompletionPill && (
+        <div className="mdash-order-wrapper fade-blur-out">
+          <div className="mdash-accepted-pill" style={{ backgroundColor: '#ffffff', color: '#034078', fontWeight: '500', display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <div style={{ backgroundColor: '#22c55e', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <CheckCircle2 size={14} color="#ffffff" />
+            </div>
+            <span>Pesanan selesai, hebat!</span>
+          </div>
         </div>
       )}
 

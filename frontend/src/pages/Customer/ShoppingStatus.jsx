@@ -44,6 +44,11 @@ export default function ShoppingStatus() {
           const order = JSON.parse(saved);
           if (order.driverPhase) {
             setDriverPhase(order.driverPhase);
+            if (order.driverPhase === 'heading_to_customer' || order.driverPhase === 'arrived_at_customer') {
+              setOrderStatus((prev) => prev !== 'diantar' ? 'diantar' : prev);
+            } else if (order.driverPhase === 'completed') {
+              setOrderStatus((prev) => prev !== 'selesai' ? 'selesai' : prev);
+            }
           }
         } catch (e) {
           console.error(e);
@@ -279,7 +284,7 @@ export default function ShoppingStatus() {
                       ? (location.state?.dropoffLocation ? { lat: location.state.dropoffLocation.lat, lng: location.state.dropoffLocation.lng } : { lat: -5.147, lng: 119.432 })
                       : { lat: -5.1290, lng: 119.4950 } // Store coords (for heading to store phase)
                   }
-                  isActive={true}
+                  isActive={driverPhase !== 'arrived_at_customer'}
                   height="240px"
                 />
               </div>

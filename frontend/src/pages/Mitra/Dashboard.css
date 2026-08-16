@@ -161,6 +161,22 @@
   }
 }
 
+.fade-blur-out {
+  animation: fadeBlurOut 0.5s ease 1.5s forwards; /* starts after 1.5s, lasts 0.5s = 2s total */
+}
+
+@keyframes fadeBlurOut {
+  0% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    filter: blur(8px);
+    visibility: hidden;
+  }
+}
+
 /* Incoming Order Sheet */
 .mdash-order-wrapper {
   position: absolute;
