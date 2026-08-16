@@ -7,6 +7,7 @@ export default function CustomerLayout() {
   
   // Paths where the bottom navigation should be hidden
   const hideBottomNavPaths = [
+    '/customer/finding',
     '/customer/shopping', 
     '/customer/shopping/map', 
     '/customer/shopping/details', 
