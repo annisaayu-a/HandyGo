@@ -103,6 +103,8 @@
   font-weight: 500;
   cursor: pointer;
   margin-bottom: 24px;
+  position: relative;
+  z-index: 10;
 }
 
 .stnk-upload-box.uploaded {

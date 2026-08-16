@@ -52,10 +52,41 @@ export default function PartnerSTNK() {
 
     const reader = new FileReader();
     reader.onload = (e) => {
-      setUploadedImageUrl(e.target.result);
-      setIsUploaded(true);
-      // Store in localStorage for next pages
-      localStorage.setItem('handyGoStnkPhoto', e.target.result);
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        
+        // Max dimension
+        const MAX_SIZE = 1200;
+        if (width > height && width > MAX_SIZE) {
+          height *= MAX_SIZE / width;
+          width = MAX_SIZE;
+        } else if (height > MAX_SIZE) {
+          width *= MAX_SIZE / height;
+          height = MAX_SIZE;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Compress to 80% JPEG
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        
+        setUploadedImageUrl(compressedDataUrl);
+        setIsUploaded(true);
+        
+        try {
+          localStorage.setItem('handyGoStnkPhoto', compressedDataUrl);
+        } catch (err) {
+          console.error("Failed to save to localStorage:", err);
+          setUploadError("Gagal menyimpan foto karena memori browser penuh.");
+        }
+      };
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   };
