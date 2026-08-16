@@ -16,6 +16,32 @@ export default function DeliveryStatus() {
   // Rating state for 'selesai' step
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState('');
+  const [driverPhase, setDriverPhase] = useState('heading_to_store');
+
+  useEffect(() => {
+    const checkOrder = () => {
+      const saved = localStorage.getItem('simulated_incoming_order');
+      if (saved) {
+        try {
+          const order = JSON.parse(saved);
+          if (order.driverPhase) {
+            setDriverPhase(order.driverPhase);
+            if (order.driverPhase === 'heading_to_customer' || order.driverPhase === 'arrived_at_customer') {
+              setOrderStatus((prev) => prev !== 'mengantar' ? 'mengantar' : prev);
+            } else if (order.driverPhase === 'completed') {
+              setOrderStatus((prev) => prev !== 'selesai' ? 'selesai' : prev);
+            }
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+    
+    checkOrder();
+    const interval = setInterval(checkOrder, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (orderId) {
@@ -137,20 +163,20 @@ export default function DeliveryStatus() {
         </div>
 
         {/* Real-time Driver Tracking Map */}
-        {orderStatus === 'mengantar' && (
+        {(orderStatus === 'mengantar' || (orderStatus === 'menuju' && driverPhase === 'heading_to_store')) && (
           <div style={{ width: '100%', padding: '0 0 8px 0' }}>
             <DriverTrackingMap
               pickupCoords={
-                location.state?.pickupLocation
-                  ? { lat: location.state.pickupLocation.lat, lng: location.state.pickupLocation.lng }
-                  : { lat: -5.165, lng: 119.431 }
+                orderStatus === 'mengantar'
+                  ? { lat: -5.1290, lng: 119.4950 } // Sender coords
+                  : { lat: -5.1325, lng: 119.4920 } // Driver start coords
               }
               dropoffCoords={
-                location.state?.dropoffLocation
-                  ? { lat: location.state.dropoffLocation.lat, lng: location.state.dropoffLocation.lng }
-                  : { lat: -5.147, lng: 119.432 }
+                orderStatus === 'mengantar'
+                  ? (location.state?.dropoffLocation ? { lat: location.state.dropoffLocation.lat, lng: location.state.dropoffLocation.lng } : { lat: -5.1382, lng: 119.5015 })
+                  : { lat: -5.1290, lng: 119.4950 } // Sender coords
               }
-              isActive={orderStatus === 'mengantar'}
+              isActive={driverPhase !== 'arrived_at_customer' && driverPhase !== 'at_store'}
               height="240px"
             />
           </div>

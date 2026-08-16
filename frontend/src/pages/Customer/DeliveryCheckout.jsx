@@ -80,6 +80,11 @@ export default function DeliveryCheckout() {
       id: createdOrderId || Date.now(),
       service: 'Antar Barang',
       destination: dropoff.name,
+      pickupName: userName || senderName,
+      receiverName: receiverName,
+      category: formatCategory(selectedCategory),
+      size: formatSize(selectedSize),
+      weight: weight,
       paymentMethod: paymentMethod,
       total: 30000,
       timestamp: Date.now()

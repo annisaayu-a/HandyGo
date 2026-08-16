@@ -68,12 +68,29 @@ export default function MitraDashboard() {
     return () => clearInterval(interval);
   }, [isOnline]);
 
+  const [showAcceptPill, setShowAcceptPill] = useState(false);
+
   const acceptOrder = () => {
     setIsOrderAccepted(true);
     if (incomingOrder) {
-      const updated = { ...incomingOrder, accepted: true, driverPhase: 'heading_to_store' };
-      localStorage.setItem('simulated_incoming_order', JSON.stringify(updated));
-      setIncomingOrder(updated); // Update local state as well
+      if (incomingOrder.service === 'Antar Barang') {
+        const updated = { ...incomingOrder, accepted: true, driverPhase: 'accepted' };
+        localStorage.setItem('simulated_incoming_order', JSON.stringify(updated));
+        setIncomingOrder(updated);
+        
+        setShowAcceptPill(true);
+        setTimeout(() => {
+          setShowAcceptPill(false);
+          // Manually do the state update instead of handlePhaseChange because it might conflict with timeout closures
+          const nextUpdate = { ...updated, driverPhase: 'heading_to_store' };
+          localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
+          setIncomingOrder(nextUpdate);
+        }, 2000);
+      } else {
+        const updated = { ...incomingOrder, accepted: true, driverPhase: 'heading_to_store' };
+        localStorage.setItem('simulated_incoming_order', JSON.stringify(updated));
+        setIncomingOrder(updated);
+      }
     }
   };
 
@@ -250,7 +267,13 @@ export default function MitraDashboard() {
               <div className="mdash-order-content no-margin-bottom">
                 <div className="mdash-order-left">
                   <p className="mdash-order-label">Diantar ke</p>
-                  <h4 className="mdash-order-value">{incomingOrder.destination}</h4>
+                  {incomingOrder.service === 'Antar Barang' ? (
+                    <h4 className="mdash-order-value" style={{ color: '#034078', display: 'flex', gap: '8px' }}>
+                      <span style={{ fontWeight: '600' }}>{incomingOrder.receiverName || 'Hana'}</span> <span style={{ color: '#94a3b8' }}>|</span> <span>{incomingOrder.destination}</span>
+                    </h4>
+                  ) : (
+                    <h4 className="mdash-order-value">{incomingOrder.destination}</h4>
+                  )}
                 </div>
                 <div className="mdash-order-actions">
                   <button className="mdash-icon-btn"><Phone size={18} color="#034078" fill="#034078" /></button>
@@ -258,14 +281,22 @@ export default function MitraDashboard() {
                 </div>
               </div>
               
-              <div className="mdash-order-details-section">
-                <p className="mdash-order-label">Pesanan</p>
-                <h4 className="mdash-order-value text-medium">Ayam Bakar Paha Atas (2), Ayam Bakar Dada (4)</h4>
-              </div>
+              {incomingOrder.service === 'Antar Barang' ? (
+                <div className="mdash-order-details-section">
+                  <p className="mdash-order-label">Detail paket</p>
+                  <h4 className="mdash-order-value text-medium">{incomingOrder.category || 'Pakaian'}, {incomingOrder.size || 'Kecil'} ({incomingOrder.weight || '4'}kg)</h4>
+                </div>
+              ) : (
+                <div className="mdash-order-details-section">
+                  <p className="mdash-order-label">Pesanan</p>
+                  <h4 className="mdash-order-value text-medium">Ayam Bakar Paha Atas (2), Ayam Bakar Dada (4)</h4>
+                </div>
+              )}
 
+              {/* Conditional Buttons based on Phase and Service */}
               {incomingOrder.driverPhase === 'heading_to_store' && (
                 <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('at_store')}>
-                  Sudah di toko
+                  {incomingOrder.service === 'Antar Barang' ? 'Barang diserahkan' : 'Sudah di toko'}
                 </button>
               )}
               {incomingOrder.driverPhase === 'at_store' && (
@@ -285,6 +316,18 @@ export default function MitraDashboard() {
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Accept Pill for Antar Barang */}
+      {showAcceptPill && (
+        <div className="mdash-order-wrapper fade-blur-out" style={{ bottom: '260px' }}>
+          <div className="mdash-accepted-pill" style={{ backgroundColor: '#ffffff', color: '#10b981', fontWeight: '500', display: 'flex', gap: '8px', alignItems: 'center', margin: '0 auto', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', padding: '10px 20px', borderRadius: '30px' }}>
+            <div style={{ backgroundColor: '#10b981', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <CheckCircle2 size={14} color="#ffffff" />
+            </div>
+            <span>Pesanan diterima</span>
+          </div>
         </div>
       )}
 
