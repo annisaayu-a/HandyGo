@@ -133,7 +133,19 @@ export default function MitraDashboard() {
       localStorage.setItem('simulated_incoming_order', JSON.stringify(updated));
       setIncomingOrder(updated);
       
-      if (newPhase === 'traveling_to_customer') {
+      if (newPhase === 'traveling_to_destination') {
+        setTimeout(() => {
+          const currentOrderStr = localStorage.getItem('simulated_incoming_order');
+          if (currentOrderStr) {
+             const currentOrder = JSON.parse(currentOrderStr);
+             if (currentOrder.driverPhase === 'traveling_to_destination') {
+               const nextUpdate = { ...currentOrder, driverPhase: 'payment_confirmation' };
+               localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
+               setIncomingOrder(nextUpdate);
+             }
+          }
+        }, 5000);
+      } else if (newPhase === 'traveling_to_customer') {
         setTimeout(() => {
           // Check if order still exists and we are still in traveling_to_customer
           const currentOrderStr = localStorage.getItem('simulated_incoming_order');
@@ -381,7 +393,7 @@ export default function MitraDashboard() {
               <div style={{ backgroundColor: '#eab308', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                  <Info size={14} color="#ffffff" />
               </div>
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.85rem', color: '#334155', lineHeight: '1.4', fontWeight: '500' }}>Dibayarkan dengan metode Tunai.<br/>Hanya konfirmasi jika pembayaran<br/>sudah kamu terima</span>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.85rem', color: '#334155', lineHeight: '1.4', fontWeight: '500' }}>Dibayarkan dengan metode Tunai.<br/>{incomingOrder.service === 'Antar Jemput' ? 'Hanya selesaikan pesanan jika' : 'Hanya konfirmasi jika pembayaran'}<br/>{incomingOrder.service === 'Antar Jemput' ? 'pembayaran sudah kamu terima' : 'sudah kamu terima'}</span>
             </div>
           )}
           {incomingOrder.driverPhase === 'payment_confirmation_qris' && (
@@ -624,6 +636,10 @@ export default function MitraDashboard() {
                     <button className="mdash-at-store-btn" style={{ backgroundColor: '#7895b2', cursor: 'default' }}>
                       {formatWorkingTime(incomingOrder.totalWorkingSeconds || workingSeconds)}
                     </button>
+                  ) : incomingOrder.service === 'Antar Jemput' ? (
+                    <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('completed')}>
+                      Pesanan Selesai
+                    </button>
                   ) : (
                     <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('payment_confirmed')}>
                       Pembayaran Terkonfirmasi
@@ -633,7 +649,7 @@ export default function MitraDashboard() {
                     <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('payment_confirmed')}>
                       Pembayaran Terkonfirmasi
                     </button>
-                  ) : (
+                  ) : incomingOrder.service === 'Antar Jemput' ? null : (
                     <button className="mdash-at-store-btn" style={{ backgroundColor: '#a8a29e', cursor: 'not-allowed' }}>
                       Mulai Mengerjakan
                     </button>
