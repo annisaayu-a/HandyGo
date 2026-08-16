@@ -97,7 +97,7 @@ export default function MitraDashboard() {
   const acceptOrder = () => {
     setIsOrderAccepted(true);
     if (incomingOrder) {
-      if (incomingOrder.service === 'Antar Barang' || incomingOrder.service === 'Bersih-Bersih' || incomingOrder.service === 'Perbaikan Kelistrikan') {
+      if (incomingOrder.service === 'Antar Barang' || incomingOrder.service === 'Bersih-Bersih' || ['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service)) {
         const updated = { ...incomingOrder, accepted: true, driverPhase: 'accepted' };
         localStorage.setItem('simulated_incoming_order', JSON.stringify(updated));
         setIncomingOrder(updated);
@@ -105,7 +105,7 @@ export default function MitraDashboard() {
         setShowAcceptPill(true);
         setTimeout(() => {
           setShowAcceptPill(false);
-          const nextPhase = (incomingOrder.service === 'Bersih-Bersih' || incomingOrder.service === 'Perbaikan Kelistrikan') ? 'heading_to_customer' : 'heading_to_store';
+          const nextPhase = ['Bersih-Bersih', 'Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) ? 'heading_to_customer' : 'heading_to_store';
           const nextUpdate = { ...updated, driverPhase: nextPhase };
           localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
           setIncomingOrder(nextUpdate);
@@ -169,7 +169,7 @@ export default function MitraDashboard() {
                localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
                setIncomingOrder(nextUpdate);
                
-               if (currentOrder.service === 'Perbaikan Kelistrikan') {
+               if (['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(currentOrder.service)) {
                  setShowQrisSuccessPill(true);
                  setTimeout(() => {
                    setShowQrisSuccessPill(false);
@@ -392,7 +392,7 @@ export default function MitraDashboard() {
               <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.85rem', color: '#334155', lineHeight: '1.4', fontWeight: '500' }}>Dibayarkan dengan metode QRIS.<br/>Tunggu sebentar sampai kami<br/>mengonfirmasi pembayarannya</span>
             </div>
           )}
-          {incomingOrder.service === 'Perbaikan Kelistrikan' && incomingOrder.driverPhase === 'arrived_at_customer' && (
+          {['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) && incomingOrder.driverPhase === 'arrived_at_customer' && (
             <div className="mdash-cleaning-info-pill" style={{ display: 'flex', gap: '10px', backgroundColor: '#ffffff', padding: '12px 20px', borderRadius: '20px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', marginBottom: '15px', alignItems: 'flex-start', maxWidth: '320px' }}>
               <div style={{ backgroundColor: '#eab308', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                  <Clock size={14} color="#ffffff" />
@@ -404,23 +404,23 @@ export default function MitraDashboard() {
           {!isOrderAccepted && (
             <div className="mdash-order-sheet">
               <h3 className="mdash-order-title">Layanan {incomingOrder.service}</h3>
-              <div className="mdash-order-content" style={{ marginBottom: incomingOrder.service === 'Perbaikan Kelistrikan' ? '12px' : '20px' }}>
+              <div className="mdash-order-content" style={{ marginBottom: ['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) ? '12px' : '20px' }}>
                 <div className="mdash-order-left">
-                  <p className="mdash-order-label">{['Bersih-Bersih', 'Perbaikan Kelistrikan'].includes(incomingOrder.service) ? 'Lokasi' : 'Diantar ke'}</p>
+                  <p className="mdash-order-label">{['Bersih-Bersih', 'Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) ? 'Lokasi' : 'Diantar ke'}</p>
                   <h4 className="mdash-order-value">{incomingOrder.destination}</h4>
                 </div>
                 <div className="mdash-order-right">
-                  <p className="mdash-order-label">{incomingOrder.service === 'Perbaikan Kelistrikan' ? 'Estimasi' : (incomingOrder.paymentMethod === 'Bayar di Tempat' ? 'Tunai' : incomingOrder.paymentMethod)}</p>
-                  <h4 className="mdash-order-price" style={incomingOrder.service === 'Perbaikan Kelistrikan' ? { color: '#034078', fontWeight: '700' } : {}}>{incomingOrder.service === 'Perbaikan Kelistrikan' ? `Rp 80.000 - 120.000` : `Rp ${formatRupiah(incomingOrder.total)}`}</h4>
+                  <p className="mdash-order-label">{['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) ? 'Estimasi' : (incomingOrder.paymentMethod === 'Bayar di Tempat' ? 'Tunai' : incomingOrder.paymentMethod)}</p>
+                  <h4 className="mdash-order-price" style={['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) ? { color: '#034078', fontWeight: '700' } : {}}>{['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) ? (incomingOrder.service === 'Perbaikan Elektronik' ? 'Rp 280.000 - 380.000' : 'Rp 80.000 - 120.000') : `Rp ${formatRupiah(incomingOrder.total)}`}</h4>
                 </div>
               </div>
               
-              {incomingOrder.service === 'Perbaikan Kelistrikan' && (
+              {['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) && (
                 <div className="mdash-order-details-section" style={{ marginBottom: '16px' }}>
                   <p className="mdash-order-label">Detail pekerjaan</p>
                   <h4 className="mdash-order-value text-medium">
-                    {incomingOrder.detailPekerjaan || 'Saklar rusak'}<br/>
-                    Tingkat kerusakan {incomingOrder.tingkatKerusakan || 'sedang'}
+                    {incomingOrder.detailPekerjaan || (incomingOrder.service === 'Perbaikan Elektronik' ? 'Mesin Cuci' : 'Saklar rusak')}<br/>
+                    Tingkat kerusakan {incomingOrder.tingkatKerusakan || (incomingOrder.service === 'Perbaikan Elektronik' ? 'berat' : 'sedang')}
                   </h4>
                 </div>
               )}
@@ -428,7 +428,7 @@ export default function MitraDashboard() {
               <button className="mdash-accept-btn" onClick={acceptOrder}>
                 Terima Pesanan
               </button>
-              <p className="mdash-order-footer">{incomingOrder.service === 'Perbaikan Kelistrikan' ? 'Berjarak 1km dari lokasimu sekarang' : 'Berjarak 500m dari lokasimu sekarang'}</p>
+              <p className="mdash-order-footer">{['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) ? 'Berjarak 1km dari lokasimu sekarang' : 'Berjarak 500m dari lokasimu sekarang'}</p>
             </div>
           )}
 
@@ -439,7 +439,7 @@ export default function MitraDashboard() {
               <h3 className="mdash-order-title">Layanan {incomingOrder.service}</h3>
               <div className="mdash-order-content no-margin-bottom">
                 <div className="mdash-order-left">
-                  <p className="mdash-order-label">{['Bersih-Bersih', 'Perbaikan Kelistrikan'].includes(incomingOrder.service) ? 'Lokasi' : 'Diantar ke'}</p>
+                  <p className="mdash-order-label">{['Bersih-Bersih', 'Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) ? 'Lokasi' : 'Diantar ke'}</p>
                   {incomingOrder.service === 'Antar Barang' ? (
                     <h4 className="mdash-order-value" style={{ color: '#034078', display: 'flex', gap: '8px' }}>
                       <span style={{ fontWeight: '600' }}>{incomingOrder.receiverName || 'Hana'}</span> <span style={{ color: '#94a3b8' }}>|</span> <span>{incomingOrder.destination}</span>
@@ -459,14 +459,14 @@ export default function MitraDashboard() {
                   <p className="mdash-order-label">Detail paket</p>
                   <h4 className="mdash-order-value text-medium">{incomingOrder.category || 'Pakaian'}, {incomingOrder.size || 'Kecil'} ({incomingOrder.weight || '4'}kg)</h4>
                 </div>
-              ) : incomingOrder.service === 'Perbaikan Kelistrikan' ? (
+              ) : ['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) ? (
                 <div className="mdash-order-details-section">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: incomingOrder.driverPhase === 'arrived_at_customer' ? '16px' : '0' }}>
                     <div>
                       <p className="mdash-order-label">Detail pekerjaan</p>
                       <h4 className="mdash-order-value text-medium">
-                        {incomingOrder.detailPekerjaan || 'Saklar rusak'}<br/>
-                        Tingkat kerusakan {incomingOrder.tingkatKerusakan || 'sedang'}
+                        {incomingOrder.detailPekerjaan || (incomingOrder.service === 'Perbaikan Elektronik' ? 'Mesin Cuci' : 'Saklar rusak')}<br/>
+                        Tingkat kerusakan {incomingOrder.tingkatKerusakan || (incomingOrder.service === 'Perbaikan Elektronik' ? 'berat' : 'sedang')}
                       </h4>
                     </div>
                   </div>
@@ -522,13 +522,13 @@ export default function MitraDashboard() {
                     <div style={{ marginTop: '16px' }}>
                       <p className="mdash-order-label">Detail perbaikan</p>
                       <h4 className="mdash-order-value text-medium">
-                        {repairSparepart || 'Saklar seri, Sekrup, dan Bracket'}<br/>
+                        {repairSparepart || (incomingOrder.service === 'Perbaikan Elektronik' ? 'Motor penggerak' : 'Saklar seri, Sekrup, dan Bracket')}<br/>
                         Waktu mengerjakan {repairEstimatedTime || '< 30 menit'}
                       </h4>
                       <div style={{ marginTop: '16px' }}>
                         <p className="mdash-order-label">Total</p>
                         <h4 className="mdash-order-value" style={{ color: '#034078', fontWeight: '700' }}>
-                          Rp 125.000
+                          {incomingOrder.service === 'Perbaikan Elektronik' ? 'Rp 300.000' : 'Rp 125.000'}
                         </h4>
                       </div>
                     </div>
@@ -581,8 +581,8 @@ export default function MitraDashboard() {
                 </button>
               )}
               {incomingOrder.driverPhase === 'arrived_at_customer' && (
-                <button className="mdash-at-store-btn" onClick={() => handlePhaseChange(incomingOrder.service === 'Bersih-Bersih' ? 'working' : incomingOrder.service === 'Perbaikan Kelistrikan' ? 'finished_working_wait' : 'completed')}>
-                  {incomingOrder.service === 'Bersih-Bersih' ? 'Mulai Mengerjakan' : incomingOrder.service === 'Perbaikan Kelistrikan' ? 'Pengecekan Selesai' : 'Pesanan Selesai'}
+                <button className="mdash-at-store-btn" onClick={() => handlePhaseChange(incomingOrder.service === 'Bersih-Bersih' ? 'working' : ['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) ? 'finished_working_wait' : 'completed')}>
+                  {incomingOrder.service === 'Bersih-Bersih' ? 'Mulai Mengerjakan' : ['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) ? 'Pengecekan Selesai' : 'Pesanan Selesai'}
                 </button>
               )}
               {incomingOrder.driverPhase === 'working' && (
@@ -606,7 +606,7 @@ export default function MitraDashboard() {
                   {formatWorkingTime(incomingOrder.totalWorkingSeconds || workingSeconds)}
                 </button>
               )}
-              {incomingOrder.service === 'Perbaikan Kelistrikan' && ['finished_working_wait', 'payment_confirmation_qris'].includes(incomingOrder.driverPhase) && (
+              {['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) && ['finished_working_wait', 'payment_confirmation_qris'].includes(incomingOrder.driverPhase) && (
                 <button className="mdash-at-store-btn" style={{ backgroundColor: '#a8a29e', cursor: 'not-allowed' }}>
                   Mulai Mengerjakan
                 </button>
@@ -675,7 +675,7 @@ export default function MitraDashboard() {
             <div style={{ backgroundColor: '#22c55e', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <CheckCircle2 size={14} color="#ffffff" />
             </div>
-            <span>{incomingOrder?.service === 'Perbaikan Kelistrikan' ? 'Pembayaran terkonfirmasi' : 'Pembayaran berhasil'}</span>
+            <span>{['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder?.service) ? 'Pembayaran terkonfirmasi' : 'Pembayaran berhasil'}</span>
           </div>
         </div>
       )}
