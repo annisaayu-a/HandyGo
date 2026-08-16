@@ -87,7 +87,7 @@ export default function MitraChat() {
           </div>
         </div>
 
-        <button className="chat-call-btn" onClick={() => {}} disabled={isFinished} style={{ cursor: isFinished ? 'default' : 'pointer' }}>
+        <button className="chat-call-btn" onClick={() => !isFinished && navigate('/mitra/call')} disabled={isFinished} style={{ cursor: isFinished ? 'default' : 'pointer' }}>
           <Phone size={20} color={isFinished ? "#cbd5e1" : "#d1d5db"} fill="currentColor" />
         </button>
       </header>

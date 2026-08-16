@@ -74,6 +74,7 @@ import MitraProfile from '../pages/Mitra/Profile';
 import MitraProfileDetail from '../pages/Mitra/ProfileDetail';
 import MitraChat from '../pages/Mitra/Chat';
 import MitraChatList from '../pages/Mitra/ChatList';
+import MitraCall from '../pages/Mitra/Call';
 import AppInfo from '../pages/Shared/AppInfo';
 import Protection from '../pages/Shared/Protection';
 import Help from '../pages/Shared/Help';
@@ -371,6 +372,10 @@ export const router = createBrowserRouter([
       {
         path: 'chat',
         element: <MitraChat />,
+      },
+      {
+        path: 'call',
+        element: <MitraCall />,
       },
       {
         path: 'messages',

@@ -480,7 +480,7 @@ export default function MitraDashboard() {
                   </div>
                 ) : (
                   <div className="mdash-order-actions">
-                  <button className="mdash-icon-btn"><Phone size={18} color="#034078" fill="#034078" /></button>
+                  <button className="mdash-icon-btn" onClick={() => navigate('/mitra/call')}><Phone size={18} color="#034078" fill="#034078" /></button>
                   <button className="mdash-icon-btn" onClick={() => navigate('/mitra/chat')}><MessageCircle size={18} color="#034078" fill="#034078" /></button>
                   </div>
                 )}
