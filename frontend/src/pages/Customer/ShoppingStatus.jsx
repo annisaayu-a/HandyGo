@@ -34,6 +34,28 @@ export default function ShoppingStatus() {
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState('');
 
+  const [driverPhase, setDriverPhase] = useState('heading_to_store');
+
+  useEffect(() => {
+    const checkOrder = () => {
+      const saved = localStorage.getItem('simulated_incoming_order');
+      if (saved) {
+        try {
+          const order = JSON.parse(saved);
+          if (order.driverPhase) {
+            setDriverPhase(order.driverPhase);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+    
+    checkOrder();
+    const interval = setInterval(checkOrder, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     if (orderId) {
       const savedRatings = JSON.parse(localStorage.getItem('handyGoRatings') || '{}');
@@ -180,7 +202,7 @@ export default function ShoppingStatus() {
             {/* Courier Card (Disabled) */}
             <div className="courier-card">
               <div className="courier-info-left">
-                <img src="https://i.pravatar.cc/150?img=11" alt="Courier Avatar" className="courier-avatar" />
+                <img src="https://ui-avatars.com/api/?name=Rafael+Gemam&background=034078&color=fff" alt="Courier Avatar" className="courier-avatar" />
                 <div className="courier-text">
                   <h4 className="courier-name">Rafael gemam</h4>
                   <div className="courier-rating">
@@ -236,30 +258,37 @@ export default function ShoppingStatus() {
           </>
         ) : (
           <>
+            {/* Heading to Store Banner */}
+            {orderStatus === 'disiapkan' && driverPhase === 'heading_to_store' && (
+              <div style={{ backgroundColor: '#e0f2fe', color: '#0369a1', padding: '12px 16px', borderRadius: '12px', marginBottom: '16px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '1.2rem' }}>🛵</span> Driver sedang menuju lokasi toko
+              </div>
+            )}
+
             {/* Real-time Driver Tracking Map */}
-            {orderStatus === 'diantar' && (
-              <div style={{ width: '100%', padding: '0 0 8px 0' }}>
+            {(orderStatus === 'diantar' || (orderStatus === 'disiapkan' && driverPhase === 'heading_to_store')) && (
+              <div style={{ width: '100%', padding: '0 0 16px 0' }}>
                 <DriverTrackingMap
                   pickupCoords={
-                    location.state?.pickupLocation
-                      ? { lat: location.state.pickupLocation.lat, lng: location.state.pickupLocation.lng }
-                      : { lat: -5.165, lng: 119.431 }
+                    orderStatus === 'diantar'
+                      ? { lat: -5.1290, lng: 119.4950 } // Store coords (for delivery phase)
+                      : { lat: -5.1325, lng: 119.4920 } // Driver starting coords (for heading to store phase)
                   }
                   dropoffCoords={
-                    location.state?.dropoffLocation
-                      ? { lat: location.state.dropoffLocation.lat, lng: location.state.dropoffLocation.lng }
-                      : { lat: -5.147, lng: 119.432 }
+                    orderStatus === 'diantar'
+                      ? (location.state?.dropoffLocation ? { lat: location.state.dropoffLocation.lat, lng: location.state.dropoffLocation.lng } : { lat: -5.147, lng: 119.432 })
+                      : { lat: -5.1290, lng: 119.4950 } // Store coords (for heading to store phase)
                   }
-                  isActive={orderStatus === 'diantar'}
+                  isActive={true}
                   height="240px"
                 />
               </div>
             )}
 
             {/* Courier Card (Active) */}
-            <div className="courier-card">
+            <div className="courier-card" style={{ marginTop: orderStatus === 'disiapkan' && driverPhase !== 'heading_to_store' ? '0' : undefined }}>
               <div className="courier-info-left">
-                <img src="https://i.pravatar.cc/150?img=11" alt="Courier Avatar" className="courier-avatar" />
+                <img src="https://ui-avatars.com/api/?name=Rafael+Gemam&background=034078&color=fff" alt="Courier Avatar" className="courier-avatar" />
                 <div className="courier-text">
                   <h4 className="courier-name">Rafael gemam</h4>
                   <div className="courier-rating">

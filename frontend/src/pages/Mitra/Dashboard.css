@@ -299,3 +299,57 @@
   50% { transform: scale(1.1); opacity: 1; }
   100% { transform: scale(1); opacity: 1; }
 }
+
+/* New Styles for Accepted State (Heading to store) */
+.mdash-order-sheet.accepted {
+  padding-bottom: 24px;
+}
+
+.no-margin-bottom {
+  margin-bottom: 12px;
+}
+
+.mdash-order-details-section {
+  margin-top: 16px;
+  margin-bottom: 24px;
+}
+
+.text-medium {
+  font-weight: 500;
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
+.mdash-at-store-btn {
+  width: 100%;
+  padding: 16px;
+  background-color: #2b5c8f;
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.mdash-at-store-btn:active {
+  opacity: 0.8;
+}
+
+.mdash-scooter-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+}
+
+.mdash-store-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
