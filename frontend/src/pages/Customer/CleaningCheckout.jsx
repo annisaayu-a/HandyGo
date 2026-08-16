@@ -97,8 +97,12 @@ export default function CleaningCheckout() {
       // Simulate sending order to Mitra via localStorage
       localStorage.setItem('simulated_incoming_order', JSON.stringify({
         id: createdOrderId || Date.now(),
-        service: 'Bersih-bersih',
+        service: 'Bersih-Bersih',
         destination: detailLokasi ? `${address} - ${detailLokasi}` : address,
+        luasArea: luasArea,
+        tingkatKekotoran: tingkatKekotoran,
+        durasi: durasi,
+        jumlahPetugas: 1, // Defaulting to 1 as per design
         paymentMethod: 'Bayar di Tempat',
         total: totalHarga,
         timestamp: Date.now()

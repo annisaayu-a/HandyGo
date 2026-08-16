@@ -73,7 +73,7 @@ export default function MitraDashboard() {
   const acceptOrder = () => {
     setIsOrderAccepted(true);
     if (incomingOrder) {
-      if (incomingOrder.service === 'Antar Barang') {
+      if (incomingOrder.service === 'Antar Barang' || incomingOrder.service === 'Bersih-Bersih') {
         const updated = { ...incomingOrder, accepted: true, driverPhase: 'accepted' };
         localStorage.setItem('simulated_incoming_order', JSON.stringify(updated));
         setIncomingOrder(updated);
@@ -81,8 +81,8 @@ export default function MitraDashboard() {
         setShowAcceptPill(true);
         setTimeout(() => {
           setShowAcceptPill(false);
-          // Manually do the state update instead of handlePhaseChange because it might conflict with timeout closures
-          const nextUpdate = { ...updated, driverPhase: 'heading_to_store' };
+          const nextPhase = incomingOrder.service === 'Bersih-Bersih' ? 'heading_to_customer' : 'heading_to_store';
+          const nextUpdate = { ...updated, driverPhase: nextPhase };
           localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
           setIncomingOrder(nextUpdate);
         }, 2000);
@@ -249,6 +249,37 @@ export default function MitraDashboard() {
         </div>
       </div>
 
+      {/* Bersih-Bersih detail overlay on map during incoming state */}
+      {incomingOrder && !isOrderAccepted && incomingOrder.service === 'Bersih-Bersih' && (
+        <div className="mdash-cleaning-overlay">
+          <h4 className="mdash-cleaning-title">Detail Pesanan</h4>
+          <div className="mdash-cleaning-row">
+            <span>Lokasi</span>
+            <span className="value">{incomingOrder.destination}</span>
+          </div>
+          <div className="mdash-cleaning-row">
+            <span>Luas Area</span>
+            <span className="value">{incomingOrder.luasArea}</span>
+          </div>
+          <div className="mdash-cleaning-row">
+            <span>Tingkat Kekotoran</span>
+            <span className="value">{incomingOrder.tingkatKekotoran}</span>
+          </div>
+          <div className="mdash-cleaning-row">
+            <span>Estimasi Durasi</span>
+            <span className="value">{incomingOrder.durasi} jam</span>
+          </div>
+          <div className="mdash-cleaning-row">
+            <span>Jumlah Petugas</span>
+            <span className="value">{incomingOrder.jumlahPetugas} orang</span>
+          </div>
+          <div className="mdash-cleaning-row">
+            <span>Tanggal & Waktu Pemesanan</span>
+            <span className="value">Rabu, 10:08</span>
+          </div>
+        </div>
+      )}
+
       {/* Incoming / Accepted Order Sheet */}
       {incomingOrder && (
         <div className="mdash-order-wrapper fade-up-in">
@@ -274,12 +305,13 @@ export default function MitraDashboard() {
           )}
 
           {/* Accepted State */}
+          {/* Accepted State */}
           {isOrderAccepted && incomingOrder.driverPhase !== 'completed' && incomingOrder.driverPhase !== 'traveling_to_customer' && (
             <div className="mdash-order-sheet accepted">
               <h3 className="mdash-order-title">Layanan {incomingOrder.service}</h3>
               <div className="mdash-order-content no-margin-bottom">
                 <div className="mdash-order-left">
-                  <p className="mdash-order-label">Diantar ke</p>
+                  <p className="mdash-order-label">{incomingOrder.service === 'Bersih-Bersih' ? 'Lokasi' : 'Diantar ke'}</p>
                   {incomingOrder.service === 'Antar Barang' ? (
                     <h4 className="mdash-order-value" style={{ color: '#034078', display: 'flex', gap: '8px' }}>
                       <span style={{ fontWeight: '600' }}>{incomingOrder.receiverName || 'Hana'}</span> <span style={{ color: '#94a3b8' }}>|</span> <span>{incomingOrder.destination}</span>
@@ -299,6 +331,14 @@ export default function MitraDashboard() {
                   <p className="mdash-order-label">Detail paket</p>
                   <h4 className="mdash-order-value text-medium">{incomingOrder.category || 'Pakaian'}, {incomingOrder.size || 'Kecil'} ({incomingOrder.weight || '4'}kg)</h4>
                 </div>
+              ) : incomingOrder.service === 'Bersih-Bersih' ? (
+                <div className="mdash-order-details-section">
+                  <p className="mdash-order-label">Detail pekerjaan</p>
+                  <h4 className="mdash-order-value text-medium">
+                    Luas area {incomingOrder.luasArea}<br/>
+                    Tingkat kekotoran {incomingOrder.tingkatKekotoran?.toLowerCase()}
+                  </h4>
+                </div>
               ) : (
                 <div className="mdash-order-details-section">
                   <p className="mdash-order-label">Pesanan</p>
@@ -317,12 +357,22 @@ export default function MitraDashboard() {
                   Menuju Lokasi
                 </button>
               )}
-              {(incomingOrder.driverPhase === 'heading_to_customer' || incomingOrder.driverPhase === 'arrived_near_customer') && (
+              {incomingOrder.driverPhase === 'heading_to_customer' && (
+                <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('arrived_at_customer')}>
+                  Sudah di lokasi tujuan
+                </button>
+              )}
+              {incomingOrder.driverPhase === 'arrived_near_customer' && (
                 <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('arrived_at_customer')}>
                   Sudah di lokasi tujuan
                 </button>
               )}
               {incomingOrder.driverPhase === 'arrived_at_customer' && (
+                <button className="mdash-at-store-btn" onClick={() => handlePhaseChange(incomingOrder.service === 'Bersih-Bersih' ? 'working' : 'completed')}>
+                  {incomingOrder.service === 'Bersih-Bersih' ? 'Mulai Mengerjakan' : 'Pesanan Selesai'}
+                </button>
+              )}
+              {incomingOrder.driverPhase === 'working' && (
                 <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('completed')}>
                   Pesanan Selesai
                 </button>

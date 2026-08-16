@@ -78,18 +78,32 @@ export default function CleaningStatus() {
     });
   }, []);
 
-  // Auto-progress steps for demonstration
+  const [driverPhase, setDriverPhase] = useState('heading_to_customer');
+
   useEffect(() => {
-    if (initialStep >= 3) return;
-    
-    const timer1 = setTimeout(() => setActiveStep(2), 5000);
-    // After 15 seconds, transition to step 3 (finished)
-    const timer2 = setTimeout(() => setActiveStep(3), 15000);
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
+    const checkOrder = () => {
+      const saved = localStorage.getItem('simulated_incoming_order');
+      if (saved) {
+        try {
+          const order = JSON.parse(saved);
+          if (order.driverPhase) {
+            setDriverPhase(order.driverPhase);
+            if (order.driverPhase === 'working') {
+              setActiveStep(2);
+            } else if (order.driverPhase === 'completed') {
+              setActiveStep(3);
+            }
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
     };
-  }, [initialStep]);
+    
+    checkOrder();
+    const interval = setInterval(checkOrder, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     let interval = null;
@@ -174,7 +188,7 @@ export default function CleaningStatus() {
                   ? { lat: orderData.lat, lng: orderData.lng }
                   : { lat: -5.150, lng: 119.435 }
               }
-              isActive={activeStep === 1}
+              isActive={activeStep === 1 && driverPhase !== 'arrived_at_customer'}
               height="220px"
             />
           </div>
