@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import './PartnerAuthOption.css';
+import partnerIcon from '../../assets/mitra.png';
 
 export default function PartnerAuthOption() {
   const navigate = useNavigate();
@@ -14,10 +15,13 @@ export default function PartnerAuthOption() {
       </div>
 
       <button className="pauth-back-btn" onClick={() => navigate('/partner-welcome')}>
-        <ArrowLeft size={24} color="#1e293b" />
+        <ArrowLeft size={24} color="#ffffff" />
       </button>
 
       <div className="pauth-content">
+        <div className="pauth-illustration-wrapper">
+          <img src={partnerIcon} alt="Mitra Illustration" className="pauth-illustration" />
+        </div>
         <div className="pauth-buttons">
           <button 
             className="pauth-daftar-btn" 
