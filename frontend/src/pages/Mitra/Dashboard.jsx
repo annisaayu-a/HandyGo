@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Map from 'react-map-gl';
+import Map from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { User, Power, ChevronRight, AlertCircle, CheckCircle2 } from 'lucide-react';
 import './Dashboard.css';
