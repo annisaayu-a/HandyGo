@@ -15,10 +15,20 @@ export default function MitraDashboard() {
   
   const [userLocation, setUserLocation] = useState(null);
   const [status, setStatus] = useState('pending');
+  const [isOnline, setIsOnline] = useState(false);
 
   const handleAlertClick = () => {
     if (status === 'pending') {
       setStatus('active');
+    }
+  };
+
+  const toggleOnline = () => {
+    // Only allow going online if account is active/verified
+    if (status !== 'pending') {
+      setIsOnline(!isOnline);
+    } else {
+      alert("Selesaikan verifikasi atribut terlebih dahulu untuk mulai menerima pesanan.");
     }
   };
 
@@ -81,11 +91,11 @@ export default function MitraDashboard() {
         </div>
         
         <div className="mdash-status-pill">
-          <span className="mdash-status-text">Offline</span>
+          <span className="mdash-status-text">{isOnline ? 'Online' : 'Offline'}</span>
           <ChevronRight size={16} color="#0f172a" />
         </div>
         
-        <div className="mdash-power-icon">
+        <div className={`mdash-power-icon ${isOnline ? 'online' : ''}`} onClick={toggleOnline}>
           <Power size={20} color="#ffffff" />
         </div>
       </div>

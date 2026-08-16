@@ -103,6 +103,12 @@
   justify-content: center;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mdash-power-icon.online {
+  background-color: #034078;
+  box-shadow: 0 0 0 4px rgba(3, 64, 120, 0.2), 0 4px 10px rgba(0,0,0,0.2);
 }
 
 /* Alert Box */
