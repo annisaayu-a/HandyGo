@@ -97,7 +97,7 @@ export default function MitraDashboard() {
   const acceptOrder = () => {
     setIsOrderAccepted(true);
     if (incomingOrder) {
-      if (incomingOrder.service === 'Antar Barang' || incomingOrder.service === 'Bersih-Bersih' || ['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service)) {
+      if (incomingOrder.service === 'Antar Barang' || incomingOrder.service === 'Antar Jemput' || incomingOrder.service === 'Bersih-Bersih' || ['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service)) {
         const updated = { ...incomingOrder, accepted: true, driverPhase: 'accepted' };
         localStorage.setItem('simulated_incoming_order', JSON.stringify(updated));
         setIncomingOrder(updated);
@@ -105,7 +105,7 @@ export default function MitraDashboard() {
         setShowAcceptPill(true);
         setTimeout(() => {
           setShowAcceptPill(false);
-          const nextPhase = ['Bersih-Bersih', 'Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) ? 'heading_to_customer' : 'heading_to_store';
+          const nextPhase = ['Bersih-Bersih', 'Perbaikan Kelistrikan', 'Perbaikan Elektronik', 'Antar Jemput'].includes(incomingOrder.service) ? 'heading_to_customer' : 'heading_to_store';
           const nextUpdate = { ...updated, driverPhase: nextPhase };
           localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
           setIncomingOrder(nextUpdate);
@@ -428,7 +428,7 @@ export default function MitraDashboard() {
               <button className="mdash-accept-btn" onClick={acceptOrder}>
                 Terima Pesanan
               </button>
-              <p className="mdash-order-footer">{['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) ? 'Berjarak 1km dari lokasimu sekarang' : 'Berjarak 500m dari lokasimu sekarang'}</p>
+              <p className="mdash-order-footer">{['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) ? 'Berjarak 1km dari lokasimu sekarang' : incomingOrder.service === 'Antar Jemput' ? 'Berjarak 100m dari lokasimu sekarang' : 'Berjarak 500m dari lokasimu sekarang'}</p>
             </div>
           )}
 
@@ -448,10 +448,17 @@ export default function MitraDashboard() {
                     <h4 className="mdash-order-value">{incomingOrder.destination}</h4>
                   )}
                 </div>
-                <div className="mdash-order-actions">
+                {incomingOrder.service === 'Antar Jemput' ? (
+                  <div className="mdash-order-right">
+                    <p className="mdash-order-label">{incomingOrder.paymentMethod === 'Bayar di Tempat' ? 'Tunai' : incomingOrder.paymentMethod}</p>
+                    <h4 className="mdash-order-price">Rp {formatRupiah(incomingOrder.total)}</h4>
+                  </div>
+                ) : (
+                  <div className="mdash-order-actions">
                   <button className="mdash-icon-btn"><Phone size={18} color="#034078" fill="#034078" /></button>
                   <button className="mdash-icon-btn"><MessageCircle size={18} color="#034078" fill="#034078" /></button>
-                </div>
+                  </div>
+                )}
               </div>
               
               {incomingOrder.service === 'Antar Barang' ? (
@@ -572,7 +579,7 @@ export default function MitraDashboard() {
               )}
               {incomingOrder.driverPhase === 'heading_to_customer' && (
                 <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('arrived_at_customer')}>
-                  Sudah di lokasi tujuan
+                  {incomingOrder.service === 'Antar Jemput' ? 'Sudah di Lokasi' : 'Sudah di lokasi tujuan'}
                 </button>
               )}
               {incomingOrder.driverPhase === 'arrived_near_customer' && (
@@ -581,8 +588,8 @@ export default function MitraDashboard() {
                 </button>
               )}
               {incomingOrder.driverPhase === 'arrived_at_customer' && (
-                <button className="mdash-at-store-btn" onClick={() => handlePhaseChange(incomingOrder.service === 'Bersih-Bersih' ? 'working' : ['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) ? 'finished_working_wait' : 'completed')}>
-                  {incomingOrder.service === 'Bersih-Bersih' ? 'Mulai Mengerjakan' : ['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) ? 'Pengecekan Selesai' : 'Pesanan Selesai'}
+                <button className="mdash-at-store-btn" onClick={() => handlePhaseChange(incomingOrder.service === 'Antar Jemput' ? 'traveling_to_destination' : incomingOrder.service === 'Bersih-Bersih' ? 'working' : ['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) ? 'finished_working_wait' : 'completed')}>
+                  {incomingOrder.service === 'Antar Jemput' ? 'Menuju Lokasi' : incomingOrder.service === 'Bersih-Bersih' ? 'Mulai Mengerjakan' : ['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder.service) ? 'Pengecekan Selesai' : 'Pesanan Selesai'}
                 </button>
               )}
               {incomingOrder.driverPhase === 'working' && (
