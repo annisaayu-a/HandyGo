@@ -9,6 +9,7 @@ export default function MitraLayout() {
   const showBottomNavPaths = [
     '/mitra',
     '/mitra/',
+    '/mitra/messages'
   ];
   
   const shouldHideBottomNav = !showBottomNavPaths.includes(location.pathname);

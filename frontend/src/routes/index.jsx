@@ -71,6 +71,8 @@ import FindingDriver from '../pages/Customer/FindingDriver';
 import MitraDashboard from '../pages/Mitra/Dashboard';
 import MitraProfile from '../pages/Mitra/Profile';
 import MitraProfileDetail from '../pages/Mitra/ProfileDetail';
+import MitraChat from '../pages/Mitra/Chat';
+import MitraChatList from '../pages/Mitra/ChatList';
 import AppInfo from '../pages/Shared/AppInfo';
 import Protection from '../pages/Shared/Protection';
 import Help from '../pages/Shared/Help';
@@ -364,6 +366,14 @@ export const router = createBrowserRouter([
       {
         path: 'profile/detail',
         element: <MitraProfileDetail />,
+      },
+      {
+        path: 'chat',
+        element: <MitraChat />,
+      },
+      {
+        path: 'messages',
+        element: <MitraChatList />,
       },
       {
         path: 'app-info',

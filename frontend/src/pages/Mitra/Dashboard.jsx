@@ -102,6 +102,14 @@ export default function MitraDashboard() {
       const updated = { ...incomingOrder, accepted: true, driverPhase: 'accepted' };
       localStorage.setItem('simulated_incoming_order', JSON.stringify(updated));
       setIncomingOrder(updated);
+
+      // Initialize automatic chat message when accepted
+      localStorage.setItem('handygo_active_chat_messages', JSON.stringify([{
+        id: Date.now(),
+        sender: 'mitra',
+        text: 'Pesanan berhasil diterima.\n\nHalo, Saya sudah menerima pesanan Anda dan sedang menuju lokasi. Jika ada patokan lokasi atau informasi tambahan, silahkan sampaikan melalui chat ini ya.\n\nIni adalah pesan otomatis.',
+        time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(':', '.')
+      }]));
       
       setShowAcceptPill(true);
       setTimeout(() => {
@@ -473,7 +481,7 @@ export default function MitraDashboard() {
                 ) : (
                   <div className="mdash-order-actions">
                   <button className="mdash-icon-btn"><Phone size={18} color="#034078" fill="#034078" /></button>
-                  <button className="mdash-icon-btn"><MessageCircle size={18} color="#034078" fill="#034078" /></button>
+                  <button className="mdash-icon-btn" onClick={() => navigate('/mitra/chat')}><MessageCircle size={18} color="#034078" fill="#034078" /></button>
                   </div>
                 )}
               </div>

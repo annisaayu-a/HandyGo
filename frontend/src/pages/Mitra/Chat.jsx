@@ -1,23 +1,21 @@
 import { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, Phone, Paperclip, Mic, Image as ImageIcon, Camera, Send, MessageSquare } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import './Chat.css';
+import '../Customer/Chat.css'; // Reusing customer chat CSS
 
-export default function Chat() {
+export default function MitraChat() {
   const navigate = useNavigate();
   const location = useLocation();
   const isFinished = location.state?.isFinished || false;
-  const isCallActive = location.state?.isCallActive || false;
-  const initialCallTime = location.state?.initialCallTime || 0;
   
   const [message, setMessage] = useState('');
   const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
-  const [activeCallTime, setActiveCallTime] = useState(initialCallTime);
   const messagesEndRef = useRef(null);
 
   const [chatHistory, setChatHistory] = useState([]);
 
-  const quickReplies = ['Lokasi sudah sesuai titik ya', 'Baik saya tunggu'];
+  // Mitra specific quick replies based on user image
+  const quickReplies = ['Saya sudah dilokasi kak', 'Oke, tunggu ya', 'Sesuai titik kan kak'];
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -39,7 +37,7 @@ export default function Chat() {
     // Initial load
     loadMessages();
 
-    // Listen for storage changes from other tabs/windows (Mitra simulator)
+    // Listen for storage changes from other tabs/windows (Customer simulator)
     window.addEventListener('storage', loadMessages);
     
     // Also poll every 1 second just in case we are in the same window
@@ -51,28 +49,12 @@ export default function Chat() {
     };
   }, []);
 
-  useEffect(() => {
-    let interval;
-    if (isCallActive) {
-      interval = setInterval(() => {
-        setActiveCallTime(prev => prev + 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isCallActive]);
-
-  const formatTime = (seconds) => {
-    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-    const s = (seconds % 60).toString().padStart(2, '0');
-    return `${m} : ${s}`;
-  };
-
   const handleSend = (text = message) => {
     if (!text.trim()) return;
     
     const newMessage = {
       id: Date.now(),
-      sender: 'customer',
+      sender: 'mitra',
       text: text,
       time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(':', '.')
     };
@@ -88,7 +70,7 @@ export default function Chat() {
   };
 
   return (
-    <div className="chat-page">
+    <div className="chat-page animate-fade-in">
       {/* Header */}
       <header className="chat-header">
         <button className="chat-back-btn" onClick={() => navigate(-1)}>
@@ -96,49 +78,28 @@ export default function Chat() {
         </button>
         
         <div className="chat-mitra-profile">
-          <img src="https://i.pravatar.cc/150?img=11" alt="Mitra" className="chat-mitra-avatar" />
+          <img src="https://ui-avatars.com/api/?name=Hana&background=cbd5e1&color=64748b" alt="Customer" className="chat-mitra-avatar" />
           <div className="chat-mitra-info">
-            <h1 className="chat-mitra-name">Rafael Gemam</h1>
+            <h1 className="chat-mitra-name">Hana</h1>
             <div className="chat-mitra-rating">
-              <span className="star">★</span> 4.9 <span className="reviews">(59 ulasan)</span>
+              <span className="star">★</span> 5.0
             </div>
           </div>
         </div>
 
-        <button className="chat-call-btn" onClick={() => !isFinished && navigate('/customer/call')} disabled={isFinished} style={{ cursor: isFinished ? 'default' : 'pointer' }}>
-          <Phone size={20} color={isFinished ? "#cbd5e1" : "#034078"} fill="currentColor" />
+        <button className="chat-call-btn" onClick={() => {}} disabled={isFinished} style={{ cursor: isFinished ? 'default' : 'pointer' }}>
+          <Phone size={20} color={isFinished ? "#cbd5e1" : "#d1d5db"} fill="currentColor" />
         </button>
       </header>
 
       {/* Chat Area */}
       <div className="chat-area">
-        {isCallActive && (
-          <div className="chat-active-call-banner" onClick={() => navigate('/customer/call')}>
-            <div className="chat-active-call-left">
-              <Phone size={16} color="#1e293b" fill="currentColor" />
-              <span className="chat-active-call-name">Rafael Gemam</span>
-            </div>
-            <span className="chat-active-call-time">{formatTime(activeCallTime)}</span>
-          </div>
-        )}
-
         {chatHistory.map((msg) => (
-          <div key={msg.id} className={`chat-bubble-container ${msg.type === 'call_history' ? 'center' : (msg.sender === 'customer' ? 'right' : 'left')}`}>
-            {msg.type === 'call_history' ? (
-              <div className="chat-history-call-pill">
-                <div className="chat-history-call-content">
-                  <Phone size={14} color="#64748b" />
-                  <span className="chat-history-call-title">{msg.title}</span>
-                  <span className="chat-history-call-duration">{msg.duration}</span>
-                </div>
-                <div className="chat-history-call-time">{msg.time}</div>
-              </div>
-            ) : (
-              <div className={`chat-bubble ${msg.sender === 'customer' ? 'customer-bubble' : 'mitra-bubble'}`}>
-                <div className="chat-text">{msg.text}</div>
-                <div className="chat-time">{msg.time}</div>
-              </div>
-            )}
+          <div key={msg.id} className={`chat-bubble-container ${msg.sender === 'mitra' ? 'right' : 'left'}`}>
+            <div className={`chat-bubble ${msg.sender === 'mitra' ? 'mitra-bubble' : 'customer-bubble'}`} style={msg.sender === 'mitra' ? { borderBottomRightRadius: '4px', borderBottomLeftRadius: '12px' } : { borderBottomLeftRadius: '4px', borderBottomRightRadius: '12px' }}>
+              <div className="chat-text">{msg.text}</div>
+              <div className="chat-time">{msg.time}</div>
+            </div>
           </div>
         ))}
 
