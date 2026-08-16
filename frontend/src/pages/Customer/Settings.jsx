@@ -60,6 +60,8 @@ export default function CustomerSettings() {
             onClick={() => {
               if (item.label === 'Detail Profil') navigate('/customer/profile');
               if (item.label === 'Lokasi') navigate('/customer/location');
+              if (item.label === 'Informasi Aplikasi') navigate('/customer/app-info');
+              if (item.label === 'Perlindungan') navigate('/customer/protection');
             }}
             style={{ cursor: 'pointer' }}
           >

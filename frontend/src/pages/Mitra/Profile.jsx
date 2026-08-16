@@ -67,14 +67,17 @@ export default function MitraProfile() {
             <span className="mprofile-menu-text">Detail Profil</span>
           </div>
 
-          <div className="mprofile-menu-item">
+          <div
+            className="mprofile-menu-item"
+            onClick={() => navigate('/mitra/app-info')}
+          >
             <div className="mprofile-menu-icon">
               <Info size={14} color="#64748b" />
             </div>
             <span className="mprofile-menu-text">Informasi Aplikasi</span>
           </div>
 
-          <div className="mprofile-menu-item">
+          <div className="mprofile-menu-item" onClick={() => navigate('/mitra/protection')}>
             <div className="mprofile-menu-icon">
               <ShieldCheck size={14} color="#64748b" />
             </div>

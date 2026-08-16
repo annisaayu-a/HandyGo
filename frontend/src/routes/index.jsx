@@ -71,6 +71,9 @@ import FindingDriver from '../pages/Customer/FindingDriver';
 import MitraDashboard from '../pages/Mitra/Dashboard';
 import MitraProfile from '../pages/Mitra/Profile';
 import MitraProfileDetail from '../pages/Mitra/ProfileDetail';
+import AppInfo from '../pages/Shared/AppInfo';
+import Protection from '../pages/Shared/Protection';
+import Help from '../pages/Shared/Help';
 import AdminDashboard from '../pages/Admin/Dashboard';
 
 export const router = createBrowserRouter([
@@ -327,6 +330,18 @@ export const router = createBrowserRouter([
         path: 'finding-driver',
         element: <FindingDriver />,
       },
+      {
+        path: 'app-info',
+        element: <AppInfo />,
+      },
+      {
+        path: 'protection',
+        element: <Protection />,
+      },
+      {
+        path: 'help',
+        element: <Help />,
+      },
     ],
   },
   // Mitra Routes
@@ -349,6 +364,18 @@ export const router = createBrowserRouter([
       {
         path: 'profile/detail',
         element: <MitraProfileDetail />,
+      },
+      {
+        path: 'app-info',
+        element: <AppInfo />,
+      },
+      {
+        path: 'protection',
+        element: <Protection />,
+      },
+      {
+        path: 'help',
+        element: <Help />,
       },
     ],
   },

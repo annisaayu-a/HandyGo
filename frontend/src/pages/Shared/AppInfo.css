@@ -1,0 +1,74 @@
+.appinfo-container {
+  min-height: 100dvh;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.appinfo-header {
+  display: flex;
+  align-items: center;
+  padding: 20px 20px;
+}
+
+.appinfo-back-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  margin-right: 12px;
+}
+
+.appinfo-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+.appinfo-content {
+  padding: 16px 24px;
+}
+
+.appinfo-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.appinfo-logo {
+  flex-shrink: 0;
+}
+
+.appinfo-name-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.appinfo-app-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 2px 0;
+}
+
+.appinfo-version {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.appinfo-description {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.92rem;
+  color: #334155;
+  line-height: 1.65;
+  margin: 0;
+}
