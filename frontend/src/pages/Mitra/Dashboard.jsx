@@ -503,6 +503,21 @@ export default function MitraDashboard() {
                       </div>
                     </div>
                   )}
+                  {['finished_working_wait', 'payment_confirmation', 'payment_confirmed', 'working'].includes(incomingOrder.driverPhase) && (
+                    <div style={{ marginTop: '16px' }}>
+                      <p className="mdash-order-label">Detail perbaikan</p>
+                      <h4 className="mdash-order-value text-medium">
+                        {repairSparepart || 'Saklar seri, Sekrup, dan Bracket'}<br/>
+                        Waktu mengerjakan {repairEstimatedTime || '< 30 menit'}
+                      </h4>
+                      <div style={{ marginTop: '16px' }}>
+                        <p className="mdash-order-label">Total</p>
+                        <h4 className="mdash-order-value" style={{ color: '#034078', fontWeight: '700' }}>
+                          Rp 125.000
+                        </h4>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : incomingOrder.service === 'Bersih-Bersih' ? (
                 <div className="mdash-order-details-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -551,7 +566,7 @@ export default function MitraDashboard() {
                 </button>
               )}
               {incomingOrder.driverPhase === 'arrived_at_customer' && (
-                <button className="mdash-at-store-btn" onClick={() => handlePhaseChange(incomingOrder.service === 'Bersih-Bersih' || incomingOrder.service === 'Perbaikan Kelistrikan' ? 'working' : 'completed')}>
+                <button className="mdash-at-store-btn" onClick={() => handlePhaseChange(incomingOrder.service === 'Bersih-Bersih' ? 'working' : incomingOrder.service === 'Perbaikan Kelistrikan' ? 'finished_working_wait' : 'completed')}>
                   {incomingOrder.service === 'Bersih-Bersih' ? 'Mulai Mengerjakan' : incomingOrder.service === 'Perbaikan Kelistrikan' ? 'Pengecekan Selesai' : 'Pesanan Selesai'}
                 </button>
               )}
@@ -576,24 +591,49 @@ export default function MitraDashboard() {
                   {formatWorkingTime(incomingOrder.totalWorkingSeconds || workingSeconds)}
                 </button>
               )}
+              {incomingOrder.service === 'Perbaikan Kelistrikan' && ['finished_working_wait', 'payment_confirmation_qris'].includes(incomingOrder.driverPhase) && (
+                <button className="mdash-at-store-btn" style={{ backgroundColor: '#a8a29e', cursor: 'not-allowed' }}>
+                  Mulai Mengerjakan
+                </button>
+              )}
               {incomingOrder.driverPhase === 'payment_confirmation' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <button className="mdash-at-store-btn" style={{ backgroundColor: '#7895b2', cursor: 'default' }}>
-                    {formatWorkingTime(incomingOrder.totalWorkingSeconds || workingSeconds)}
-                  </button>
-                  <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('payment_confirmed')}>
-                    Pembayaran Terkonfirmasi
-                  </button>
+                  {incomingOrder.service === 'Bersih-Bersih' ? (
+                    <button className="mdash-at-store-btn" style={{ backgroundColor: '#7895b2', cursor: 'default' }}>
+                      {formatWorkingTime(incomingOrder.totalWorkingSeconds || workingSeconds)}
+                    </button>
+                  ) : (
+                    <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('payment_confirmed')}>
+                      Pembayaran Terkonfirmasi
+                    </button>
+                  )}
+                  {incomingOrder.service === 'Bersih-Bersih' ? (
+                    <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('payment_confirmed')}>
+                      Pembayaran Terkonfirmasi
+                    </button>
+                  ) : (
+                    <button className="mdash-at-store-btn" style={{ backgroundColor: '#a8a29e', cursor: 'not-allowed' }}>
+                      Mulai Mengerjakan
+                    </button>
+                  )}
                 </div>
               )}
               {['payment_confirmed', 'payment_confirmed_qris'].includes(incomingOrder.driverPhase) && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <button className="mdash-at-store-btn" style={{ backgroundColor: '#7895b2', cursor: 'default' }}>
-                    {formatWorkingTime(incomingOrder.totalWorkingSeconds || workingSeconds)}
-                  </button>
-                  <button className="mdash-at-store-btn" onClick={() => handlePhaseChange(incomingOrder.driverPhase === 'payment_confirmed_qris' ? 'completed_qris_success' : 'completed')}>
-                    Pesanan Selesai
-                  </button>
+                  {incomingOrder.service === 'Bersih-Bersih' ? (
+                    <>
+                      <button className="mdash-at-store-btn" style={{ backgroundColor: '#7895b2', cursor: 'default' }}>
+                        {formatWorkingTime(incomingOrder.totalWorkingSeconds || workingSeconds)}
+                      </button>
+                      <button className="mdash-at-store-btn" onClick={() => handlePhaseChange(incomingOrder.driverPhase === 'payment_confirmed_qris' ? 'completed_qris_success' : 'completed')}>
+                        Pesanan Selesai
+                      </button>
+                    </>
+                  ) : (
+                    <button className="mdash-at-store-btn" onClick={() => handlePhaseChange('working')}>
+                      Mulai Mengerjakan
+                    </button>
+                  )}
                 </div>
               )}
             </div>
