@@ -211,7 +211,7 @@ export default function MitraJobs() {
               </p>
             </div>
           </div>
-          <button className="notification-btn">
+          <button className="notification-btn" onClick={() => navigate('/mitra/notifications')}>
             <Bell size={20} />
           </button>
         </header>

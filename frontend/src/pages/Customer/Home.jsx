@@ -53,7 +53,7 @@ export default function CustomerHome() {
             </p>
           </div>
         </div>
-        <button className="notification-btn">
+        <button className="notification-btn" onClick={() => navigate('/customer/notifications')}>
           <Bell size={22} color="#0f172a" />
         </button>
       </header>

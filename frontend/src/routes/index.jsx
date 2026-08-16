@@ -78,6 +78,7 @@ import MitraCall from '../pages/Mitra/Call';
 import AppInfo from '../pages/Shared/AppInfo';
 import Protection from '../pages/Shared/Protection';
 import Help from '../pages/Shared/Help';
+import Notification from '../pages/Shared/Notification';
 import AdminDashboard from '../pages/Admin/Dashboard';
 
 export const router = createBrowserRouter([
@@ -346,6 +347,10 @@ export const router = createBrowserRouter([
         path: 'help',
         element: <Help />,
       },
+      {
+        path: 'notifications',
+        element: <Notification />,
+      },
     ],
   },
   // Mitra Routes
@@ -392,6 +397,10 @@ export const router = createBrowserRouter([
       {
         path: 'help',
         element: <Help />,
+      },
+      {
+        path: 'notifications',
+        element: <Notification />,
       },
     ],
   },

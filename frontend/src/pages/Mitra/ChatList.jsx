@@ -111,7 +111,7 @@ export default function MitraChatList() {
             </div>
           </div>
         </div>
-        <button className="chatlist-bell">
+        <button className="chatlist-bell" onClick={() => navigate('/mitra/notifications')}>
           <Bell size={24} color="#1e293b" />
         </button>
       </header>
