@@ -5,7 +5,7 @@ import '../Customer/ChatList.css'; // Reuse CSS
 
 export default function MitraChatList() {
   const navigate = useNavigate();
-  const [mitraName, setMitraName] = useState('Budiono Siregar');
+  const [mitraName, setMitraName] = useState('Mitra HandyGo');
   const [mitraAvatar, setMitraAvatar] = useState('');
 
   useEffect(() => {
@@ -13,7 +13,8 @@ export default function MitraChatList() {
       const saved = localStorage.getItem('mitra_profile_data');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.name) setMitraName(parsed.name);
+        if (parsed.full_name) setMitraName(parsed.full_name);
+        else if (parsed.name) setMitraName(parsed.name);
         if (parsed.avatar) setMitraAvatar(parsed.avatar);
       }
     } catch (e) {
@@ -23,26 +24,7 @@ export default function MitraChatList() {
 
   const [activeChats, setActiveChats] = useState([]);
 
-  const [historyChats, setHistoryChats] = useState([
-    {
-      id: 2,
-      name: 'Ahmad Rizal',
-      lastMessage: 'Pesanan selesai, chat berakhir.',
-      avatar: 'https://i.pravatar.cc/150?img=33'
-    },
-    {
-      id: 3,
-      name: 'Budi Santoso',
-      lastMessage: 'Pesanan selesai, chat berakhir.',
-      avatar: 'https://i.pravatar.cc/150?img=12'
-    },
-    {
-      id: 4,
-      name: 'Dewi Lestari',
-      lastMessage: 'Pesanan selesai, chat berakhir.',
-      avatar: 'https://i.pravatar.cc/150?img=53'
-    }
-  ]);
+  const [historyChats, setHistoryChats] = useState([]);
 
   const handleOpenChat = (isFinished) => {
     navigate('/mitra/chat', { state: { isFinished } });
@@ -105,10 +87,6 @@ export default function MitraChatList() {
           )}
           <div className="chatlist-profile-info">
             <h1 className="chatlist-name">{mitraName}</h1>
-            <div className="chatlist-location">
-              <MapPin size={12} color="#034078" />
-              <span>Makassar</span>
-            </div>
           </div>
         </div>
         <button className="chatlist-bell" onClick={() => navigate('/mitra/notifications')}>

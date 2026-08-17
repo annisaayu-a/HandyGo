@@ -13,8 +13,10 @@ export default function MitraJobs() {
       const saved = localStorage.getItem('mitra_profile_data');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.name) setMitraName(parsed.name);
-        if (parsed.avatar) setMitraAvatar(parsed.avatar);
+        if (parsed.full_name) setMitraName(parsed.full_name);
+        else if (parsed.name) setMitraName(parsed.name);
+      } else {
+        setMitraName('Mitra HandyGo');
       }
     } catch (e) {}
   }, []);
@@ -41,63 +43,7 @@ export default function MitraJobs() {
     // Using a fixed year for April to match mockup style if wanted, but using current year makes it logical
     const aprilYear = `April ${now.getFullYear()}`;
 
-    let data = [
-      {
-        id: 1,
-        service: 'Antar Barang',
-        status: 'Sukses',
-        date: 'Hari ini, 13:49',
-        monthYearGroup: currentMonthYear,
-        isCanceled: false,
-        statusColor: '#1e293b'
-      },
-      {
-        id: 2,
-        service: 'Antar Jemput',
-        status: 'Sukses',
-        date: 'Kamis, 9 April, 15:23',
-        monthYearGroup: aprilYear,
-        isCanceled: false,
-        statusColor: '#1e293b'
-      },
-      {
-        id: 3,
-        service: 'Belanja',
-        status: 'Dibatalkan',
-        date: 'Selasa, 7 April, 20:19',
-        monthYearGroup: aprilYear,
-        isCanceled: true,
-        cancelReason: 'Toko tutup',
-        statusColor: '#64748b'
-      },
-      {
-        id: 4,
-        service: 'Perbaikan',
-        status: 'Sukses',
-        date: 'Sabtu, 4 April, 17:08',
-        monthYearGroup: aprilYear,
-        isCanceled: false,
-        statusColor: '#1e293b'
-      },
-      {
-        id: 5,
-        service: 'Antar Jemput',
-        status: 'Sukses',
-        date: 'Kamis, 9 April, 15:23',
-        monthYearGroup: aprilYear,
-        isCanceled: false,
-        statusColor: '#1e293b'
-      },
-      {
-        id: 6,
-        service: 'Perbaikan',
-        status: 'Sukses',
-        date: 'Sabtu, 4 April, 17:08',
-        monthYearGroup: aprilYear,
-        isCanceled: false,
-        statusColor: '#1e293b'
-      }
-    ];
+    let data = [];
 
     // Check if there is an active simulated order in localStorage
     try {
@@ -202,13 +148,10 @@ export default function MitraJobs() {
             {mitraAvatar ? (
                <img src={mitraAvatar} alt="Profile" className="profile-img" />
             ) : (
-               <img src={`https://ui-avatars.com/api/?name=${mitraName}&background=034078&color=fff`} alt="Profile" className="profile-img" />
+               <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(mitraName)}&background=034078&color=fff`} alt="Profile" className="profile-img" />
             )}
             <div className="profile-info">
               <h2 className="profile-name">{mitraName}</h2>
-              <p className="profile-location">
-                <MapPin size={12} className="location-icon" /> Kota Makassar
-              </p>
             </div>
           </div>
           <button className="notification-btn" onClick={() => navigate('/mitra/notifications')}>
