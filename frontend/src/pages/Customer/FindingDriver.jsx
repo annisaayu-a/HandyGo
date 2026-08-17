@@ -37,23 +37,39 @@ export default function FindingDriver() {
   }, []);
 
   useEffect(() => {
-    const checkAcceptance = () => {
-      const orderStr = localStorage.getItem('simulated_incoming_order');
-      if (orderStr) {
-        try {
-          const order = JSON.parse(orderStr);
-          if (order.accepted) {
-            // Mitra accepted the order! Redirect to status page
-            navigate(nextRoute, { state: nextState });
-          }
-        } catch (e) {
-          console.error(e);
+    let interval;
+    const checkAcceptance = async () => {
+      const orderId = nextState.orderId;
+      if (!orderId) {
+        // Fallback to local storage for backward compatibility during transition
+        const orderStr = localStorage.getItem('simulated_incoming_order');
+        if (orderStr) {
+          try {
+            const order = JSON.parse(orderStr);
+            if (order.accepted) {
+              navigate(nextRoute, { state: nextState });
+            }
+          } catch (e) {}
         }
+        return;
+      }
+
+      try {
+        const response = await fetch(`https://handygo-api.vercel.app/api/orders/${orderId}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.order && data.order.status !== 'menunggu') {
+            // Mitra accepted the order! Redirect to status page
+            navigate(nextRoute, { state: { ...nextState, orderStatus: data.order.status } });
+          }
+        }
+      } catch (e) {
+        console.error('Error checking order status:', e);
       }
     };
 
-    // Poll every 1.5 seconds
-    const interval = setInterval(checkAcceptance, 1500);
+    // Poll every 2 seconds
+    interval = setInterval(checkAcceptance, 2000);
     return () => clearInterval(interval);
   }, [navigate, nextRoute, nextState]);
 

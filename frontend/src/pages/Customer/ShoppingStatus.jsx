@@ -37,29 +37,49 @@ export default function ShoppingStatus() {
   const [driverPhase, setDriverPhase] = useState('heading_to_store');
 
   useEffect(() => {
-    const checkOrder = () => {
-      const saved = localStorage.getItem('simulated_incoming_order');
-      if (saved) {
-        try {
-          const order = JSON.parse(saved);
-          if (order.driverPhase) {
-            setDriverPhase(order.driverPhase);
-            if (order.driverPhase === 'heading_to_customer' || order.driverPhase === 'arrived_at_customer') {
+    const checkOrder = async () => {
+      if (!orderId) {
+        // Fallback for backward compatibility
+        const saved = localStorage.getItem('simulated_incoming_order');
+        if (saved) {
+          try {
+            const order = JSON.parse(saved);
+            if (order.driverPhase) {
+              setDriverPhase(order.driverPhase);
+              if (order.driverPhase === 'heading_to_customer' || order.driverPhase === 'arrived_at_customer') {
+                setOrderStatus((prev) => prev !== 'diantar' ? 'diantar' : prev);
+              } else if (order.driverPhase === 'completed') {
+                setOrderStatus((prev) => prev !== 'selesai' ? 'selesai' : prev);
+              }
+            }
+          } catch (e) {}
+        }
+        return;
+      }
+      
+      try {
+        const response = await fetch(`https://handygo-api.vercel.app/api/orders/${orderId}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.order && data.order.status && data.order.status !== 'menunggu') {
+            const currentPhase = data.order.status;
+            setDriverPhase(currentPhase);
+            if (currentPhase === 'heading_to_customer' || currentPhase === 'arrived_at_customer') {
               setOrderStatus((prev) => prev !== 'diantar' ? 'diantar' : prev);
-            } else if (order.driverPhase === 'completed') {
+            } else if (currentPhase === 'completed') {
               setOrderStatus((prev) => prev !== 'selesai' ? 'selesai' : prev);
             }
           }
-        } catch (e) {
-          console.error(e);
         }
+      } catch (e) {
+        console.error('Error fetching order status:', e);
       }
     };
     
     checkOrder();
-    const interval = setInterval(checkOrder, 1000);
+    const interval = setInterval(checkOrder, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [orderId]);
 
   useEffect(() => {
     if (orderId) {

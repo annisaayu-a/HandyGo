@@ -16,7 +16,6 @@ export default function MitraDashboard() {
   });
   
   const [userLocation, setUserLocation] = useState(null);
-  const [status, setStatus] = useState('pending');
   const [isOnline, setIsOnline] = useState(false);
   
   const [incomingOrder, setIncomingOrder] = useState(null);
@@ -26,53 +25,75 @@ export default function MitraDashboard() {
   const [repairSparepart, setRepairSparepart] = useState('');
   const [repairEstimatedTime, setRepairEstimatedTime] = useState('');
 
-  const handleAlertClick = () => {
-    if (status === 'pending') {
-      setStatus('active');
+  const toggleOnline = () => {
+    setIsOnline(!isOnline);
+    if (isOnline) {
+      // Going offline
+      setIncomingOrder(null);
+      setIsOrderAccepted(false);
     }
   };
 
-  const toggleOnline = () => {
-    if (status !== 'pending') {
-      setIsOnline(!isOnline);
-      if (isOnline) {
-        // Going offline
-        setIncomingOrder(null);
-        setIsOrderAccepted(false);
-      }
-    } else {
-      alert("Selesaikan verifikasi atribut terlebih dahulu untuk mulai menerima pesanan.");
-    }
-  };
+  const [debugLog, setDebugLog] = useState("");
 
   useEffect(() => {
-    if (!isOnline) return;
+    if (!isOnline) {
+      setDebugLog("Offline");
+      return;
+    }
     
-    const checkOrder = () => {
-      const orderStr = localStorage.getItem('simulated_incoming_order');
-      if (orderStr) {
-        try {
-          const order = JSON.parse(orderStr);
-          // If order is less than 5 minutes old
-          if (Date.now() - order.timestamp < 300000) {
+    let interval;
+    const checkOrder = async () => {
+      // Fetch pending orders from API
+      try {
+        const url = `https://handygo-api.vercel.app/api/orders/pending?t=${Date.now()}`;
+        setDebugLog(`Fetching: ${url}`);
+        const res = await fetch(url, {
+          cache: 'no-store'
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setDebugLog(`Fetched OK. Orders length: ${data.orders ? data.orders.length : 0}`);
+          if (data.orders && data.orders.length > 0) {
+            // Get the first pending order
+            const apiOrder = data.orders[0];
+            
+            // Format to match the frontend state expectations
+            const formattedOrder = {
+              id: apiOrder.id,
+              service: apiOrder.service.name,
+              destination: apiOrder.dropoff_location,
+              paymentMethod: apiOrder.payment_method,
+              total: apiOrder.estimated_price,
+              timestamp: new Date(apiOrder.created_at).getTime(),
+              detailPekerjaan: apiOrder.order_details,
+              driverPhase: apiOrder.status === 'menunggu' ? undefined : apiOrder.status
+            };
+
             setIncomingOrder(prev => {
-              // If it's a new order or we don't have one yet
-              if (!prev || prev.id !== order.id) {
-                setIsOrderAccepted(order.accepted || false);
-                return order;
+              if (isOrderAccepted && prev && prev.id) {
+                return prev; // Do not override if currently handling an order
+              }
+              if (!prev || prev.id !== formattedOrder.id) {
+                setIsOrderAccepted(false);
+                return formattedOrder;
               }
               return prev;
             });
           }
-        } catch (e) {
-          console.error(e);
+        } else {
+          setDebugLog(`Fetch failed with status: ${res.status}`);
         }
+      } catch (e) {
+        console.error('Error fetching pending orders:', e);
+        setDebugLog(`Fetch error: ${e.message}`);
       }
     };
 
-    const interval = setInterval(checkOrder, 2000); // poll every 2s
+    checkOrder(); // Check immediately upon going online
+    interval = setInterval(checkOrder, 3000); // poll every 3s
     return () => clearInterval(interval);
-  }, [isOnline]);
+  }, [isOnline, isOrderAccepted]);
 
   const [showAcceptPill, setShowAcceptPill] = useState(false);
   const [workingSeconds, setWorkingSeconds] = useState(0);
@@ -96,11 +117,21 @@ export default function MitraDashboard() {
     return `${h.toString().padStart(2, '0')} : ${m.toString().padStart(2, '0')} : ${s.toString().padStart(2, '0')}`;
   };
 
-  const acceptOrder = () => {
+  const acceptOrder = async () => {
     setIsOrderAccepted(true);
     if (incomingOrder) {
+      try {
+        const mitraId = 'default-mitra-id'; // You would normally get this from mitra_profile_data
+        await fetch(`https://handygo-api.vercel.app/api/orders/${incomingOrder.id}/accept`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mitra_id: mitraId })
+        });
+      } catch (e) {
+        console.error('Error accepting order via API:', e);
+      }
+
       const updated = { ...incomingOrder, accepted: true, driverPhase: 'accepted' };
-      localStorage.setItem('simulated_incoming_order', JSON.stringify(updated));
       setIncomingOrder(updated);
 
       // Initialize automatic chat message when accepted
@@ -112,109 +143,81 @@ export default function MitraDashboard() {
       }]));
       
       setShowAcceptPill(true);
-      setTimeout(() => {
+      setTimeout(async () => {
         setShowAcceptPill(false);
         const nextPhase = ['Antar Barang', 'Belanja'].includes(incomingOrder.service) ? 'heading_to_store' : 'heading_to_customer';
         const nextUpdate = { ...updated, driverPhase: nextPhase };
-        localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
         setIncomingOrder(nextUpdate);
-      }, 2000);
+        
+        try {
+          await fetch(`https://handygo-api.vercel.app/api/orders/${incomingOrder.id}/status`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: nextPhase })
+          });
+        } catch (e) {
+          console.error('Error updating status via API:', e);
+        }
+      }, 3000);
     }
   };
 
   const [showCompletionPill, setShowCompletionPill] = useState(false);
   const [showQrisSuccessPill, setShowQrisSuccessPill] = useState(false);
 
-  const handlePhaseChange = (newPhase) => {
-    if (incomingOrder) {
-      const updated = { ...incomingOrder, driverPhase: newPhase };
+  const handlePhaseChange = async (newPhase) => {
+    setIncomingOrder(prev => {
+      if (!prev) return prev;
+      const updated = { ...prev, driverPhase: newPhase };
       if (newPhase === 'working') {
         updated.workingStartTime = Date.now();
       } else if (newPhase === 'finished_working_wait') {
-        updated.totalWorkingSeconds = Math.floor((Date.now() - (incomingOrder.workingStartTime || Date.now())) / 1000);
+        updated.totalWorkingSeconds = Math.floor((Date.now() - (prev.workingStartTime || Date.now())) / 1000);
       }
+      return updated;
+    });
 
-      localStorage.setItem('simulated_incoming_order', JSON.stringify(updated));
-      setIncomingOrder(updated);
+    const orderId = incomingOrder ? incomingOrder.id : null;
+    if (orderId) {
+      try {
+        await fetch(`https://handygo-api.vercel.app/api/orders/${orderId}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newPhase })
+        });
+      } catch (e) {
+        console.error('Error updating phase via API:', e);
+      }
+    }
       
       if (newPhase === 'traveling_to_destination') {
         setTimeout(() => {
-          const currentOrderStr = localStorage.getItem('simulated_incoming_order');
-          if (currentOrderStr) {
-             const currentOrder = JSON.parse(currentOrderStr);
-             if (currentOrder.driverPhase === 'traveling_to_destination') {
-               const nextUpdate = { ...currentOrder, driverPhase: 'payment_confirmation' };
-               localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
-               setIncomingOrder(nextUpdate);
-             }
-          }
+          handlePhaseChange('payment_confirmation');
         }, 5000);
       } else if (newPhase === 'traveling_to_customer') {
         setTimeout(() => {
-          // Check if order still exists and we are still in traveling_to_customer
-          const currentOrderStr = localStorage.getItem('simulated_incoming_order');
-          if (currentOrderStr) {
-             const currentOrder = JSON.parse(currentOrderStr);
-             if (currentOrder.driverPhase === 'traveling_to_customer') {
-               const nextUpdate = { ...currentOrder, driverPhase: 'arrived_near_customer' };
-               localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
-               setIncomingOrder(nextUpdate);
-             }
-          }
+          handlePhaseChange('arrived_near_customer');
         }, 5000);
       } else if (newPhase === 'finished_working_wait') {
         setTimeout(() => {
-          const currentOrderStr = localStorage.getItem('simulated_incoming_order');
-          if (currentOrderStr) {
-             const currentOrder = JSON.parse(currentOrderStr);
-             if (currentOrder.driverPhase === 'finished_working_wait') {
-               const isQris = currentOrder.paymentMethod === 'QRIS';
-               const nextUpdate = { ...currentOrder, driverPhase: isQris ? 'payment_confirmation_qris' : 'payment_confirmation' };
-               localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
-               setIncomingOrder(nextUpdate);
-             }
-          }
+          const isQris = incomingOrder?.paymentMethod === 'QRIS';
+          handlePhaseChange(isQris ? 'payment_confirmation_qris' : 'payment_confirmation');
         }, 2000);
       } else if (newPhase === 'payment_confirmation_qris') {
         setTimeout(() => {
-          const currentOrderStr = localStorage.getItem('simulated_incoming_order');
-          if (currentOrderStr) {
-             const currentOrder = JSON.parse(currentOrderStr);
-             if (currentOrder.driverPhase === 'payment_confirmation_qris') {
-               const nextUpdate = { ...currentOrder, driverPhase: 'payment_confirmed_qris' };
-               localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
-               setIncomingOrder(nextUpdate);
-               
-               if (['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(currentOrder.service)) {
-                 setShowQrisSuccessPill(true);
-                 setTimeout(() => {
-                   setShowQrisSuccessPill(false);
-                 }, 3000);
-               }
-             }
+          handlePhaseChange('payment_confirmed_qris');
+          if (['Perbaikan Kelistrikan', 'Perbaikan Elektronik'].includes(incomingOrder?.service)) {
+            setShowQrisSuccessPill(true);
+            setTimeout(() => {
+              setShowQrisSuccessPill(false);
+            }, 3000);
           }
         }, 2000);
       } else if (newPhase === 'completed_qris_success') {
         setShowQrisSuccessPill(true);
         setTimeout(() => {
-          const currentOrderStr = localStorage.getItem('simulated_incoming_order');
-          if (currentOrderStr) {
-             const currentOrder = JSON.parse(currentOrderStr);
-             if (currentOrder.driverPhase === 'completed_qris_success') {
-               setShowQrisSuccessPill(false);
-               const nextUpdate = { ...currentOrder, driverPhase: 'completed' };
-               localStorage.setItem('simulated_incoming_order', JSON.stringify(nextUpdate));
-               setIncomingOrder(nextUpdate);
-               
-               setShowCompletionPill(true);
-               setTimeout(() => {
-                 setShowCompletionPill(false);
-                 setIncomingOrder(null);
-                 setIsOrderAccepted(false);
-                 localStorage.removeItem('simulated_incoming_order');
-               }, 2000);
-             }
-          }
+          setShowQrisSuccessPill(false);
+          handlePhaseChange('completed');
         }, 3000);
       } else if (newPhase === 'completed') {
         setShowCompletionPill(true);
@@ -222,14 +225,13 @@ export default function MitraDashboard() {
           setShowCompletionPill(false);
           setIncomingOrder(null);
           setIsOrderAccepted(false);
-          localStorage.removeItem('simulated_incoming_order');
+          // Optional: You could notify the server that it's fully closed here
         }, 2000);
       }
-    }
   };
 
   const formatRupiah = (number) => {
-    return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(number);
+    return new Intl.NumberFormat('id-ID').format(number);
   };
 
   useEffect(() => {
@@ -251,17 +253,20 @@ export default function MitraDashboard() {
     }
   }, []);
 
-  useEffect(() => {
-    if (status === 'active') {
-      const timer = setTimeout(() => {
-        setStatus('hidden');
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [status]);
+
 
   return (
     <div className="mitra-dashboard-container">
+      {/* DEBUG TEXT */}
+      <div style={{ position: 'absolute', top: '100px', left: '20px', zIndex: 9999, background: 'rgba(0,0,0,0.8)', color: 'lime', padding: '10px', fontSize: '10px', borderRadius: '5px' }}>
+        DEBUG INFO:<br/>
+        Online: {isOnline ? "YES" : "NO"}<br/>
+        API Status: {debugLog}<br/>
+        Order Accepted: {isOrderAccepted ? "YES" : "NO"}<br/>
+        Has Incoming: {incomingOrder ? "YES" : "NO"}<br/>
+        {incomingOrder && `Order Phase: ${incomingOrder.driverPhase}`}<br/>
+      </div>
+
       {/* Map Background */}
       <div className="mdash-map-container">
         <Map
@@ -587,7 +592,19 @@ export default function MitraDashboard() {
               ) : (
                 <div className="mdash-order-details-section">
                   <p className="mdash-order-label">Pesanan</p>
-                  <h4 className="mdash-order-value text-medium">Ayam Bakar Paha Atas (2), Ayam Bakar Dada (4)</h4>
+                  <h4 className="mdash-order-value text-medium">
+                    {(() => {
+                      try {
+                        const items = JSON.parse(incomingOrder.detailPekerjaan);
+                        if (Array.isArray(items)) {
+                          return items.map(item => `${item.name} (${item.quantity})`).join(', ');
+                        }
+                        return incomingOrder.detailPekerjaan;
+                      } catch (e) {
+                        return incomingOrder.detailPekerjaan || 'Item Pesanan';
+                      }
+                    })()}
+                  </h4>
                 </div>
               )}
 
@@ -728,29 +745,6 @@ export default function MitraDashboard() {
         </div>
       )}
 
-      {/* Alert Box */}
-      {status !== 'hidden' && (
-        <div 
-          className={`mdash-alert-box ${status === 'active' ? 'active fade-up-out' : ''}`}
-          onClick={handleAlertClick}
-        >
-          {status === 'pending' ? (
-            <>
-              <AlertCircle size={20} color="#eab308" className="mdash-alert-icon" />
-              <p className="mdash-alert-text">
-                Pengiriman atribut akan segera diproses. Untuk saat ini, kamu belum bisa menerima pesanan ya. Jelajahi handygo dan lengkapi profil dulu yuk!
-              </p>
-            </>
-          ) : (
-            <>
-              <CheckCircle2 size={20} color="#22c55e" className="mdash-alert-icon" />
-              <p className="mdash-alert-text">
-                Pengiriman atribut telah selesai dan akun kamu sudah aktif! Yuk mulai perjalanan pertamamu.
-              </p>
-            </>
-          )}
-        </div>
-      )}
     </div>
   );
 }

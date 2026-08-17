@@ -76,16 +76,7 @@ export default function ShoppingCheckout() {
       const responseData = await response.json();
       const createdOrderId = responseData.order?.id;
 
-      // Simulate sending order to Mitra via localStorage
-      localStorage.setItem('simulated_incoming_order', JSON.stringify({
-        id: createdOrderId || Date.now(),
-        service: 'Belanja',
-        destination: pengantaran.name,
-        paymentMethod: paymentMethod,
-        total: total,
-        timestamp: Date.now()
-      }));
-
+      // Do not use localStorage simulation, pass orderId directly
       setShowModal(true);
       // Auto redirect back to status page after 3 seconds
       setTimeout(() => {
