@@ -304,8 +304,8 @@ exports.getMitraProfileByPhone = async (req, res) => {
       return res.status(400).json({ error: 'Nomor HP diperlukan' });
     }
     
-    // Normalize phone format since frontend saves it as +628... or 8...
-    phone = phone.replace('+62', '8');
+    // Normalize phone format since frontend saves it as +628... or 08...
+    phone = phone.replace('+62', '0');
 
     const mitra = await prisma.mitra.findFirst({
       where: { phone_number: phone }

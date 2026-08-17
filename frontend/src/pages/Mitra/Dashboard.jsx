@@ -129,7 +129,9 @@ export default function MitraDashboard() {
         if (savedProfile) {
           parsed = JSON.parse(savedProfile);
           mitraId = parsed.id;
-        } else if (handyGoMitra) {
+        }
+        
+        if (!mitraId && handyGoMitra) {
           parsed = JSON.parse(handyGoMitra);
           mitraId = parsed.id;
         }
