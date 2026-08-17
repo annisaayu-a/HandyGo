@@ -115,7 +115,7 @@ exports.getOrderById = async (req, res) => {
     
     const order = await prisma.order.findUnique({
       where: { id },
-      include: { service: true }
+      include: { service: true, mitra: true }
     });
 
     if (!order) {
@@ -132,10 +132,19 @@ exports.getOrderById = async (req, res) => {
 exports.acceptOrder = async (req, res) => {
   try {
     const { id } = req.params;
-    const { mitra_id } = req.body;
+    let { mitra_id } = req.body;
 
     if (!mitra_id) {
       return res.status(400).json({ error: 'ID Mitra diperlukan' });
+    }
+
+    if (mitra_id === 'default-mitra-id') {
+      const firstMitra = await prisma.mitra.findFirst();
+      if (firstMitra) {
+        mitra_id = firstMitra.id;
+      } else {
+        return res.status(400).json({ error: 'Mitra belum tersedia di database' });
+      }
     }
 
     // Ensure order is still pending
@@ -152,7 +161,8 @@ exports.acceptOrder = async (req, res) => {
       data: { 
         status: 'accepted',
         mitra_id 
-      }
+      },
+      include: { mitra: true }
     });
 
     res.status(200).json({ message: 'Pesanan berhasil diambil', order });
