@@ -8,6 +8,27 @@ import './CompletedStatus.css';
 
 export default function TransportDetails() {
   const navigate = useNavigate();
+  const [mitraName, setMitraName] = useState('Mitra HandyGo');
+  const [mitraAvatar, setMitraAvatar] = useState('https://ui-avatars.com/api/?name=Mitra+HandyGo&background=034078&color=fff');
+  
+  useEffect(() => {
+    try {
+      const order = JSON.parse(localStorage.getItem('simulated_incoming_order'));
+      if (order && order.mitra) {
+        setMitraName(order.mitra.full_name || order.mitra.name || 'Mitra HandyGo');
+        if (order.mitra.profile_picture) setMitraAvatar(order.mitra.profile_picture);
+      } else {
+        const saved = localStorage.getItem('mitra_profile_data');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.full_name) setMitraName(parsed.full_name);
+          else if (parsed.name) setMitraName(parsed.name);
+          if (parsed.avatar) setMitraAvatar(parsed.avatar);
+        }
+      }
+    } catch(e) {}
+  }, []);
+
   const location = useLocation();
   
   const rawPickup = location.state?.pickupLocation || { name: 'Universitas Hasanuddin Fakultas Tekni...', lat: -5.1332, lng: 119.4975 };
@@ -231,9 +252,9 @@ export default function TransportDetails() {
 
           <div className="driver-info-box">
             <div className="driver-profile-card">
-              <img src="https://ui-avatars.com/api/?name=Rafael+Gemam&background=034078&color=fff" alt="Driver" className="driver-avatar" />
+              <img src={mitraAvatar} alt="Driver" className="driver-avatar" />
               <div className="driver-profile-info">
-                <h4 className="driver-name">Rafael gemam</h4>
+                <h4 className="driver-name">{mitraName}</h4>
                 <div className="driver-rating"><Star size={14} color="#eab308" fill="#eab308" /> 4.9 <span className="reviews">(59 ulasan)</span></div>
               </div>
               <div className="driver-actions">
@@ -436,9 +457,9 @@ export default function TransportDetails() {
 
               <div className="driver-info-box">
                 <div className="driver-profile-card">
-                  <img src="https://ui-avatars.com/api/?name=Rafael+Gemam&background=034078&color=fff" alt="Driver" className="driver-avatar" />
+                  <img src={mitraAvatar} alt="Driver" className="driver-avatar" />
                   <div className="driver-profile-info">
-                    <h4 className="driver-name">Rafael gemam</h4>
+                    <h4 className="driver-name">{mitraName}</h4>
                     <div className="driver-rating"><Star size={14} color="#eab308" fill="#eab308" /> 4.9 <span className="reviews">(59 ulasan)</span></div>
                   </div>
                   <div className="driver-actions">

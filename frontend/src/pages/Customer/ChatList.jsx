@@ -1,10 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Bell, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './ChatList.css';
 
 export default function ChatList() {
   const navigate = useNavigate();
+  const [mitraName, setMitraName] = useState('Mitra HandyGo');
+  const [mitraAvatar, setMitraAvatar] = useState('https://ui-avatars.com/api/?name=Mitra+HandyGo&background=034078&color=fff');
+  
+  useEffect(() => {
+    try {
+      const order = JSON.parse(localStorage.getItem('simulated_incoming_order'));
+      if (order && order.mitra) {
+        setMitraName(order.mitra.full_name || order.mitra.name || 'Mitra HandyGo');
+        if (order.mitra.profile_picture) setMitraAvatar(order.mitra.profile_picture);
+      } else {
+        const saved = localStorage.getItem('mitra_profile_data');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.full_name) setMitraName(parsed.full_name);
+          else if (parsed.name) setMitraName(parsed.name);
+          if (parsed.avatar) setMitraAvatar(parsed.avatar);
+        }
+      }
+    } catch(e) {}
+  }, []);
+
 
   const [activeChats, setActiveChats] = useState([]);
 
@@ -61,7 +82,7 @@ export default function ChatList() {
       if (isOrderActive) {
         setActiveChats([{
           id: 1,
-          name: 'Rafael Gemam',
+          name: mitraName,
           lastMessage: lastMsg,
           avatar: 'https://i.pravatar.cc/150?img=11',
           unread: 1,

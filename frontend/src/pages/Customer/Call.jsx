@@ -6,6 +6,27 @@ import './Call.css';
 
 export default function Call() {
   const navigate = useNavigate();
+  const [mitraName, setMitraName] = useState('Mitra HandyGo');
+  const [mitraAvatar, setMitraAvatar] = useState('https://ui-avatars.com/api/?name=Mitra+HandyGo&background=034078&color=fff');
+  
+  useEffect(() => {
+    try {
+      const order = JSON.parse(localStorage.getItem('simulated_incoming_order'));
+      if (order && order.mitra) {
+        setMitraName(order.mitra.full_name || order.mitra.name || 'Mitra HandyGo');
+        if (order.mitra.profile_picture) setMitraAvatar(order.mitra.profile_picture);
+      } else {
+        const saved = localStorage.getItem('mitra_profile_data');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.full_name) setMitraName(parsed.full_name);
+          else if (parsed.name) setMitraName(parsed.name);
+          if (parsed.avatar) setMitraAvatar(parsed.avatar);
+        }
+      }
+    } catch(e) {}
+  }, []);
+
   
   // State: 'ringing', 'connected'
   const [callState, setCallState] = useState('ringing');
@@ -44,7 +65,7 @@ export default function Call() {
     <div className="call-page animate-fade-in">
       <div className="call-header">
         <h1 className="call-logo-text">HG</h1>
-        <h2 className="call-name">Rafael Gemam</h2>
+        <h2 className="call-name">{mitraName}</h2>
         <p className="call-number">+628521940009</p>
       </div>
 

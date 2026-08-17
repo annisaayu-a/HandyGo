@@ -7,6 +7,27 @@ import DriverTrackingMap from '../../components/DriverTrackingMap';
 
 export default function RepairStatus() {
   const navigate = useNavigate();
+  const [mitraName, setMitraName] = useState('Mitra HandyGo');
+  const [mitraAvatar, setMitraAvatar] = useState('https://ui-avatars.com/api/?name=Mitra+HandyGo&background=034078&color=fff');
+  
+  useEffect(() => {
+    try {
+      const order = JSON.parse(localStorage.getItem('simulated_incoming_order'));
+      if (order && order.mitra) {
+        setMitraName(order.mitra.full_name || order.mitra.name || 'Mitra HandyGo');
+        if (order.mitra.profile_picture) setMitraAvatar(order.mitra.profile_picture);
+      } else {
+        const saved = localStorage.getItem('mitra_profile_data');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.full_name) setMitraName(parsed.full_name);
+          else if (parsed.name) setMitraName(parsed.name);
+          if (parsed.avatar) setMitraAvatar(parsed.avatar);
+        }
+      }
+    } catch(e) {}
+  }, []);
+
   const location = useLocation();
   const initialPhase = location.state?.status || 'coming';
   const [statusPhase, setStatusPhase] = useState(initialPhase);
@@ -301,9 +322,9 @@ export default function RepairStatus() {
           <>
             <div className="courier-card" style={{ marginBottom: '24px' }}>
               <div className="courier-info-left">
-                <img src="https://i.pravatar.cc/150?u=rafael" alt="Mitra" className="courier-avatar" />
+                <img src={mitraAvatar} alt="Mitra" className="courier-avatar" />
                 <div className="courier-text">
-                  <h4 className="courier-name">Rafael gemam</h4>
+                  <h4 className="courier-name">{mitraName}</h4>
                   <div className="courier-rating">
                     <span className="star">★</span> 4.9 <span className="reviews">(59 ulasan)</span>
                   </div>
@@ -363,9 +384,9 @@ export default function RepairStatus() {
       {/* Technician Floating Bottom Card (Only for non-finished phases) */}
       {statusPhase !== 'finished' && (
         <div style={{ position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)', width: 'calc(100% - 48px)', maxWidth: 'calc(480px - 48px)', backgroundColor: '#ffffff', borderRadius: '30px', padding: '12px 16px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', zIndex: 20, boxSizing: 'border-box', border: '1px solid #f1f5f9' }}>
-          <img src="https://i.pravatar.cc/150?u=rafael" alt="Mitra" style={{ width: '48px', height: '48px', borderRadius: '50%', marginRight: '16px', objectFit: 'cover' }} />
+          <img src={mitraAvatar} alt="Mitra" style={{ width: '48px', height: '48px', borderRadius: '50%', marginRight: '16px', objectFit: 'cover' }} />
           <div style={{ flex: 1 }}>
-            <h3 style={{ margin: '0 0 4px 0', fontFamily: 'Outfit, sans-serif', fontSize: '1rem', fontWeight: 700 }}>Rafael gemam</h3>
+            <h3 style={{ margin: '0 0 4px 0', fontFamily: 'Outfit, sans-serif', fontSize: '1rem', fontWeight: 700 }}>{mitraName}</h3>
             <div style={{ fontSize: '0.8rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <span style={{ color: '#eab308' }}>★</span>
               <span style={{ fontWeight: 600, color: '#1e293b' }}>4.9</span>

@@ -5,6 +5,27 @@ import './Messages.css';
 
 export default function CustomerMessages() {
   const navigate = useNavigate();
+  const [mitraName, setMitraName] = useState('Mitra HandyGo');
+  const [mitraAvatar, setMitraAvatar] = useState('https://ui-avatars.com/api/?name=Mitra+HandyGo&background=034078&color=fff');
+  
+  useEffect(() => {
+    try {
+      const order = JSON.parse(localStorage.getItem('simulated_incoming_order'));
+      if (order && order.mitra) {
+        setMitraName(order.mitra.full_name || order.mitra.name || 'Mitra HandyGo');
+        if (order.mitra.profile_picture) setMitraAvatar(order.mitra.profile_picture);
+      } else {
+        const saved = localStorage.getItem('mitra_profile_data');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.full_name) setMitraName(parsed.full_name);
+          else if (parsed.name) setMitraName(parsed.name);
+          if (parsed.avatar) setMitraAvatar(parsed.avatar);
+        }
+      }
+    } catch(e) {}
+  }, []);
+
   const storedUser = JSON.parse(localStorage.getItem('handyGoUser') || '{}');
   const userName = storedUser.name || 'Ajel';
 
@@ -23,7 +44,7 @@ export default function CustomerMessages() {
           if (activeOrder) {
             setActiveChat({
               id: activeOrder.id,
-              name: 'Rafael gemam',
+              name: mitraName,
               status: activeOrder.service?.name === 'Antar Barang' 
                 ? 'Kurir sedang menuju lokasi penjemputan.' 
                 : 'Mohon menunggu, pesananmu sedang disiapkan.',

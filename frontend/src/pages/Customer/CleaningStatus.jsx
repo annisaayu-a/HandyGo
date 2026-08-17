@@ -7,6 +7,27 @@ import DriverTrackingMap from '../../components/DriverTrackingMap';
 
 export default function CleaningStatus() {
   const navigate = useNavigate();
+  const [mitraName, setMitraName] = useState('Mitra HandyGo');
+  const [mitraAvatar, setMitraAvatar] = useState('https://ui-avatars.com/api/?name=Mitra+HandyGo&background=034078&color=fff');
+  
+  useEffect(() => {
+    try {
+      const order = JSON.parse(localStorage.getItem('simulated_incoming_order'));
+      if (order && order.mitra) {
+        setMitraName(order.mitra.full_name || order.mitra.name || 'Mitra HandyGo');
+        if (order.mitra.profile_picture) setMitraAvatar(order.mitra.profile_picture);
+      } else {
+        const saved = localStorage.getItem('mitra_profile_data');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.full_name) setMitraName(parsed.full_name);
+          else if (parsed.name) setMitraName(parsed.name);
+          if (parsed.avatar) setMitraAvatar(parsed.avatar);
+        }
+      }
+    } catch(e) {}
+  }, []);
+
   const location = useLocation();
   const orderData = location.state?.orderData || {
     address: 'BTP Blok G 114',
@@ -326,7 +347,7 @@ export default function CleaningStatus() {
                   <div className="courier-info-left">
                     <img src="https://i.pravatar.cc/150?img=11" alt="Mitra" className="courier-avatar" />
                     <div className="courier-text">
-                      <h4 className="courier-name">Rafael gemam</h4>
+                      <h4 className="courier-name">{mitraName}</h4>
                       <div className="courier-rating">
                         <span className="star">★</span> 4.9 <span className="reviews">(59 ulasan)</span>
                       </div>
@@ -488,7 +509,7 @@ export default function CleaningStatus() {
             <div className="cs-card cs-mitra-card">
               <img src="https://i.pravatar.cc/150?img=11" alt="Mitra" className="cs-mitra-avatar" />
               <div className="cs-mitra-info">
-                <h3 className="cs-mitra-name">Rafael gemam</h3>
+                <h3 className="cs-mitra-name">{mitraName}</h3>
                 <div className="cs-mitra-rating">
                   <span className="star">★</span> 4.9 <span className="reviews">(59 ulasan)</span>
                 </div>

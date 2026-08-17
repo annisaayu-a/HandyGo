@@ -5,6 +5,27 @@ import './Chat.css';
 
 export default function Chat() {
   const navigate = useNavigate();
+  const [mitraName, setMitraName] = useState('Mitra HandyGo');
+  const [mitraAvatar, setMitraAvatar] = useState('https://ui-avatars.com/api/?name=Mitra+HandyGo&background=034078&color=fff');
+  
+  useEffect(() => {
+    try {
+      const order = JSON.parse(localStorage.getItem('simulated_incoming_order'));
+      if (order && order.mitra) {
+        setMitraName(order.mitra.full_name || order.mitra.name || 'Mitra HandyGo');
+        if (order.mitra.profile_picture) setMitraAvatar(order.mitra.profile_picture);
+      } else {
+        const saved = localStorage.getItem('mitra_profile_data');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.full_name) setMitraName(parsed.full_name);
+          else if (parsed.name) setMitraName(parsed.name);
+          if (parsed.avatar) setMitraAvatar(parsed.avatar);
+        }
+      }
+    } catch(e) {}
+  }, []);
+
   const location = useLocation();
   const isFinished = location.state?.isFinished || false;
   const isCallActive = location.state?.isCallActive || false;
@@ -98,7 +119,7 @@ export default function Chat() {
         <div className="chat-mitra-profile">
           <img src="https://i.pravatar.cc/150?img=11" alt="Mitra" className="chat-mitra-avatar" />
           <div className="chat-mitra-info">
-            <h1 className="chat-mitra-name">Rafael Gemam</h1>
+            <h1 className="chat-mitra-name">{mitraName}</h1>
             <div className="chat-mitra-rating">
               <span className="star">★</span> 4.9 <span className="reviews">(59 ulasan)</span>
             </div>
@@ -116,7 +137,7 @@ export default function Chat() {
           <div className="chat-active-call-banner" onClick={() => navigate('/customer/call')}>
             <div className="chat-active-call-left">
               <Phone size={16} color="#1e293b" fill="currentColor" />
-              <span className="chat-active-call-name">Rafael Gemam</span>
+              <span className="chat-active-call-name">{mitraName}</span>
             </div>
             <span className="chat-active-call-time">{formatTime(activeCallTime)}</span>
           </div>

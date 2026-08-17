@@ -7,6 +7,27 @@ import DriverTrackingMap from '../../components/DriverTrackingMap';
 
 export default function DeliveryStatus() {
   const navigate = useNavigate();
+  const [mitraName, setMitraName] = useState('Mitra HandyGo');
+  const [mitraAvatar, setMitraAvatar] = useState('https://ui-avatars.com/api/?name=Mitra+HandyGo&background=034078&color=fff');
+  
+  useEffect(() => {
+    try {
+      const order = JSON.parse(localStorage.getItem('simulated_incoming_order'));
+      if (order && order.mitra) {
+        setMitraName(order.mitra.full_name || order.mitra.name || 'Mitra HandyGo');
+        if (order.mitra.profile_picture) setMitraAvatar(order.mitra.profile_picture);
+      } else {
+        const saved = localStorage.getItem('mitra_profile_data');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.full_name) setMitraName(parsed.full_name);
+          else if (parsed.name) setMitraName(parsed.name);
+          if (parsed.avatar) setMitraAvatar(parsed.avatar);
+        }
+      }
+    } catch(e) {}
+  }, []);
+
   const location = useLocation();
   const orderId = location.state?.orderId;
 
@@ -224,7 +245,7 @@ export default function DeliveryStatus() {
                   className="courier-avatar"
                 />
                 <div className="courier-text">
-                  <h4 className="courier-name">Rafael gemam</h4>
+                  <h4 className="courier-name">{mitraName}</h4>
                   <div className="courier-rating">
                     <span className="star" style={{color: '#fbbf24'}}>★</span> 4.9 <span className="reviews" style={{color: '#64748b'}}>(59 ulasan)</span>
                   </div>
@@ -285,7 +306,7 @@ export default function DeliveryStatus() {
                 className="courier-avatar"
               />
               <div className="courier-text">
-                <h4 className="courier-name">Rafael gemam</h4>
+                <h4 className="courier-name">{mitraName}</h4>
                 <div className="courier-rating">
                     <span className="star" style={{color: '#fbbf24'}}>★</span> 4.9 <span className="reviews" style={{color: '#64748b'}}>(59 ulasan)</span>
                 </div>
