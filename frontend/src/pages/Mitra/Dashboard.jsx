@@ -121,27 +121,54 @@ export default function MitraDashboard() {
     setIsOrderAccepted(true);
     if (incomingOrder) {
       try {
-        const mitraId = 'default-mitra-id'; // You would normally get this from mitra_profile_data
+        let mitraId = null;
+        const savedProfile = localStorage.getItem('mitra_profile_data');
+        if (savedProfile) {
+          const parsed = JSON.parse(savedProfile);
+          mitraId = parsed.id;
+          if (!mitraId && parsed.phone) {
+            const res = await fetch(`https://handygo-api.vercel.app/api/auth/mitra/profile?phone=${encodeURIComponent(parsed.phone)}`);
+            if (res.ok) {
+              const mData = await res.json();
+              mitraId = mData.mitra.id;
+              parsed.id = mitraId;
+              localStorage.setItem('mitra_profile_data', JSON.stringify(parsed));
+            }
+          }
+        }
+        
+        if (!mitraId) {
+          alert('Gagal mengambil profil Mitra. Pastikan Anda sudah login.');
+          return;
+        }
+
         await fetch(`https://handygo-api.vercel.app/api/orders/${incomingOrder.id}/accept`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ mitra_id: mitraId })
         });
+        
+        // Post welcome chat message to backend instead of localStorage
+        await fetch('https://handygo-api.vercel.app/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            order_id: incomingOrder.id,
+            sender_type: 'mitra',
+            text: 'Pesanan berhasil diterima.\n\nHalo, Saya sudah menerima pesanan Anda dan sedang menuju lokasi. Jika ada patokan lokasi atau informasi tambahan, silahkan sampaikan melalui chat ini ya.\n\nIni adalah pesan otomatis.'
+          })
+        });
+
       } catch (e) {
         console.error('Error accepting order via API:', e);
       }
 
       const updated = { ...incomingOrder, accepted: true, driverPhase: 'accepted' };
       setIncomingOrder(updated);
-
-      // Initialize automatic chat message when accepted
-      localStorage.setItem('handygo_active_chat_messages', JSON.stringify([{
-        id: Date.now(),
-        sender: 'mitra',
-        text: 'Pesanan berhasil diterima.\n\nHalo, Saya sudah menerima pesanan Anda dan sedang menuju lokasi. Jika ada patokan lokasi atau informasi tambahan, silahkan sampaikan melalui chat ini ya.\n\nIni adalah pesan otomatis.',
-        time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(':', '.')
-      }]));
       
+      // Save active order ID for Chat page to use
+      localStorage.setItem('handygo_active_order_id', incomingOrder.id);
+
       setShowAcceptPill(true);
       setTimeout(async () => {
         setShowAcceptPill(false);
@@ -221,11 +248,22 @@ export default function MitraDashboard() {
         }, 3000);
       } else if (newPhase === 'completed') {
         setShowCompletionPill(true);
+        // Update DB status to 'selesai' (completed)
+        const completedOrderId = incomingOrder ? incomingOrder.id : null;
+        if (completedOrderId) {
+          try {
+            await fetch(`https://handygo-api.vercel.app/api/orders/${completedOrderId}/status`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: 'selesai' })
+            });
+          } catch (e) {}
+        }
         setTimeout(() => {
           setShowCompletionPill(false);
           setIncomingOrder(null);
           setIsOrderAccepted(false);
-          // Optional: You could notify the server that it's fully closed here
+          localStorage.removeItem('handygo_active_order_id');
         }, 2000);
       }
   };
@@ -486,7 +524,7 @@ export default function MitraDashboard() {
                 ) : (
                   <div className="mdash-order-actions">
                   <button className="mdash-icon-btn" onClick={() => navigate('/mitra/call')}><Phone size={18} color="#034078" fill="#034078" /></button>
-                  <button className="mdash-icon-btn" onClick={() => navigate('/mitra/chat')}><MessageCircle size={18} color="#034078" fill="#034078" /></button>
+                  <button className="mdash-icon-btn" onClick={() => navigate('/mitra/chat', { state: { orderId: incomingOrder.id } })}><MessageCircle size={18} color="#034078" fill="#034078" /></button>
                   </div>
                 )}
               </div>

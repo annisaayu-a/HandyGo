@@ -62,4 +62,14 @@ model Order {
   payment_method    String
   created_at        DateTime @default(now())
   completed_at      DateTime?
+  chat_messages     ChatMessage[]
+}
+
+model ChatMessage {
+  id          String   @id @default(uuid())
+  order_id    String
+  order       Order    @relation(fields: [order_id], references: [id])
+  sender_type String   // "customer" atau "mitra"
+  text        String
+  created_at  DateTime @default(now())
 }

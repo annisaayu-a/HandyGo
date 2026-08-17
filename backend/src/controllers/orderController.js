@@ -61,7 +61,7 @@ exports.getOrders = async (req, res) => {
     const orders = await prisma.order.findMany({
       where: whereClause,
       orderBy: { created_at: 'desc' },
-      include: { service: true, user: true }
+      include: { service: true, user: true, mitra: true }
     });
 
     res.status(200).json({ orders });
@@ -119,7 +119,7 @@ exports.getOrderById = async (req, res) => {
     
     const order = await prisma.order.findUnique({
       where: { id },
-      include: { service: true, mitra: true }
+      include: { service: true, mitra: true, user: true }
     });
 
     if (!order) {

@@ -3,18 +3,52 @@ import { ArrowLeft, Phone, Paperclip, Mic, Image as ImageIcon, Camera, Send, Mes
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../Customer/Chat.css'; // Reusing customer chat CSS
 
+const API = 'https://handygo-api.vercel.app';
+
 export default function MitraChat() {
   const navigate = useNavigate();
   const location = useLocation();
   const isFinished = location.state?.isFinished || false;
-  
+  const orderId = location.state?.orderId || null;
+
+  const [customerName, setCustomerName] = useState('Pelanggan');
+  const [customerAvatar, setCustomerAvatar] = useState('https://ui-avatars.com/api/?name=Pelanggan&background=cbd5e1&color=64748b');
+
+  // If no orderId in state, see if we have a recent one
+  const [activeOrderId, setActiveOrderId] = useState(orderId);
+
+  useEffect(() => {
+    if (!activeOrderId) {
+      const saved = localStorage.getItem('handygo_active_order_id');
+      if (saved) setActiveOrderId(saved);
+    }
+  }, []);
+
+  // Fetch customer info from DB order
+  useEffect(() => {
+    if (activeOrderId) {
+      fetch(`${API}/api/orders/${activeOrderId}`)
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (data?.order?.user) {
+            const u = data.order.user;
+            setCustomerName(u.full_name || 'Pelanggan');
+            setCustomerAvatar(
+              u.profile_picture ||
+              `https://ui-avatars.com/api/?name=${encodeURIComponent(u.full_name || 'Pelanggan')}&background=cbd5e1&color=64748b`
+            );
+          }
+        })
+        .catch(() => {});
+    }
+  }, [activeOrderId]);
+
   const [message, setMessage] = useState('');
   const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
   const messagesEndRef = useRef(null);
-
   const [chatHistory, setChatHistory] = useState([]);
 
-  // Mitra specific quick replies based on user image
+  // Mitra specific quick replies
   const quickReplies = ['Saya sudah dilokasi kak', 'Oke, tunggu ya', 'Sesuai titik kan kak'];
 
   const scrollToBottom = () => {
@@ -25,44 +59,52 @@ export default function MitraChat() {
     scrollToBottom();
   }, [chatHistory]);
 
-  // Sync with localStorage to simulate real-time chat
+  // Poll messages from backend API
   useEffect(() => {
-    const loadMessages = () => {
-      const saved = localStorage.getItem('handygo_active_chat_messages');
-      if (saved) {
-        setChatHistory(JSON.parse(saved));
-      }
+    if (!activeOrderId) return;
+
+    const loadMessages = async () => {
+      try {
+        const res = await fetch(`${API}/api/chat/${activeOrderId}`);
+        if (res.ok) {
+          const data = await res.json();
+          const mapped = data.messages.map(m => ({
+            id: m.id,
+            sender: m.sender_type, // 'customer' or 'mitra'
+            text: m.text,
+            time: new Date(m.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(':', '.')
+          }));
+          setChatHistory(mapped);
+        }
+      } catch (e) {}
     };
-    
-    // Initial load
+
     loadMessages();
+    const interval = setInterval(loadMessages, 2000);
+    return () => clearInterval(interval);
+  }, [activeOrderId]);
 
-    // Listen for storage changes from other tabs/windows (Customer simulator)
-    window.addEventListener('storage', loadMessages);
-    
-    // Also poll every 1 second just in case we are in the same window
-    const interval = setInterval(loadMessages, 1000);
-
-    return () => {
-      window.removeEventListener('storage', loadMessages);
-      clearInterval(interval);
-    };
-  }, []);
-
-  const handleSend = (text = message) => {
+  const handleSend = async (text = message) => {
     if (!text.trim()) return;
-    
-    const newMessage = {
-      id: Date.now(),
-      sender: 'mitra',
-      text: text,
-      time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(':', '.')
-    };
-    
-    const newHistory = [...chatHistory, newMessage];
-    setChatHistory(newHistory);
-    localStorage.setItem('handygo_active_chat_messages', JSON.stringify(newHistory));
     setMessage('');
+
+    if (activeOrderId) {
+      try {
+        await fetch(`${API}/api/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order_id: activeOrderId, sender_type: 'mitra', text })
+        });
+        // Optimistically add to local state
+        const newMsg = {
+          id: Date.now(),
+          sender: 'mitra',
+          text,
+          time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(':', '.')
+        };
+        setChatHistory(prev => [...prev, newMsg]);
+      } catch (e) {}
+    }
   };
 
   const handleAttachmentClick = () => {
@@ -78,9 +120,9 @@ export default function MitraChat() {
         </button>
         
         <div className="chat-mitra-profile">
-          <img src="https://ui-avatars.com/api/?name=Hana&background=cbd5e1&color=64748b" alt="Customer" className="chat-mitra-avatar" />
+          <img src={customerAvatar} alt="Customer" className="chat-mitra-avatar" />
           <div className="chat-mitra-info">
-            <h1 className="chat-mitra-name">Hana</h1>
+            <h1 className="chat-mitra-name">{customerName}</h1>
             <div className="chat-mitra-rating">
               <span className="star">★</span> 5.0
             </div>

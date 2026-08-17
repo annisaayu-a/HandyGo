@@ -1,99 +1,110 @@
 import { useState, useEffect } from 'react';
-import { Bell, MapPin } from 'lucide-react';
+import { Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './ChatList.css';
 
+const API = 'https://handygo-api.vercel.app';
+
 export default function ChatList() {
   const navigate = useNavigate();
-  const [mitraName, setMitraName] = useState('Mitra HandyGo');
-  const [mitraAvatar, setMitraAvatar] = useState('https://ui-avatars.com/api/?name=Mitra+HandyGo&background=034078&color=fff');
-  
+
+  const [userName, setUserName] = useState('Pengguna');
+  const [userAvatar, setUserAvatar] = useState('https://ui-avatars.com/api/?name=Pengguna&background=cbd5e1&color=64748b');
+
+  // Load customer profile from localStorage
   useEffect(() => {
     try {
-      const order = JSON.parse(localStorage.getItem('simulated_incoming_order'));
-      if (order && order.mitra) {
-        setMitraName(order.mitra.full_name || order.mitra.name || 'Mitra HandyGo');
-        if (order.mitra.profile_picture) setMitraAvatar(order.mitra.profile_picture);
-      } else {
-        const saved = localStorage.getItem('mitra_profile_data');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed.full_name) setMitraName(parsed.full_name);
-          else if (parsed.name) setMitraName(parsed.name);
-          if (parsed.avatar) setMitraAvatar(parsed.avatar);
-        }
+      const saved = localStorage.getItem('handyGoUser');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.full_name) setUserName(parsed.full_name);
+        else if (parsed.name) setUserName(parsed.name);
+        if (parsed.profile_picture) setUserAvatar(parsed.profile_picture);
       }
     } catch(e) {}
   }, []);
 
-
   const [activeChats, setActiveChats] = useState([]);
+  const [historyChats, setHistoryChats] = useState([]);
 
-  const [historyChats, setHistoryChats] = useState([
-    {
-      id: 2,
-      name: 'Rama Wicaksono',
-      lastMessage: 'Pesanan selesai, chat berakhir.',
-      avatar: 'https://i.pravatar.cc/150?img=33'
-    },
-    {
-      id: 3,
-      name: 'Muhammad Alif',
-      lastMessage: 'Pesanan selesai, chat berakhir.',
-      avatar: 'https://i.pravatar.cc/150?img=12'
-    },
-    {
-      id: 4,
-      name: 'Rahmat Alam',
-      lastMessage: 'Pesanan selesai, chat berakhir.',
-      avatar: 'https://i.pravatar.cc/150?img=53'
-    }
-  ]);
-
-  const handleOpenChat = (isFinished) => {
-    navigate('/customer/chat', { state: { isFinished } });
+  const handleOpenChat = (orderId, mitraName, mitraAvatar, isFinished) => {
+    navigate('/customer/chat', { state: { orderId, mitraName, mitraAvatar, isFinished } });
   };
 
   useEffect(() => {
-    const checkOrderState = () => {
-      const orderStr = localStorage.getItem('simulated_incoming_order');
-      const chatStr = localStorage.getItem('handygo_active_chat_messages');
-      let lastMsg = 'Sy Mnuju ke lokasi sekarang kk';
-      
-      if (chatStr) {
+    const checkOrders = async () => {
+      // Get active order from localStorage
+      const activeOrderId = localStorage.getItem('handygo_active_order_id');
+
+      if (activeOrderId) {
         try {
-          const msgs = JSON.parse(chatStr);
-          if (msgs.length > 0) {
-            lastMsg = msgs[msgs.length - 1].text;
+          const res = await fetch(`${API}/api/orders/${activeOrderId}`);
+          if (res.ok) {
+            const data = await res.json();
+            const order = data.order;
+            
+            if (order && order.status !== 'selesai' && order.status !== 'batal' && order.status !== 'menunggu' && order.mitra) {
+              const mitraName = order.mitra.full_name || 'Mitra HandyGo';
+              const mitraAvatar = order.mitra.profile_picture || 
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(mitraName)}&background=034078&color=fff`;
+              
+              // Fetch last message for preview
+              let lastMsg = 'Mitra sedang dalam perjalanan...';
+              try {
+                const chatRes = await fetch(`${API}/api/chat/${activeOrderId}`);
+                if (chatRes.ok) {
+                  const chatData = await chatRes.json();
+                  if (chatData.messages && chatData.messages.length > 0) {
+                    lastMsg = chatData.messages[chatData.messages.length - 1].text;
+                    if (lastMsg.length > 50) lastMsg = lastMsg.substring(0, 50) + '...';
+                  }
+                }
+              } catch(e) {}
+              
+              setActiveChats([{
+                id: activeOrderId,
+                name: mitraName,
+                lastMessage: lastMsg,
+                avatar: mitraAvatar,
+                unread: 1,
+                mitraAvatar
+              }]);
+            } else if (order && order.status === 'selesai') {
+              setActiveChats([]);
+            }
           }
         } catch(e) {}
       }
 
-      let isOrderActive = false;
-      if (orderStr) {
-        try {
-          const order = JSON.parse(orderStr);
-          if (order.accepted && !['completed', 'completed_qris_success'].includes(order.driverPhase)) {
-            isOrderActive = true;
+      // Get history orders from API based on user id
+      try {
+        const userStr = localStorage.getItem('handyGoUser');
+        if (userStr) {
+          const user = JSON.parse(userStr);
+          if (user?.id) {
+            const res = await fetch(`${API}/api/orders?user_id=${user.id}`);
+            if (res.ok) {
+              const data = await res.json();
+              const completedOrders = (data.orders || []).filter(o => o.status === 'selesai' && o.mitra);
+              const history = completedOrders.map(o => {
+                const mitraName = o.mitra?.full_name || 'Mitra HandyGo';
+                return {
+                  id: o.id,
+                  name: mitraName,
+                  lastMessage: 'Pesanan selesai, chat berakhir.',
+                  avatar: o.mitra?.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(mitraName)}&background=034078&color=fff`,
+                  mitraAvatar: o.mitra?.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(mitraName)}&background=034078&color=fff`
+                };
+              });
+              setHistoryChats(history);
+            }
           }
-        } catch (e) {}
-      }
-
-      if (isOrderActive) {
-        setActiveChats([{
-          id: 1,
-          name: mitraName,
-          lastMessage: lastMsg,
-          avatar: 'https://i.pravatar.cc/150?img=11',
-          unread: 1,
-        }]);
-      } else {
-        setActiveChats([]);
-      }
+        }
+      } catch(e) {}
     };
 
-    checkOrderState();
-    const interval = setInterval(checkOrderState, 1500);
+    checkOrders();
+    const interval = setInterval(checkOrders, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -102,13 +113,9 @@ export default function ChatList() {
       {/* Header */}
       <header className="chatlist-header">
         <div className="chatlist-profile">
-          <img src="https://i.pravatar.cc/150?img=47" alt="Profile" className="chatlist-avatar" />
+          <img src={userAvatar} alt="Profile" className="chatlist-avatar" />
           <div className="chatlist-profile-info">
-            <h1 className="chatlist-name">Ajel</h1>
-            <div className="chatlist-location">
-              <MapPin size={12} color="#034078" />
-              <span>Kab. Gowa</span>
-            </div>
+            <h1 className="chatlist-name">{userName}</h1>
           </div>
         </div>
         <button className="chatlist-bell">
@@ -126,7 +133,7 @@ export default function ChatList() {
                 <div 
                   key={chat.id} 
                   className="chatlist-card"
-                  onClick={() => handleOpenChat(false)}
+                  onClick={() => handleOpenChat(chat.id, chat.name, chat.mitraAvatar, false)}
                 >
                   <img src={chat.avatar} alt={chat.name} className="chatlist-card-avatar" />
                   <div className="chatlist-card-text">
@@ -152,19 +159,23 @@ export default function ChatList() {
           </p>
           
           <div className="chatlist-items">
-            {historyChats.map(chat => (
-              <div 
-                key={chat.id} 
-                className="chatlist-card"
-                onClick={() => handleOpenChat(true)}
-              >
-                <img src={chat.avatar} alt={chat.name} className="chatlist-card-avatar" />
-                <div className="chatlist-card-text">
-                  <h3 className="chatlist-card-name">{chat.name}</h3>
-                  <p className="chatlist-card-msg finished">{chat.lastMessage}</p>
+            {historyChats.length === 0 ? (
+              <p className="chatlist-empty-text">Belum ada riwayat chat</p>
+            ) : (
+              historyChats.map(chat => (
+                <div 
+                  key={chat.id} 
+                  className="chatlist-card"
+                  onClick={() => handleOpenChat(chat.id, chat.name, chat.mitraAvatar, true)}
+                >
+                  <img src={chat.avatar} alt={chat.name} className="chatlist-card-avatar" />
+                  <div className="chatlist-card-text">
+                    <h3 className="chatlist-card-name">{chat.name}</h3>
+                    <p className="chatlist-card-msg finished">{chat.lastMessage}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </section>
       </main>

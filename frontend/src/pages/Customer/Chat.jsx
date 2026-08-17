@@ -3,39 +3,58 @@ import { ArrowLeft, Phone, Paperclip, Mic, Image as ImageIcon, Camera, Send, Mes
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Chat.css';
 
+const API = 'https://handygo-api.vercel.app';
+
 export default function Chat() {
   const navigate = useNavigate();
-  const [mitraName, setMitraName] = useState('Mitra HandyGo');
-  const [mitraAvatar, setMitraAvatar] = useState('https://ui-avatars.com/api/?name=Mitra+HandyGo&background=034078&color=fff');
-  
-  useEffect(() => {
-    try {
-      const order = JSON.parse(localStorage.getItem('simulated_incoming_order'));
-      if (order && order.mitra) {
-        setMitraName(order.mitra.full_name || order.mitra.name || 'Mitra HandyGo');
-        if (order.mitra.profile_picture) setMitraAvatar(order.mitra.profile_picture);
-      } else {
-        const saved = localStorage.getItem('mitra_profile_data');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed.full_name) setMitraName(parsed.full_name);
-          else if (parsed.name) setMitraName(parsed.name);
-          if (parsed.avatar) setMitraAvatar(parsed.avatar);
-        }
-      }
-    } catch(e) {}
-  }, []);
-
   const location = useLocation();
+
+  // orderId and mitra info are now passed via route state
+  const orderId = location.state?.orderId || null;
   const isFinished = location.state?.isFinished || false;
   const isCallActive = location.state?.isCallActive || false;
   const initialCallTime = location.state?.initialCallTime || 0;
-  
+
+  const [mitraName, setMitraName] = useState(location.state?.mitraName || 'Mitra HandyGo');
+  const [mitraAvatar, setMitraAvatar] = useState(
+    location.state?.mitraAvatar ||
+    'https://ui-avatars.com/api/?name=Mitra+HandyGo&background=034078&color=fff'
+  );
+
+  // If orderId was not passed but there's an active order in local storage, use it
+  const [activeOrderId, setActiveOrderId] = useState(orderId);
+
+  useEffect(() => {
+    // If orderId not in state, try to get it from the most recent saved active order
+    if (!activeOrderId) {
+      const saved = localStorage.getItem('handygo_active_order_id');
+      if (saved) setActiveOrderId(saved);
+    }
+  }, []);
+
+  // Fetch mitra info from DB if not provided
+  useEffect(() => {
+    if (activeOrderId && mitraName === 'Mitra HandyGo') {
+      fetch(`${API}/api/orders/${activeOrderId}`)
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (data?.order?.mitra) {
+            const m = data.order.mitra;
+            setMitraName(m.full_name || 'Mitra HandyGo');
+            setMitraAvatar(
+              m.profile_picture ||
+              `https://ui-avatars.com/api/?name=${encodeURIComponent(m.full_name || 'Mitra')}&background=034078&color=fff`
+            );
+          }
+        })
+        .catch(() => {});
+    }
+  }, [activeOrderId]);
+
   const [message, setMessage] = useState('');
   const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
   const [activeCallTime, setActiveCallTime] = useState(initialCallTime);
   const messagesEndRef = useRef(null);
-
   const [chatHistory, setChatHistory] = useState([]);
 
   const quickReplies = ['Lokasi sudah sesuai titik ya', 'Baik saya tunggu'];
@@ -48,29 +67,31 @@ export default function Chat() {
     scrollToBottom();
   }, [chatHistory]);
 
-  // Sync with localStorage to simulate real-time chat
+  // Poll messages from backend API
   useEffect(() => {
-    const loadMessages = () => {
-      const saved = localStorage.getItem('handygo_active_chat_messages');
-      if (saved) {
-        setChatHistory(JSON.parse(saved));
-      }
+    if (!activeOrderId) return;
+
+    const loadMessages = async () => {
+      try {
+        const res = await fetch(`${API}/api/chat/${activeOrderId}`);
+        if (res.ok) {
+          const data = await res.json();
+          // Map DB messages to display format
+          const mapped = data.messages.map(m => ({
+            id: m.id,
+            sender: m.sender_type, // 'customer' or 'mitra'
+            text: m.text,
+            time: new Date(m.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(':', '.')
+          }));
+          setChatHistory(mapped);
+        }
+      } catch (e) {}
     };
-    
-    // Initial load
+
     loadMessages();
-
-    // Listen for storage changes from other tabs/windows (Mitra simulator)
-    window.addEventListener('storage', loadMessages);
-    
-    // Also poll every 1 second just in case we are in the same window
-    const interval = setInterval(loadMessages, 1000);
-
-    return () => {
-      window.removeEventListener('storage', loadMessages);
-      clearInterval(interval);
-    };
-  }, []);
+    const interval = setInterval(loadMessages, 2000);
+    return () => clearInterval(interval);
+  }, [activeOrderId]);
 
   useEffect(() => {
     let interval;
@@ -88,20 +109,27 @@ export default function Chat() {
     return `${m} : ${s}`;
   };
 
-  const handleSend = (text = message) => {
+  const handleSend = async (text = message) => {
     if (!text.trim()) return;
-    
-    const newMessage = {
-      id: Date.now(),
-      sender: 'customer',
-      text: text,
-      time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(':', '.')
-    };
-    
-    const newHistory = [...chatHistory, newMessage];
-    setChatHistory(newHistory);
-    localStorage.setItem('handygo_active_chat_messages', JSON.stringify(newHistory));
     setMessage('');
+
+    if (activeOrderId) {
+      try {
+        await fetch(`${API}/api/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order_id: activeOrderId, sender_type: 'customer', text })
+        });
+        // Optimistically add to local state
+        const newMsg = {
+          id: Date.now(),
+          sender: 'customer',
+          text,
+          time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(':', '.')
+        };
+        setChatHistory(prev => [...prev, newMsg]);
+      } catch (e) {}
+    }
   };
 
   const handleAttachmentClick = () => {
@@ -117,7 +145,7 @@ export default function Chat() {
         </button>
         
         <div className="chat-mitra-profile">
-          <img src="https://i.pravatar.cc/150?img=11" alt="Mitra" className="chat-mitra-avatar" />
+          <img src={mitraAvatar} alt="Mitra" className="chat-mitra-avatar" />
           <div className="chat-mitra-info">
             <h1 className="chat-mitra-name">{mitraName}</h1>
             <div className="chat-mitra-rating">

@@ -42,27 +42,15 @@ export default function ShoppingStatus() {
     reviews: 0
   });
 
+  // Save orderId to localStorage so ChatList can find the active order
+  useEffect(() => {
+    if (orderId) {
+      localStorage.setItem('handygo_active_order_id', orderId);
+    }
+  }, [orderId]);
+
   useEffect(() => {
     const checkOrder = async () => {
-      if (!orderId) {
-        // Fallback for backward compatibility
-        const saved = localStorage.getItem('simulated_incoming_order');
-        if (saved) {
-          try {
-            const order = JSON.parse(saved);
-            if (order.driverPhase) {
-              setDriverPhase(order.driverPhase);
-              if (order.driverPhase === 'heading_to_customer' || order.driverPhase === 'arrived_at_customer') {
-                setOrderStatus((prev) => prev !== 'diantar' ? 'diantar' : prev);
-              } else if (order.driverPhase === 'completed') {
-                setOrderStatus((prev) => prev !== 'selesai' ? 'selesai' : prev);
-              }
-            }
-          } catch (e) {}
-        }
-        return;
-      }
-      
       try {
         const response = await fetch(`https://handygo-api.vercel.app/api/orders/${orderId}`);
         if (response.ok) {
@@ -339,7 +327,7 @@ export default function ShoppingStatus() {
                 <button className="courier-action-btn" onClick={() => navigate('/customer/call')}>
                   <Phone size={24} color="#034078" fill="#034078" />
                 </button>
-                <button className="courier-action-btn" onClick={() => navigate('/customer/chat')}>
+                <button className="courier-action-btn" onClick={() => navigate('/customer/chat', { state: { orderId, mitraName: mitraInfo.name, mitraAvatar: mitraInfo.avatar } })}>
                   <MessageCircle size={24} color="#034078" fill="#034078" />
                 </button>
               </div>
