@@ -10,24 +10,6 @@ export default function DeliveryStatus() {
   const [mitraName, setMitraName] = useState('Mitra HandyGo');
   const [mitraAvatar, setMitraAvatar] = useState('https://ui-avatars.com/api/?name=Mitra+HandyGo&background=034078&color=fff');
   
-  useEffect(() => {
-    try {
-      const order = JSON.parse(localStorage.getItem('simulated_incoming_order'));
-      if (order && order.mitra) {
-        setMitraName(order.mitra.full_name || order.mitra.name || 'Mitra HandyGo');
-        if (order.mitra.profile_picture) setMitraAvatar(order.mitra.profile_picture);
-      } else {
-        const saved = localStorage.getItem('mitra_profile_data');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed.full_name) setMitraName(parsed.full_name);
-          else if (parsed.name) setMitraName(parsed.name);
-          if (parsed.avatar) setMitraAvatar(parsed.avatar);
-        }
-      }
-    } catch(e) {}
-  }, []);
-
   const location = useLocation();
   const orderId = location.state?.orderId;
 
@@ -39,30 +21,44 @@ export default function DeliveryStatus() {
   const [review, setReview] = useState('');
   const [driverPhase, setDriverPhase] = useState('heading_to_store');
 
+  // Save orderId to localStorage so ChatList can find the active order
   useEffect(() => {
-    const checkOrder = () => {
-      const saved = localStorage.getItem('simulated_incoming_order');
-      if (saved) {
-        try {
-          const order = JSON.parse(saved);
-          if (order.driverPhase) {
-            setDriverPhase(order.driverPhase);
-            if (['heading_to_customer', 'traveling_to_customer', 'arrived_near_customer', 'arrived_at_customer'].includes(order.driverPhase)) {
+    if (orderId) {
+      localStorage.setItem('handygo_active_order_id', orderId);
+    }
+  }, [orderId]);
+
+  useEffect(() => {
+    const checkOrder = async () => {
+      try {
+        const response = await fetch(`https://handygo-api.vercel.app/api/orders/${orderId}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.order && data.order.mitra) {
+            setMitraName(data.order.mitra.full_name || 'Mitra HandyGo');
+            setMitraAvatar(data.order.mitra.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.order.mitra.full_name || 'Mitra HandyGo')}&background=034078&color=fff`);
+          }
+          if (data.order && data.order.status && data.order.status !== 'menunggu') {
+            const currentPhase = data.order.status;
+            setDriverPhase(currentPhase);
+            if (['heading_to_customer', 'traveling_to_customer', 'arrived_near_customer', 'arrived_at_customer'].includes(currentPhase)) {
               setOrderStatus((prev) => prev !== 'mengantar' ? 'mengantar' : prev);
-            } else if (order.driverPhase === 'completed') {
+            } else if (currentPhase === 'selesai' || currentPhase === 'completed') {
               setOrderStatus((prev) => prev !== 'selesai' ? 'selesai' : prev);
             }
           }
-        } catch (e) {
-          console.error(e);
         }
+      } catch (e) {
+        console.error('Error fetching order status:', e);
       }
     };
     
-    checkOrder();
-    const interval = setInterval(checkOrder, 1000);
-    return () => clearInterval(interval);
-  }, []);
+    if (orderId) {
+      checkOrder();
+      const interval = setInterval(checkOrder, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [orderId]);
 
   useEffect(() => {
     if (orderId) {

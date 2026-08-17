@@ -75,20 +75,7 @@ export default function DeliveryCheckout() {
     
     setShowSuccessPopup(true);
     
-    // Simulate sending order to Mitra via localStorage
-    localStorage.setItem('simulated_incoming_order', JSON.stringify({
-      id: createdOrderId || Date.now(),
-      service: 'Antar Barang',
-      destination: dropoff.name,
-      pickupName: userName || senderName,
-      receiverName: receiverName,
-      category: formatCategory(selectedCategory),
-      size: formatSize(selectedSize),
-      weight: weight,
-      paymentMethod: paymentMethod,
-      total: 30000,
-      timestamp: Date.now()
-    }));
+    // Real order is created via API above
 
     // Auto redirect to status page after 2 seconds
     setTimeout(() => {

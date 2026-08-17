@@ -115,15 +115,7 @@ export default function RepairDetails() {
         createdOrderId = data.order?.id;
       }
 
-      // Simulate sending order to Mitra via localStorage
-      localStorage.setItem('simulated_incoming_order', JSON.stringify({
-        id: createdOrderId || Date.now(),
-        service: 'Perbaikan',
-        destination: location.state?.selectedLocation?.address || 'BTP Blok G 114',
-        paymentMethod: 'Bayar di Tempat',
-        total: 50000,
-        timestamp: Date.now()
-      }));
+      // Real order is created via API above
 
       setShowSuccessModal(true);
       setTimeout(() => {

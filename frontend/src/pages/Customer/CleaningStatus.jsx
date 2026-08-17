@@ -10,121 +10,44 @@ export default function CleaningStatus() {
   const [mitraName, setMitraName] = useState('Mitra HandyGo');
   const [mitraAvatar, setMitraAvatar] = useState('https://ui-avatars.com/api/?name=Mitra+HandyGo&background=034078&color=fff');
   
-  useEffect(() => {
-    try {
-      const order = JSON.parse(localStorage.getItem('simulated_incoming_order'));
-      if (order && order.mitra) {
-        setMitraName(order.mitra.full_name || order.mitra.name || 'Mitra HandyGo');
-        if (order.mitra.profile_picture) setMitraAvatar(order.mitra.profile_picture);
-      } else {
-        const saved = localStorage.getItem('mitra_profile_data');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed.full_name) setMitraName(parsed.full_name);
-          else if (parsed.name) setMitraName(parsed.name);
-          if (parsed.avatar) setMitraAvatar(parsed.avatar);
-        }
-      }
-    } catch(e) {}
-  }, []);
-
-  const location = useLocation();
-  const orderData = location.state?.orderData || {
-    address: 'BTP Blok G 114',
-    luasArea: '50 - 100 m²',
-    tingkatKekotoran: 'Sedang',
-    durasi: 3,
-    catatan: 'Kamar utama tidak usah'
-  };
-
-  const initialStep = location.state?.orderStatus === 'selesai' || location.state?.status === 'selesai' ? 3 : 1;
-  const [activeStep, setActiveStep] = useState(initialStep);
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const [paymentMethod, setPaymentMethod] = useState('');
-  const [rating, setRating] = useState(0);
-  const [reviewText, setReviewText] = useState('');
-  const orderId = location.state?.orderId;
-  const isPaid = location.state?.isPaid || false;
-
+  // Save orderId to localStorage so ChatList can find the active order
   useEffect(() => {
     if (orderId) {
-      const savedRatings = JSON.parse(localStorage.getItem('handyGoRatings') || '{}');
-      if (savedRatings[orderId]) {
-        setRating(savedRatings[orderId].rating || 0);
-        setReviewText(savedRatings[orderId].review || '');
-      }
+      localStorage.setItem('handygo_active_order_id', orderId);
     }
   }, [orderId]);
 
-  const handleRatingChange = (newRating) => {
-    setRating(newRating);
-    if (orderId) {
-      const savedRatings = JSON.parse(localStorage.getItem('handyGoRatings') || '{}');
-      savedRatings[orderId] = { ...savedRatings[orderId], rating: newRating, review: reviewText };
-      localStorage.setItem('handyGoRatings', JSON.stringify(savedRatings));
-    }
-  };
-
-  const handleReviewChange = (e) => {
-    const val = e.target.value;
-    setReviewText(val);
-    if (orderId) {
-      const savedRatings = JSON.parse(localStorage.getItem('handyGoRatings') || '{}');
-      savedRatings[orderId] = { ...savedRatings[orderId], rating, review: val };
-      localStorage.setItem('handyGoRatings', JSON.stringify(savedRatings));
-    }
-  };
-
-  // Dynamic ETA
-  const [eta, setEta] = useState({ arriveStart: '', arriveEnd: '', finishStart: '', finishEnd: '', finished: '', started: '' });
-
   useEffect(() => {
-    const now = new Date();
-    const aStart = new Date(now.getTime() + 15 * 60000);
-    const aEnd = new Date(now.getTime() + 20 * 60000);
-    const fStart = new Date(now.getTime() + 180 * 60000); // Approx 3 hours
-    const fEnd = new Date(now.getTime() + 200 * 60000);
-    
-    const formatTime = (date) => {
-      return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
-    };
-
-    setEta({
-      arriveStart: formatTime(aStart),
-      arriveEnd: formatTime(aEnd),
-      finishStart: formatTime(fStart),
-      finishEnd: formatTime(fEnd),
-      finished: formatTime(fStart),
-      started: formatTime(aEnd)
-    });
-  }, []);
-
-  const [driverPhase, setDriverPhase] = useState('heading_to_customer');
-
-  useEffect(() => {
-    const checkOrder = () => {
-      const saved = localStorage.getItem('simulated_incoming_order');
-      if (saved) {
-        try {
-          const order = JSON.parse(saved);
-          if (order.driverPhase) {
-            setDriverPhase(order.driverPhase);
-            if (['working', 'finished_working_wait', 'payment_confirmation', 'payment_confirmed'].includes(order.driverPhase)) {
+    const checkOrder = async () => {
+      try {
+        const response = await fetch(`https://handygo-api.vercel.app/api/orders/${orderId}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.order && data.order.mitra) {
+            setMitraName(data.order.mitra.full_name || 'Mitra HandyGo');
+            setMitraAvatar(data.order.mitra.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.order.mitra.full_name || 'Mitra HandyGo')}&background=034078&color=fff`);
+          }
+          if (data.order && data.order.status && data.order.status !== 'menunggu') {
+            const currentPhase = data.order.status;
+            setDriverPhase(currentPhase);
+            if (['working', 'finished_working_wait', 'payment_confirmation', 'payment_confirmed'].includes(currentPhase)) {
               setActiveStep(2);
-            } else if (order.driverPhase === 'completed') {
+            } else if (currentPhase === 'selesai' || currentPhase === 'completed') {
               setActiveStep(3);
             }
           }
-        } catch (e) {
-          console.error(e);
         }
+      } catch (e) {
+        console.error('Error fetching order status:', e);
       }
     };
     
-    checkOrder();
-    const interval = setInterval(checkOrder, 1000);
-    return () => clearInterval(interval);
-  }, []);
+    if (orderId) {
+      checkOrder();
+      const interval = setInterval(checkOrder, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [orderId]);
 
   useEffect(() => {
     let interval = null;

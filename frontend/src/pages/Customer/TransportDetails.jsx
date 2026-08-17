@@ -186,16 +186,8 @@ export default function TransportDetails() {
       }
     }
 
-    // Simulate sending order to Mitra via localStorage
+    // Real order is created via API above
     const priceNum = activeVehicle.priceValue || parseInt(activeVehicle.price.replace(/[^0-9]/g, ''), 10) || 18000;
-    localStorage.setItem('simulated_incoming_order', JSON.stringify({
-      id: newOrderId || Date.now(),
-      service: 'Antar Jemput',
-      destination: dropoff.name,
-      paymentMethod: paymentMethod,
-      total: priceNum,
-      timestamp: Date.now()
-    }));
 
     navigate('/customer/finding-driver', {
       state: {
@@ -206,6 +198,7 @@ export default function TransportDetails() {
           dropoffLocation: dropoff,
           selectedVehicle: activeVehicle,
           paymentMethod,
+          orderId: newOrderId,
           driverPhase: 'heading' // Start tracking immediately when returned
         }
       }

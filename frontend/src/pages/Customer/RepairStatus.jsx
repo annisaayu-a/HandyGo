@@ -10,23 +10,32 @@ export default function RepairStatus() {
   const [mitraName, setMitraName] = useState('Mitra HandyGo');
   const [mitraAvatar, setMitraAvatar] = useState('https://ui-avatars.com/api/?name=Mitra+HandyGo&background=034078&color=fff');
   
+  // Save orderId to localStorage so ChatList can find the active order
   useEffect(() => {
-    try {
-      const order = JSON.parse(localStorage.getItem('simulated_incoming_order'));
-      if (order && order.mitra) {
-        setMitraName(order.mitra.full_name || order.mitra.name || 'Mitra HandyGo');
-        if (order.mitra.profile_picture) setMitraAvatar(order.mitra.profile_picture);
-      } else {
-        const saved = localStorage.getItem('mitra_profile_data');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed.full_name) setMitraName(parsed.full_name);
-          else if (parsed.name) setMitraName(parsed.name);
-          if (parsed.avatar) setMitraAvatar(parsed.avatar);
+    if (orderId) {
+      localStorage.setItem('handygo_active_order_id', orderId);
+    }
+  }, [orderId]);
+
+  useEffect(() => {
+    const fetchMitra = async () => {
+      try {
+        if (orderId) {
+          const response = await fetch(`https://handygo-api.vercel.app/api/orders/${orderId}`);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.order && data.order.mitra) {
+              setMitraName(data.order.mitra.full_name || 'Mitra HandyGo');
+              setMitraAvatar(data.order.mitra.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.order.mitra.full_name || 'Mitra HandyGo')}&background=034078&color=fff`);
+            }
+          }
         }
-      }
-    } catch(e) {}
-  }, []);
+      } catch(e) { console.error('Error fetching mitra:', e); }
+    };
+    fetchMitra();
+    const interval = setInterval(fetchMitra, 3000);
+    return () => clearInterval(interval);
+  }, [orderId]);
 
   const location = useLocation();
   const initialPhase = location.state?.status || 'coming';
@@ -111,20 +120,39 @@ export default function RepairStatus() {
     });
   }, []);
 
-  // Simulate phase transitions
+  // Sync phase transitions with database API
   useEffect(() => {
-    if (statusPhase === 'coming') {
-      const timer = setTimeout(() => {
-        setShowAgreement(true);
-      }, 4000);
-      return () => clearTimeout(timer);
-    } else if (statusPhase === 'working') {
-      const timer = setTimeout(() => {
-        setStatusPhase('finished');
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [statusPhase]);
+    if (!orderId) return;
+
+    const fetchStatus = async () => {
+      try {
+        const response = await fetch(`https://handygo-api.vercel.app/api/orders/${orderId}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.order && data.order.status) {
+            const currentPhase = data.order.status;
+            if (['heading_to_customer', 'traveling_to_customer', 'arrived_near_customer', 'arrived_at_customer'].includes(currentPhase)) {
+              setStatusPhase('coming');
+            } else if (currentPhase === 'working') {
+              setStatusPhase('working');
+            } else if (currentPhase === 'finished_working_wait' || currentPhase === 'payment_confirmation' || currentPhase === 'payment_confirmed') {
+              // Wait for user to pay
+              setShowAgreement(true);
+            } else if (currentPhase === 'selesai' || currentPhase === 'completed') {
+              setStatusPhase('finished');
+              setShowAgreement(false);
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Error fetching status:', e);
+      }
+    };
+
+    fetchStatus();
+    const interval = setInterval(fetchStatus, 3000);
+    return () => clearInterval(interval);
+  }, [orderId]);
 
   const handlePay = () => {
     if (!paymentMethod) return;
