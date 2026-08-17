@@ -122,18 +122,25 @@ export default function MitraDashboard() {
     if (incomingOrder) {
       try {
         let mitraId = null;
+        let parsed = null;
         const savedProfile = localStorage.getItem('mitra_profile_data');
+        const handyGoMitra = localStorage.getItem('handyGoMitra');
+        
         if (savedProfile) {
-          const parsed = JSON.parse(savedProfile);
+          parsed = JSON.parse(savedProfile);
           mitraId = parsed.id;
-          if (!mitraId && parsed.phone) {
-            const res = await fetch(`https://handygo-api.vercel.app/api/auth/mitra/profile?phone=${encodeURIComponent(parsed.phone)}`);
-            if (res.ok) {
-              const mData = await res.json();
-              mitraId = mData.mitra.id;
-              parsed.id = mitraId;
-              localStorage.setItem('mitra_profile_data', JSON.stringify(parsed));
-            }
+        } else if (handyGoMitra) {
+          parsed = JSON.parse(handyGoMitra);
+          mitraId = parsed.id;
+        }
+        
+        if (!mitraId && parsed && parsed.phone) {
+          const res = await fetch(`https://handygo-api.vercel.app/api/auth/mitra/profile?phone=${encodeURIComponent(parsed.phone)}`);
+          if (res.ok) {
+            const mData = await res.json();
+            mitraId = mData.mitra.id;
+            parsed.id = mitraId;
+            localStorage.setItem('mitra_profile_data', JSON.stringify(parsed));
           }
         }
         
