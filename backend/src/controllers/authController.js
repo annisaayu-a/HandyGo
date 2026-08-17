@@ -277,6 +277,25 @@ exports.updateProfile = async (req, res) => {
     res.status(500).json({ error: 'Gagal memperbarui profil' });
   }
 };
+exports.updateMitraProfile = async (req, res) => {
+  try {
+    const { phone_number, full_name } = req.body;
+
+    if (!phone_number || !full_name) {
+      return res.status(400).json({ error: 'Nomor HP dan nama lengkap wajib diisi' });
+    }
+
+    const updatedMitra = await prisma.mitra.updateMany({
+      where: { phone_number: phone_number },
+      data: { full_name: full_name }
+    });
+
+    res.json({ message: 'Profil mitra berhasil diperbarui' });
+  } catch (error) {
+    console.error('Update mitra profile error:', error);
+    res.status(500).json({ error: 'Gagal memperbarui profil mitra' });
+  }
+};
 
 const fs = require('fs');
 const path = require('path');

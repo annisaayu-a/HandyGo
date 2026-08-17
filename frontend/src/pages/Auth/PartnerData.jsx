@@ -22,16 +22,36 @@ export default function PartnerData() {
     }
   }, [accountNumber, fullName]);
 
-  const handleNext = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleNext = async () => {
     if (fullName && accountNumber) {
-      // Save mitra profile data to localStorage for use in profile pages
+      setIsSubmitting(true);
       const existing = JSON.parse(localStorage.getItem('mitra_profile_data') || '{}');
+      
+      try {
+        if (existing.phone) {
+          await fetch('https://handygo-api.vercel.app/api/auth/mitra/profile', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              phone_number: existing.phone.replace('+62', '8'),
+              full_name: fullName
+            })
+          });
+        }
+      } catch (error) {
+        console.error('Error updating mitra profile:', error);
+      }
+
+      // Save mitra profile data to localStorage for use in profile pages
       localStorage.setItem('mitra_profile_data', JSON.stringify({
         ...existing,
         name: fullName,
         vehicle: vehicle,
         jenisMitra: vehicle === 'motor' ? 'Mitra Motor' : 'Mitra Mobil',
       }));
+      setIsSubmitting(false);
       navigate('/partner-upload', { state: { vehicle } });
     }
   };
