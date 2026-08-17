@@ -48,16 +48,20 @@ exports.createOrder = async (req, res) => {
 
 exports.getOrders = async (req, res) => {
   try {
-    const { user_id } = req.query;
+    const { user_id, mitra_id } = req.query;
     
-    if (!user_id) {
-      return res.status(400).json({ error: 'user_id diperlukan' });
+    if (!user_id && !mitra_id) {
+      return res.status(400).json({ error: 'user_id atau mitra_id diperlukan' });
     }
 
+    const whereClause = {};
+    if (user_id) whereClause.user_id = user_id;
+    if (mitra_id) whereClause.mitra_id = mitra_id;
+
     const orders = await prisma.order.findMany({
-      where: { user_id },
+      where: whereClause,
       orderBy: { created_at: 'desc' },
-      include: { service: true }
+      include: { service: true, user: true }
     });
 
     res.status(200).json({ orders });

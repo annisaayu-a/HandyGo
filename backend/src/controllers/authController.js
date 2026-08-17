@@ -297,6 +297,31 @@ exports.updateMitraProfile = async (req, res) => {
   }
 };
 
+exports.getMitraProfileByPhone = async (req, res) => {
+  try {
+    let { phone } = req.query;
+    if (!phone) {
+      return res.status(400).json({ error: 'Nomor HP diperlukan' });
+    }
+    
+    // Normalize phone format since frontend saves it as +628... or 8...
+    phone = phone.replace('+62', '8');
+
+    const mitra = await prisma.mitra.findFirst({
+      where: { phone_number: phone }
+    });
+
+    if (!mitra) {
+      return res.status(404).json({ error: 'Mitra tidak ditemukan' });
+    }
+
+    res.json({ mitra });
+  } catch (error) {
+    console.error('Get mitra profile error:', error);
+    res.status(500).json({ error: 'Gagal mengambil data mitra' });
+  }
+};
+
 const fs = require('fs');
 const path = require('path');
 

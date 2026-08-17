@@ -31,7 +31,7 @@ export default function MitraChatList() {
   };
 
   useEffect(() => {
-    const checkOrderState = () => {
+    const checkOrderState = async () => {
       const orderStr = localStorage.getItem('simulated_incoming_order');
       const chatStr = localStorage.getItem('handygo_active_chat_messages');
       let lastMsg = 'Hati hati kak'; // Default as in image
@@ -58,20 +58,57 @@ export default function MitraChatList() {
       if (isOrderActive) {
         setActiveChats([{
           id: 1,
-          name: 'Hana',
+          name: 'Hana', // Should ideally come from the order data
           lastMessage: lastMsg,
           avatar: 'https://ui-avatars.com/api/?name=Hana&background=cbd5e1&color=64748b',
           unread: 2,
         }]);
       } else {
         setActiveChats([]);
-        // If order finished and we had a chat, we could add it to history here
-        // For simplicity, we just leave it in the hardcoded history below
       }
+
+      // Fetch history chats from backend
+      try {
+        const saved = localStorage.getItem('mitra_profile_data');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          let mitraId = parsed.id;
+          
+          if (!mitraId && parsed.phone) {
+            const res = await fetch(`https://handygo-api.vercel.app/api/auth/mitra/profile?phone=${encodeURIComponent(parsed.phone)}`);
+            if (res.ok) {
+              const mData = await res.json();
+              mitraId = mData.mitra.id;
+              parsed.id = mitraId;
+              localStorage.setItem('mitra_profile_data', JSON.stringify(parsed));
+            }
+          }
+
+          if (mitraId) {
+            const resOrders = await fetch(`https://handygo-api.vercel.app/api/orders?mitra_id=${mitraId}`);
+            if (resOrders.ok) {
+              const oData = await resOrders.json();
+              const completedOrders = oData.orders.filter(o => o.status === 'selesai');
+              
+              const history = completedOrders.map(o => {
+                const customerName = o.user?.full_name || 'Pelanggan';
+                return {
+                  id: o.id,
+                  name: customerName,
+                  lastMessage: 'Pesanan selesai, chat berakhir.',
+                  avatar: o.user?.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(customerName)}&background=cbd5e1&color=64748b`
+                };
+              });
+              
+              setHistoryChats(history);
+            }
+          }
+        }
+      } catch(e) {}
     };
 
     checkOrderState();
-    const interval = setInterval(checkOrderState, 1500);
+    const interval = setInterval(checkOrderState, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -134,7 +171,8 @@ export default function MitraChatList() {
               <div 
                 key={chat.id} 
                 className="chatlist-card"
-                onClick={() => handleOpenChat(true)}
+                style={{ cursor: 'default' }}
+                title="Riwayat chat belum bisa dibuka untuk saat ini"
               >
                 <img src={chat.avatar} alt={chat.name} className="chatlist-card-avatar" />
                 <div className="chatlist-card-text">

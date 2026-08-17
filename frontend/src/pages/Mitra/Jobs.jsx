@@ -36,13 +36,9 @@ export default function MitraJobs() {
   const [selectedMonth, setSelectedMonth] = useState('');
   const [tempMonth, setTempMonth] = useState('');
 
-  const fetchOrders = () => {
-    // Generate static mockup data based on image
+  const fetchOrders = async () => {
     const now = new Date();
     const currentMonthYear = `${months[now.getMonth()]} ${now.getFullYear()}`;
-    // Using a fixed year for April to match mockup style if wanted, but using current year makes it logical
-    const aprilYear = `April ${now.getFullYear()}`;
-
     let data = [];
 
     // Check if there is an active simulated order in localStorage
@@ -69,13 +65,60 @@ export default function MitraJobs() {
       }
     } catch(e) {}
 
+    // Fetch history from backend
+    try {
+      const saved = localStorage.getItem('mitra_profile_data');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        let mitraId = parsed.id;
+        
+        // If we don't have the UUID yet, fetch it via phone
+        if (!mitraId && parsed.phone) {
+          const res = await fetch(`https://handygo-api.vercel.app/api/auth/mitra/profile?phone=${encodeURIComponent(parsed.phone)}`);
+          if (res.ok) {
+            const mData = await res.json();
+            mitraId = mData.mitra.id;
+            // Cache it
+            parsed.id = mitraId;
+            localStorage.setItem('mitra_profile_data', JSON.stringify(parsed));
+          }
+        }
+
+        if (mitraId) {
+          const resOrders = await fetch(`https://handygo-api.vercel.app/api/orders?mitra_id=${mitraId}`);
+          if (resOrders.ok) {
+            const oData = await resOrders.json();
+            const completedOrders = oData.orders.filter(o => o.status === 'selesai' || o.status === 'batal');
+            
+            completedOrders.forEach(o => {
+              const orderDate = new Date(o.created_at);
+              const mName = months[orderDate.getMonth()];
+              const y = orderDate.getFullYear();
+              const dateStr = `${orderDate.toLocaleDateString('id-ID', { weekday: 'long' })}, ${orderDate.getDate()} ${mName}, ${orderDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':')}`;
+              const monthGroup = `${mName} ${y}`;
+              
+              data.push({
+                id: o.id,
+                service: o.service?.name || 'Layanan',
+                status: o.status === 'selesai' ? 'Sukses' : 'Dibatalkan',
+                date: dateStr,
+                monthYearGroup: monthGroup,
+                isCanceled: o.status === 'batal',
+                statusColor: o.status === 'selesai' ? '#1e293b' : '#64748b'
+              });
+            });
+          }
+        }
+      }
+    } catch(e) {}
+
     setHistoryData(data);
   };
 
   useEffect(() => {
     fetchOrders();
     // Poll to keep active status updated
-    const interval = setInterval(fetchOrders, 2000);
+    const interval = setInterval(fetchOrders, 3000);
     return () => clearInterval(interval);
   }, []);
 
