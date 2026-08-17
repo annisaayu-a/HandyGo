@@ -7,6 +7,25 @@ import DriverTrackingMap from '../../components/DriverTrackingMap';
 
 export default function CleaningStatus() {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  const orderData = location.state?.orderData || {
+    address: 'BTP Blok G 114',
+    luasArea: '50 - 100 m²',
+    tingkatKekotoran: 'Sedang',
+    durasi: 3,
+    catatan: 'Kamar utama tidak usah'
+  };
+
+  const initialStep = location.state?.orderStatus === 'selesai' || location.state?.status === 'selesai' ? 3 : 1;
+  const [activeStep, setActiveStep] = useState(initialStep);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [rating, setRating] = useState(0);
+  const [reviewText, setReviewText] = useState('');
+  const orderId = location.state?.orderId;
+  const isPaid = location.state?.isPaid || false;
+
   const [mitraName, setMitraName] = useState('Mitra HandyGo');
   const [mitraAvatar, setMitraAvatar] = useState('https://ui-avatars.com/api/?name=Mitra+HandyGo&background=034078&color=fff');
   

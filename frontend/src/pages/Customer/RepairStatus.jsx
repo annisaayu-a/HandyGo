@@ -7,6 +7,16 @@ import DriverTrackingMap from '../../components/DriverTrackingMap';
 
 export default function RepairStatus() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const orderId = location.state?.orderId;
+  const initialPhase = location.state?.status || 'coming';
+  const [statusPhase, setStatusPhase] = useState(initialPhase);
+  const [showAgreement, setShowAgreement] = useState(false);
+  const [expandSparepart, setExpandSparepart] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [rating, setRating] = useState(0);
+  const [reviewText, setReviewText] = useState('');
+  
   const [mitraName, setMitraName] = useState('Mitra HandyGo');
   const [mitraAvatar, setMitraAvatar] = useState('https://ui-avatars.com/api/?name=Mitra+HandyGo&background=034078&color=fff');
   
@@ -37,15 +47,7 @@ export default function RepairStatus() {
     return () => clearInterval(interval);
   }, [orderId]);
 
-  const location = useLocation();
-  const initialPhase = location.state?.status || 'coming';
-  const [statusPhase, setStatusPhase] = useState(initialPhase);
-  const [showAgreement, setShowAgreement] = useState(false);
-  const [expandSparepart, setExpandSparepart] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('');
-  const [rating, setRating] = useState(0);
-  const [reviewText, setReviewText] = useState('');
-  const orderId = location.state?.orderId;
+
 
   useEffect(() => {
     if (orderId) {
