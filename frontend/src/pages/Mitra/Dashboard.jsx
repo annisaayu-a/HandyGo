@@ -304,15 +304,7 @@ export default function MitraDashboard() {
 
   return (
     <div className="mitra-dashboard-container">
-      {/* DEBUG TEXT */}
-      <div style={{ position: 'absolute', top: '100px', left: '20px', zIndex: 9999, background: 'rgba(0,0,0,0.8)', color: 'lime', padding: '10px', fontSize: '10px', borderRadius: '5px' }}>
-        DEBUG INFO:<br/>
-        Online: {isOnline ? "YES" : "NO"}<br/>
-        API Status: {debugLog}<br/>
-        Order Accepted: {isOrderAccepted ? "YES" : "NO"}<br/>
-        Has Incoming: {incomingOrder ? "YES" : "NO"}<br/>
-        {incomingOrder && `Order Phase: ${incomingOrder.driverPhase}`}<br/>
-      </div>
+
 
       {/* Map Background */}
       <div className="mdash-map-container">
