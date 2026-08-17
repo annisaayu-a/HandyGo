@@ -35,6 +35,12 @@ export default function ShoppingStatus() {
   const [review, setReview] = useState('');
 
   const [driverPhase, setDriverPhase] = useState('heading_to_store');
+  const [mitraInfo, setMitraInfo] = useState({
+    name: 'Mencari Mitra...',
+    avatar: 'https://ui-avatars.com/api/?name=Mencari+Mitra&background=cbd5e1&color=fff',
+    rating: 0,
+    reviews: 0
+  });
 
   useEffect(() => {
     const checkOrder = async () => {
@@ -61,6 +67,14 @@ export default function ShoppingStatus() {
         const response = await fetch(`https://handygo-api.vercel.app/api/orders/${orderId}`);
         if (response.ok) {
           const data = await response.json();
+          if (data.order && data.order.mitra) {
+            setMitraInfo({
+              name: data.order.mitra.full_name || 'Mitra HandyGo',
+              avatar: data.order.mitra.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.order.mitra.full_name || 'Mitra HandyGo')}&background=034078&color=fff`,
+              rating: 4.9, // This can be dynamic later if added to schema
+              reviews: 59
+            });
+          }
           if (data.order && data.order.status && data.order.status !== 'menunggu') {
             const currentPhase = data.order.status;
             setDriverPhase(currentPhase);
@@ -227,11 +241,11 @@ export default function ShoppingStatus() {
             {/* Courier Card (Disabled) */}
             <div className="courier-card">
               <div className="courier-info-left">
-                <img src="https://ui-avatars.com/api/?name=Rafael+Gemam&background=034078&color=fff" alt="Courier Avatar" className="courier-avatar" />
+                <img src={mitraInfo.avatar} alt="Courier Avatar" className="courier-avatar" />
                 <div className="courier-text">
-                  <h4 className="courier-name">Rafael gemam</h4>
+                  <h4 className="courier-name">{mitraInfo.name}</h4>
                   <div className="courier-rating">
-                    <span className="star">★</span> 4.9 <span className="reviews">(59 ulasan)</span>
+                    <span className="star">★</span> {mitraInfo.rating} <span className="reviews">({mitraInfo.reviews} ulasan)</span>
                   </div>
                 </div>
               </div>
@@ -313,11 +327,11 @@ export default function ShoppingStatus() {
             {/* Courier Card (Active) */}
             <div className="courier-card" style={{ marginTop: orderStatus === 'disiapkan' && driverPhase !== 'heading_to_store' ? '0' : undefined }}>
               <div className="courier-info-left">
-                <img src="https://ui-avatars.com/api/?name=Rafael+Gemam&background=034078&color=fff" alt="Courier Avatar" className="courier-avatar" />
+                <img src={mitraInfo.avatar} alt="Courier Avatar" className="courier-avatar" />
                 <div className="courier-text">
-                  <h4 className="courier-name">Rafael gemam</h4>
+                  <h4 className="courier-name">{mitraInfo.name}</h4>
                   <div className="courier-rating">
-                    <span className="star">★</span> 4.9 <span className="reviews">(59 ulasan)</span>
+                    <span className="star">★</span> {mitraInfo.rating} <span className="reviews">({mitraInfo.reviews} ulasan)</span>
                   </div>
                 </div>
               </div>
