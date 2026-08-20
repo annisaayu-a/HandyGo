@@ -22,6 +22,8 @@ model User {
   profile_picture String?
   created_at      DateTime @default(now())
   orders          Order[]
+
+  @@map("customer_users")
 }
 
 model Mitra {
@@ -37,6 +39,8 @@ model Mitra {
   is_verified      Boolean  @default(false)
   created_at       DateTime @default(now())
   orders           Order[]
+
+  @@map("mitra_users")
 }
 model Service {
   id          Int      @id @default(autoincrement())
@@ -44,6 +48,8 @@ model Service {
   icon_url    String?
   base_price  Float?
   orders      Order[]
+
+  @@map("services")
 }
 
 model Order {
@@ -63,6 +69,8 @@ model Order {
   created_at        DateTime @default(now())
   completed_at      DateTime?
   chat_messages     ChatMessage[]
+
+  @@map("customer_orders")
 }
 
 model ChatMessage {
@@ -72,4 +80,6 @@ model ChatMessage {
   sender_type String   // "customer" atau "mitra"
   text        String
   created_at  DateTime @default(now())
+
+  @@map("order_chats")
 }
